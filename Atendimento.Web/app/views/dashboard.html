@@ -1,0 +1,567 @@
+<!-- ============================================================== -->
+<!-- Main wrapper - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<div id="main-wrapper">
+    <!-- header -->
+    <top-header></top-header>
+    <!-- left side bar -->
+    <left-side-bar></left-side-bar>
+    <!-- ============================================================== -->
+    <!-- Page wrapper  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <!-- ============================================================== -->
+        <!-- Container fluid  -->
+        <!-- ============================================================== -->
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center">
+                    <h4 class="text-themecolor">Dashboard De Atendimentos</h4>
+                </div>
+                <div class="col-md-7 align-self-center text-right">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <ol class="breadcrumb">
+                            <!-- <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li> -->
+                            <li class="breadcrumb-item active">Dashboard de Atendimentos</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div id="success-alert" class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <h3 class="text-success"><i class="fa fa-check-circle"></i> Sucesso.</h3>{{mensagem}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="error-alert" class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <h3 class="text-danger"><i class="fa fa-check-circle"></i> Erro.</h3>{{mensagem}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>            
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Start Page Content -->
+            <!-- ============================================================== -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- grid header -->
+                            <div class="row">
+                                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 m-t-10 text-center">
+                                    <!-- Botões -->
+                                    <button type="button" class="btn btn-warning" ng-click="updateTicketList()"><i class="fas fa-sync-alt"></i> Atualiza Lista</button>
+                                    <button type="button" class="btn btn-info" ng-click="initModalNewSupport()" data-toggle="modal" data-target="#add-atendimento"><i class="fas fa-plus"></i> Novo Atendimento</button>
+                                    <button type="button" class="btn btn-cyan" ng-click="initModalFilter()" data-toggle="modal" data-target="#add-filtro"><i class="fas fa-filter"></i> Filtros Avançados</button>
+                                </div>
+                                <!-- filtros -->
+                                <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 text-center m-t-20">
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="todos" name="status" class="custom-control-input" value="0" ng-model="idsStatusTicket" ng-click="updateListByStatus('0')">
+                                        <label class="custom-control-label" for="todos" style="font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalAtendimentos}} atendimentos">Todos</label>
+                                    </div>
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="emaberto" name="status" class="custom-control-input" value="1,4,5" ng-model="idsStatusTicket" ng-click="updateListByStatus('1,4,5')">
+                                        <label class="custom-control-label" for="emaberto" style="font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalEmAberto}} atendimentos">Em Aberto</label>
+                                    </div>
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="aguardando" name="status" class="custom-control-input" value="1" ng-model="idsStatusTicket" ng-click="updateListByStatus('1')">
+                                        <label class="custom-control-label" for="aguardando" style="color: #008f6c; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalAguardando}} atendimentos">Aguardando Atendimento</label>
+                                    </div>
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="pendente" name="status" class="custom-control-input" value="4" ng-model="idsStatusTicket" ng-click="updateListByStatus('4')">
+                                        <label class="custom-control-label" for="pendente" style="color: #fb9678; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalPendente}} atendimentos">Pendente com Cliente</label>
+                                    </div>
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="emanalise" name="status" class="custom-control-input" value="5" ng-model="idsStatusTicket" ng-click="updateListByStatus('5')">
+                                        <label class="custom-control-label" for="emanalise" style="color: #ab8ce4; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalEmAnalise}} atendimentos">Em Análise</label>
+                                    </div>
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="concluido" name="status" class="custom-control-input" value="2" ng-model="idsStatusTicket" ng-click="updateListByStatus('2')">
+                                        <label class="custom-control-label" for="concluido" style="color: #d19e01; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalConcluido}} atendimentos">Concluído</label>
+                                    </div>
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="cancelado" name="status" class="custom-control-input" value="3" ng-model="idsStatusTicket" ng-click="updateListByStatus('3')">
+                                        <label class="custom-control-label" for="cancelado" style="color: darkslategrey; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalCancelado}} atendimentos">Cancelado</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- grid de tickets -->
+                            <div class="table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
+                                <div class="row justify-content-md-center m-t-20">
+                                    <div class="col">
+                                        <nav aria-label="Page navigation example" ng-if="tickets.length > 0">
+                                            <!-- Paginação -->
+                                            <ul class="pagination">
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="setPage(1)">Primeiro</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="setPage(pagination.currentPage - 1)"><i class="fas fa-chevron-left"></i></a>
+                                                </li>
+    
+                                                <li class="page-item" ng-repeat="page in pagination.pages track by $index" ng-class="{active:pagination.currentPage === page}">
+                                                    <a class="page-link" ng-click="setPage(page)">{{page}}</a>
+                                                </li>
+                                                
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="setPage(pagination.currentPage + 1)"><i class="fas fa-chevron-right"></i></a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="setPage(pagination.totalPages)">Último</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    <div class="col-4">
+                                        &nbsp;
+                                    </div>
+                                    <!-- Contagem de páginas -->
+                                    <div class="col text-right" ng-if="tickets.length > 0">
+                                        <label class="">Mostrando página {{pagination.currentPage}} de {{pagination.totalPages}}</label>
+                                    </div>
+                                </div>
+                                <table id="tickets" class="table m-t-20 no-wrap" ng-if="tickets.length == 0">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Não foram encontrados resultados para o filtro informado.
+                                            </th>
+                                        </td>
+                                    </tr>
+                                </table>                              
+                                <table id="tickets" class="table m-t-20 table-hover no-wrap contact-list table-striped" ng-if="tickets.length > 0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Ticket #</th>
+                                            <th>Usuário</th>
+                                            <th>Assunto</th>
+                                            <th>Status</th>
+                                            <th>Categoria</th>
+                                            <th>Data</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="ticket in tickets track by ticket.id" ng-click="showTicket(ticket.id)" style="cursor: pointer;">
+                                            <td>{{pagination.startIndex + $index + 1}}</td>
+                                            <td>{{ticket.id}}</td>
+                                            <td>{{ticket.usuarioCliente.nome}}</td>
+                                            <td>{{ticket.titulo}}</td>
+                                            <td ng-switch on="ticket.statusTicket.id">
+                                                <span class="label label-status label-success" ng-switch-when="1">{{ticket.statusTicket.nome}}</span>
+                                                <span class="label label-status label-warning" ng-switch-when="2">{{ticket.statusTicket.nome}}</span>
+                                                <span class="label label-status label-inverse" ng-switch-when="3">{{ticket.statusTicket.nome}}</span>
+                                                <span class="label label-status label-primary" ng-switch-when="4">{{ticket.statusTicket.nome}}</span>
+                                                <span class="label label-status label-purple" ng-switch-when="5">{{ticket.statusTicket.nome}}</span>
+                                            </td>
+                                            <td>{{ticket.categoria.nome}}</td>
+                                            <td>{{ticket.dataHoraUltimaMensagem | date : 'dd/MM/yyyy HH:mm'}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- Grid Footer -->
+                                <div class="row justify-content-md-center m-t-20">
+                                    <div class="col">
+                                        <nav aria-label="Page navigation example" ng-if="tickets.length > 0">
+                                            <!-- Paginação -->
+                                            <ul class="pagination">
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="setPage(1)">Primeiro</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="setPage(pagination.currentPage - 1)"><i class="fas fa-chevron-left"></i></a>
+                                                </li>
+
+                                                <li class="page-item" ng-repeat="page in pagination.pages track by $index" ng-class="{active:pagination.currentPage === page}">
+                                                    <a class="page-link" ng-click="setPage(page)">{{page}}</a>
+                                                </li>
+                                                
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="setPage(pagination.currentPage + 1)"><i class="fas fa-chevron-right"></i></a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="setPage(pagination.totalPages)">Último</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    <div class="col-4">
+                                        &nbsp;
+                                    </div>
+                                    <!-- Contagem de páginas -->
+                                    <div class="col text-right" ng-if="tickets.length > 0">
+                                        <label class="">Mostrando página {{pagination.currentPage}} de {{pagination.totalPages}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Page Content -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Begin Modal Novo Atendimento -->
+            <!-- ============================================================== -->
+            <div id="add-atendimento" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">Novo Atendimento</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal form-material" name="novoAtendimentoForm">
+                                <div class="form-group">
+                                    <div class="form-group row">
+                                        <label for="ticket" class="col-sm-3 col-form-label"><strong>Cliente</strong></label>
+                                        <div class="col-sm-9">
+                                            <select class="form-control"
+                                                    ng-required="true"
+                                                    ng-init="atendimento.cliente = atendimento.cliente || options[0].value"
+                                                    ng-change="getUsuarios(atendimento.cliente)"
+                                                    ng-model="atendimento.cliente"
+                                                    ng-options="cliente.id as cliente.nome for cliente in clientes | orderBy: 'nome'">
+                                                <option value="">Selecione o cliente</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="ticket" class="col-sm-3 col-form-label"><strong>Usuário</strong></label>
+                                        <div class="col-sm-9">
+                                            <select class="form-control"
+                                                    ng-required="true"
+                                                    ng-disabled="atendimento.cliente == undefined"
+                                                    ng-init="atendimento.usuario = atendimento.usuario || options[0].value"
+                                                    ng-model="atendimento.usuario"
+                                                    ng-options="usuario.id as usuario.nome for usuario in usuarios | orderBy: 'nome'">
+                                                <option value="">Selecione o usuário</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="ticket" class="col-sm-3 col-form-label"><strong>Categoria</strong></label>
+                                        <div class="col-sm-9">
+                                            <select class="form-control"
+                                                    ng-required="true"
+                                                    ng-init="atendimento.categoria = atendimento.categoria || options[0].value"
+                                                    ng-model="atendimento.categoria"
+                                                    ng-options="categoria.id as categoria.nome for categoria in categorias | orderBy: 'nome'">
+                                                <option value="">Selecione a categoria</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="ticket" class="col-sm-3 col-form-label"><strong>Classificação</strong></label>
+                                        <div class="col-sm-9">
+                                            <select class="form-control"
+                                                    ng-required="true"
+                                                    ng-init="atendimento.classificacao = atendimento.classificacao || options[0].value"
+                                                    ng-model="atendimento.classificacao"
+                                                    ng-options="classificacao.id as classificacao.nome for classificacao in classificacoes | orderBy: 'idClassificacao'">
+                                                <option value="">Selecione a classificação</option>
+                                            </select>
+                                        </div>
+                                    </div>                                    
+                                    <div class="form-group row">
+                                        <label for="ticket" class="col-sm-3 col-form-label"><strong>Assunto</strong></label>
+                                        <div class="col-sm-9">
+                                            <input type="text "class="form-control" placeholder="Assunto do atendimento" 
+                                                ng-model="atendimento.assunto"
+                                                ng-required="true">
+                                        </div>                                        
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="ticket" class="col-sm-3 col-form-label"><strong>Descrição</strong></label>
+                                        <div class="col-sm-9">
+                                            <textarea class="form-control" cols="60" rows="3" placeholder="Descreva o que deseja" 
+                                                ng-model="atendimento.descricao"
+                                                ng-required="true"></textarea>
+                                        </div>                                        
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="anexos"><strong>Anexar arquivos ao novo atendimento</strong></label>
+                                        <select class="form-control" 
+                                                ng-init="qtdeAnexos = qtdeAnexos || options[0].value"
+                                                ng-model="qtdeAnexos"
+                                                ng-click="validateFiles(qtdeAnexos)"
+                                                ng-options="qtde.id as qtde.nome for qtde in qtdes | orderBy: 'id'">
+                                        </select>
+                                    </div>                                    
+                                    <div class="form-group row" ng-if="qtdeAnexos == 1">
+                                        <div class="col-sm-12">
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
+                                                <input  id="file1"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file1"
+                                                        ngf-change="fileSelected($files, $event, b)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file1}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row" ng-if="qtdeAnexos == 2">
+                                        <div class="col-sm-12">
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
+                                                <input  id="file1"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file1"
+                                                        ngf-change="fileSelected($files, $event, b)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file1}}
+                                            </div><br>                                        
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 2</span>
+                                                <input  id="file2"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file2"
+                                                        ngf-change="fileSelected($files, $event)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file2}}
+                                            </div>
+                                        </div>
+                                    </div>  
+                                    <div class="form-group row" ng-if="qtdeAnexos == 3">
+                                        <div class="col-sm-12">
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
+                                                <input  id="file1"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file1"
+                                                        ngf-change="fileSelected($files, $event)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file1}}
+                                            </div><br>                                        
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 2</span>
+                                                <input  id="file2"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file2"
+                                                        ngf-change="fileSelected($files, $event)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file2}}
+                                            </div><br>
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 3</span>
+                                                <input  id="file3"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file3"
+                                                        ngf-change="fileSelected($files, $event)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file3}}
+                                            </div>                                            
+                                        </div>
+                                    </div>
+                                    <div class="form-group row" ng-if="qtdeAnexos == 4">
+                                        <div class="col-sm-12">
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
+                                                <input  id="file1"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file1"
+                                                        ngf-change="fileSelected($files, $event)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file1}}
+                                            </div><br>                                        
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 2</span>
+                                                <input  id="file2"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file2"
+                                                        ngf-change="fileSelected($files, $event)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file2}}
+                                            </div><br>
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 3</span>
+                                                <input  id="file3"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file3"
+                                                        ngf-change="fileSelected($files, $event)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file3}}
+                                            </div><br>
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 4</span>
+                                                <input  id="file4"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file4"
+                                                        ngf-change="fileSelected($files, $event)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file4}}
+                                            </div> 
+                                        </div>
+                                    </div>
+                                    <div class="form-group row" ng-if="qtdeAnexos == 5">
+                                        <div class="col-sm-12">
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
+                                                <input  id="file1"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file1"
+                                                        ngf-change="fileSelected($files, $event)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file1}}
+                                            </div><br>                                        
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 2</span>
+                                                <input  id="file2"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file2"
+                                                        ngf-change="fileSelected($files, $event)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file2}}
+                                            </div><br>
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 3</span>
+                                                <input  id="file3"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file3"
+                                                        ngf-change="fileSelected($files, $event)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file3}}
+                                            </div><br>
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 4</span>
+                                                <input  id="file4"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file4"
+                                                        ngf-change="fileSelected($files, $event)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file4}}
+                                            </div><br>
+                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 5</span>
+                                                <input  id="file5"                                                       
+                                                        type="file" class="upload" 
+                                                        ngf-select
+                                                        ng-model="atendimento.file5"
+                                                        ngf-change="fileSelected($files, $event)"
+                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{atendimento.file5}}
+                                            </div>                                             
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="submit" ng-click="saveNewTicket();" class="btn btn-info waves-effect" data-dismiss="modal" ng-disabled="novoAtendimentoForm.$invalid">Salvar</button>
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Modal Novo Atendimento  -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Begin Modal Filtro -->
+            <!-- ============================================================== -->
+            <div id="add-filtro" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">Filtrar Atendimentos</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal form-material">
+                                <div class="form-group row">
+                                    <label for="ticket" class="col-sm-3 col-form-label"><strong>Ticket#</strong></label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="ticket" placeholder="Número do Ticket" ng-model="filtro.idTicket">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="titulo" class="col-sm-3 col-form-label"><strong>Título</strong></label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="titulo" placeholder="Título do Atendimento" ng-model="filtro.titulo">
+                                    </div>
+                                </div>   
+                                <div class="form-group row">
+                                    <label for="descricao" class="col-sm-3 col-form-label"><strong>Descrição</strong></label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="descricao" placeholder="Descrição do Atendimento" ng-model="filtro.descricao">
+                                    </div>
+                                </div>  
+                                <div class="form-group row">
+                                    <label for="datainicial" class="col-sm-3 col-form-label"><strong>Data Inicial</strong></label>
+                                    <div class="col-sm-9">
+                                        <input type="date" class="form-control" id="datainicial" placeholder="Data Inicial para Intervalo da Busca" ng-model="filtro.dataInicial">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="datafinal" class="col-sm-3 col-form-label"><strong>Data Final</strong></label>
+                                    <div class="col-sm-9">
+                                        <input type="date" class="form-control" id="datafinal" placeholder="Data Final para Intervalo da Busca" ng-model="filtro.dataFinal">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="datafinal" class="col-sm-3 col-form-label"><strong>Cliente</strong></label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control"
+                                                ng-required="true"
+                                                ng-init="filtro.idCliente = filtro.idCliente || options[0].value"
+                                                ng-model="filtro.idCliente"
+                                                ng-options="cliente.id as cliente.nome for cliente in clientes | orderBy: 'nome'">
+                                            <option value="">Selecione o cliente</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="datafinal" class="col-sm-3 col-form-label"><strong>Categoria</strong></label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control"
+                                                ng-required="true"
+                                                ng-init="filtro.idCategoria = filtro.idCategoria || options[0].value"
+                                                ng-model="filtro.idCategoria"
+                                                ng-options="categoria.id as categoria.nome for categoria in categorias | orderBy: 'nome'">
+                                            <option value="">Selecione a categoria</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-info waves-effect" data-dismiss="modal" ng-click="filterTickets()">Filtrar</button>
+                            <button type="button" class="btn btn-cyan waves-effect" ng-click="clearModalFilter()">Limpar Filtro</button>                            
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Modal Filtro  -->
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Page wrapper  -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- footer -->
+    <!-- ============================================================== -->
+    <footer class="footer">
+        © 2018 Sistema de Atendimento by Algorix Sistemas de Informática
+    </footer>
+    <!-- ============================================================== -->
+    <!-- End footer -->
+    <!-- ============================================================== -->
+</div>
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->
+
+<!-- Esse arquivo tem que importar aqui, pois senão os elementos não são achados pelo jquery -->
+<script src="./app/assets/scripts/custom.js"></script>
+<script src="./app/assets/scripts/sidebarmenu.js"></script>
+<script src="./app/assets/scripts/utilities.js"></script>
+<script src="./app/assets/scripts/fullscreen.js"></script>
+<script src="./app/assets/scripts/dashboard.js"></script>

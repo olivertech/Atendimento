@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Mapping\InsertsUpdates\**" />
+    <EmbeddedResource Remove="Mapping\InsertsUpdates\**" />
+    <None Remove="Mapping\InsertsUpdates\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Mapping\AnexoTicketMapping.cs" />
+    <Compile Remove="Mapping\AnexoTicketMensagemMapping.cs" />
+    <Compile Remove="Repositories\AnexoTicketRepository.cs" />
+    <Compile Remove="Repositories\BaseEntityRepository.cs" />
+    <Compile Remove="Repositories\Base\DapperRepositoryBase.cs" />
+    <Compile Remove="Repositories\Base\RepositoryBaseOLD.cs" />
+    <Compile Remove="Repositories\TicketRepositoryOLD.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Repositories\Base\RepositoryBase.cs~RFd51cc24.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="1.50.5" />
+    <PackageReference Include="Dapper.Contrib" Version="1.50.5" />
+    <PackageReference Include="Dapper.FluentMap" Version="1.7.0" />
+    <PackageReference Include="Dapper.FluentMap.Dommel" Version="1.6.0" />
+    <PackageReference Include="Dapper.SqlBuilder" Version="1.50.5" />
+    <PackageReference Include="Dommel" Version="1.10.1" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Atendimento.Entities\Atendimento.Entities.csproj" />
+    <ProjectReference Include="..\Atendimento.Infra\Atendimento.Infra.csproj" />
+    <ProjectReference Include="..\Atendimento.Repository.Interfaces\Atendimento.Repository.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

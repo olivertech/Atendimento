@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Classes\AnexoTicketBusiness.cs" />
+    <Compile Remove="Classes\AnexoTicketMensagemBusiness.cs" />
+    <Compile Remove="Classes\FileUploadBusiness.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Classes\Business.cs~RF9c3ee1d.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Atendimento.Business.Interfaces\Atendimento.Business.Interfaces.csproj" />
+    <ProjectReference Include="..\Atendimento.Entities\Atendimento.Entities.csproj" />
+    <ProjectReference Include="..\Atendimento.Infra\Atendimento.Infra.csproj" />
+    <ProjectReference Include="..\Atendimento.Repository.Interfaces\Atendimento.Repository.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

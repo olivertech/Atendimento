@@ -1,0 +1,6 @@
+{
+    "files" : "./src/app/**/*.{js, html, css}",
+    "server" : { "baseDir" : "./" },
+    "https" : false,
+    "browser" : ["chrome"]
+}

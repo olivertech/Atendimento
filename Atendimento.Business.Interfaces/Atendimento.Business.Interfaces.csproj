@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Partials\**" />
+    <EmbeddedResource Remove="Partials\**" />
+    <None Remove="Partials\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Interfaces\Base\IBusinessOLD.cs" />
+    <Compile Remove="Interfaces\IAnexoTicketBusiness.cs" />
+    <Compile Remove="Interfaces\IAnexoTicketMensagemBusiness.cs" />
+    <Compile Remove="Interfaces\IFileUploadBusiness.cs" />
+    <Compile Remove="Interfaces\IServico.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Atendimento.Entities\Atendimento.Entities.csproj" />
+  </ItemGroup>
+
+</Project>

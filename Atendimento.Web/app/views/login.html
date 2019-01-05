@@ -1,0 +1,101 @@
+<!-- ============================================================== -->
+<!-- Main wrapper - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<section id="wrapper" class="login-register login-sidebar" style="background-image:url(app/assets/images/background_login.png);" ng-controller="loginController">
+    <div class="login-box card">
+        <div class="card-body">
+
+            <!-- Formulário de Login -->
+            <div class="div-view-animation box-login" ng-if="!login.isRecoverFormSelected">
+                <div class="layout">
+                    <div class="center-title">
+                        <!-- <a href="#" class="db"><img src="app/assets/images/logo-text.png" alt="Home" /></a> -->
+                        Sistema de Atendimento
+                    </div>
+                </div>
+                <form class="form-horizontal form-material text-center" name="loginForm" novalidate="">
+                    <!-- <a href="#" class="db"><img src="app/assets/images/logo-text.png" alt="Home" /></a> -->
+                    <div class="form-group m-t-40">
+                        <div class="col-xs-12">
+                            <input class="form-control" type="text" required="" placeholder="Usuário" ng-model="login.username" ng-required="true">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <input class="form-control" type="password" required="" placeholder="Senha" ng-model="login.password" ng-required="true">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <select class="form-control" name="typeLoginForm" id="typeLoginForm" ng-required="true" ng-model="login.typeLoginForm">
+                                <option value="" selected>Selecione o tipo do usuário</option>
+                                <option value="Atendimento">Atendimento</option>
+                                <option value="Cliente">Cliente</option>
+                            </select>
+                        </div>
+                    </div>                
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <div class="d-flex no-block align-items-center">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" ng-click="setRememberMe()" id="rememberMeChk" ng-model="login.rememberMe" ng-disabled="loginForm.$invalid">
+                                    <label class="custom-control-label" for="rememberMeChk">Lembrar Login</label>
+                                </div> 
+                                <div class="ml-auto">
+                                    <a href="#" id="to-recover" class="text-muted" ng-click="showHideRecoverForm()"><i class="fas fa-lock m-r-5"></i>Esqueceu a senha ?</a> 
+                                </div>
+                            </div>   
+                        </div>
+                    </div>
+                    <div class="form-group text-center m-t-20">
+                        <div class="col-xs-12">
+                            <button class="btn btn-info btn-lg btn-block text-uppercase btn-rounded" ng-click="login()" ng-disabled="loginForm.$invalid">Acessar</button>
+                        </div>
+                    </div>
+                </form>
+                <div ng-show="isAuthenticationError" class="alert alert-danger">
+                    Sessão expirada ou autenticação inválida.<br>Faça o login novamente.
+                </div>   
+            </div>
+
+            <!-- Formulário de recuperação de senha -->
+            <div class="div-view-animation box-recover" ng-if="login.isRecoverFormSelected">
+                <div class="layout">
+                    <div class="center-title">
+                        Recuperar Senha
+                    </div>
+                </div>                
+                <form class="form-horizontal form-material" name="recoverForm" novalidate="">
+                    <div class="form-group m-t-40">
+                        <div class="col-xs-12">
+                            <input class="form-control" type="text" placeholder="Informe seu email cadastrado" ng-model="login.email" ng-required="true">
+                        </div>
+                        {{ email }}
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <select class="form-control" name="typeRecoverForm" id="typeRecoverForm" ng-required="true" ng-model="login.typeRecoverForm">
+                                <option value="" selected>Selecione o tipo do usuário</option>
+                                <option value="Atendimento">Atendimento</option>
+                                <option value="Cliente">Cliente</option>
+                            </select>
+                        </div>
+                    </div>       
+                    <div class="form-group text-center m-t-20">
+                        <div class="col-xs-12">
+                            <button class="btn btn-primary btn-lg btn-block text-uppercase waves-effect waves-light" ng-click="recoverPassword()" ng-disabled="recoverForm.$invalid">Solicitar Reenvio de Senha</button>
+                        </div>
+                    </div>
+                    <div ng-show="login.isPasswordRecovered" class="alert alert-success">
+                        Email de solicitação de senha, enviado com sucesso. Verifique sua caixa de correio eletrônico.
+                    </div>     
+                    <a href="#" ng-click="showHideRecoverForm()"><i class="fas fa-angle-left m-r-5"></i>Voltar</a>                   
+                </form>
+            </div>
+                
+        </div>
+    </div>
+</section>
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->

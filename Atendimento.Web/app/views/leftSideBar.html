@@ -1,0 +1,53 @@
+<!-- ============================================================== -->
+<!-- Left Sidebar - style you can find in sidebar.scss  -->
+<!-- ============================================================== -->
+<aside class="left-sidebar" ng-controller="leftSideBarController">
+    <!-- Sidebar scroll-->
+    <div class="scroll-sidebar">
+        <!-- Sidebar navigation-->
+        <div class="row">
+            <div class="col-lx-8 col-lg-8 col-md-8">
+                <nav class="sidebar-nav">
+                    <ul id="sidebarnav">
+                        <li> <a class="waves-dark" href="/dashboard" aria-expanded="false"><i class="icon-speedometer"></i><span class="hide-menu">Dashboard</span></a></li>
+                        <li> <a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-layout-grid2"></i><span class="hide-menu">Cadastros</span></a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li><a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><span class="hide-menu">Cadastro da Empresa</span></a>
+                                    <ul aria-expanded="false" class="collapse">
+                                        <li><a href="#">Grupo</a></li>
+                                        <li><a href="#">Empresa</a></li>
+                                        <li><a href="#">Atendentes</a></li>
+                                    </ul>
+                                </li>
+                                <li><a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><span class="hide-menu">Cadastro de Cliente</span></a>
+                                    <ul aria-expanded="false" class="collapse">
+                                        <li><a href="#">Clientes</a></li>
+                                        <li><a href="#">Usuários de Cliente</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li> <a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-settings"></i></i><span class="hide-menu">Cadastros Operacionais</span></a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li><a href="#">Categorias</a></li>
+                                <li><a href="#">Classificações</a></li>
+                                <li><a href="#">Status do Ticket</a></li>
+                                <li><a href="#">Templates de Resposta</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-lx-4 col-lg-4 col-md-4">
+                <div class="greeting">
+                    {{hi}}&nbsp;{{::usuario}} !!!
+                </div>
+            </div>
+        </div>
+        <!-- End Sidebar navigation -->
+    </div>
+    <!-- End Sidebar scroll-->
+</aside>
+<!-- ============================================================== -->
+<!-- End Left Sidebar - style you can find in sidebar.scss  -->
+<!-- ============================================================== -->

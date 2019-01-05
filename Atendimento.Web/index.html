@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="atendimento">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Sistema de Atendimento">
+        <meta name="author" content="Algorix Sistemas de Informática Ltda">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <base href="/">
+        
+        <!-- Estilos -->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.10/angular-material.min.css" rel="stylesheet">
+        <link href="./app/assets/libs/jquery-ui.min.css" rel="stylesheet">
+        <link href="./app/assets/libs/jquery-ui.structure.min.css" rel="stylesheet">
+        <link href="./app/assets/libs/jquery-ui.theme.min.css" rel="stylesheet">
+        <link href="./app/assets/libs/loading-bar.css" rel="stylesheet">
+        
+        <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css" rel="stylesheet"> -->
+        <!-- Login Css -->
+        <link href="./app/assets/css/login-register-lock.css" rel="stylesheet">
+        <!-- Custom Css -->
+        <link href="./app/assets/css/style.css" rel="stylesheet">
+        <!-- Dashboard Css -->
+        <link href="./app/assets/css/dashboard.css" rel="stylesheet">
+        <!-- Ticket Css -->
+        <link href="./app/assets/css/ticket.css" rel="stylesheet">
+        <!-- App Css -->
+        <link href="./app/assets/css/app.css" rel="stylesheet">
+
+        <!-- Favicon icon -->
+        <link rel="icon" type="image/png" sizes="16x16" href="./app/assets/images/favicon.ico">
+
+        <title>Sistema de Atendimento</title>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->        
+    </head>
+    <!-- <body ng-class="{'horizontal-nav skin-megna fixed-layout': $sessionStorage.isOnDashboard}"> -->
+    <!-- <body ng-class="{'horizontal-nav skin-blue-dark fixed-layout': $sessionStorage.isOnDashboard}"> -->
+    <body id="body" class="horizontal-nav skin-blue fixed-layout">
+        <!-- ============================================================== -->
+        <!-- Loading - style you can find in spinners.css -->
+        <!-- ============================================================== -->
+        <div class="loading-overlay" if-loading>
+            <div class="loader">
+                <div class="loader__figure"></div>
+                <p class="loader__label">Carregando, aguarde...</p>
+            </div>
+        </div>      
+        <div>
+            <div ui-view class="page-view-animation" id="appview"></div>
+        </div>
+    </body>
+
+    <!-- Jquery lib -->
+    <script src="./app/assets/libs/jquery-3.2.1.min.js"></script>
+    <script src="./app/assets/libs/jquery-ui.min.js"></script>
+    
+    <!-- Angular libs -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.20/angular-ui-router.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-messages/1.7.5/angular-messages.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.7.5/angular-locale_pt-br.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.11/ngStorage.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular-cookies.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular-animate.min.js"></script>
+    <script src="./app/assets/libs/ng-file-upload.min.js"></script>
+    <script src="./app/assets/libs/ng-file-upload.min.js"></script>
+    <script src="./app/assets/libs/ngClipboard.js"></script>
+    
+    <!-- Angular root -->
+    <script src="./app/app.js"></script>
+
+    <!-- configs -->
+    <script src="./app/config/interceptorsConfig.js"></script>
+    <script src="./app/config/routeConfig.js"></script>
+
+    <!-- controllers -->
+    <script src="./app/controllers/dashboardController.js"></script>
+    <script src="./app/controllers/errorController.js"></script>
+    <script src="./app/controllers/leftSideBarController.js"></script>
+    <script src="./app/controllers/loginController.js"></script>
+    <script src="./app/controllers/ticketController.js"></script>
+    <script src="./app/controllers/topHeaderController.js"></script>
+    
+    <!-- directives -->
+    <script src="./app/directives/cardDirective.js"></script>
+    <script src="./app/directives/leftSideBarDirective.js"></script>
+    <script src="./app/directives/loadingDirective.js"></script>
+    <script src="./app/directives/topHeaderDirective.js"></script>
+    <script src="./app/directives/uiAccordionDirective.js"></script>
+        
+    <!-- filters -->
+    
+    <!-- interceptors -->
+    <script src="./app/interceptors/errorInterceptor.js"></script>
+    <script src="./app/interceptors/loadingInterceptor.js"></script>
+    <script src="./app/interceptors/requestInterceptor.js"></script>
+    <script src="./app/interceptors/timestampInterceptor.js"></script>
+
+    <!-- providers -->
+
+    <!-- services -->
+    <script src="./app/services/dashboardService.js"></script>
+    <script src="./app/services/loginService.js"></script>
+    <script src="./app/services/paginationService.js"></script>
+    <script src="./app/services/rememberMeService.js"></script>
+    <script src="./app/services/ticketService.js"></script>
+        
+    <!-- values -->
+    <script src="./app/values/configValues.js"></script>
+
+    <!-- Custom libs -->
+    <script src="./app/assets/libs/popper.min.js"></script>
+    <script src="./app/assets/libs/bootstrap.min.js"></script>
+    <script src="./app/assets/libs/loading-bar.js"></script>
+    <script src="./app/assets/scripts/waves.js"></script>
+
+    <!-- <script src="./app/assets/scripts/sidebarmenu.js"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sparklines/2.1.2/jquery.sparkline.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.10/angular-material.min.js"></script>
+</html>

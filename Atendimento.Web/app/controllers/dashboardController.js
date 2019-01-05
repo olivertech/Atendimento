@@ -224,33 +224,36 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
         var promiseList = [];
 
         //Sobe primeiro os arquivos anexos, e se for com sucesso, grava o ticket
-        for (let index = 0; index <= $scope.qtdeAnexos - 1; index++) {
-            switch (index) {
-                case 0:
-                    if(file1Upload != undefined && file1Upload != null) {
-                        promiseList.push($scope.uploadTicketFile(file1Upload, index));
-                    }
-                    break;
-                case 1:
-                    if(file2Upload != undefined && file2Upload != null) {
-                        promiseList.push($scope.uploadTicketFile(file2Upload, index));
-                    }
-                    break;
-                case 2:
-                    if(file3Upload != undefined && file3Upload != null) {
-                        promiseList.push($scope.uploadTicketFile(file3Upload, index));
-                    }
-                    break;
-                case 3:
-                    if(file4Upload != undefined && file4Upload != null) {
-                        promiseList.push($scope.uploadTicketFile(file4Upload, index));
-                    }
-                    break;
-                case 4:
-                    if(file5Upload != undefined && file5Upload != null) {
-                        promiseList.push($scope.uploadTicketFile(file5Upload, index));
-                    }
-                    break;
+        if ($scope.qtdeAnexos == 0) { $scope.uploadSuccess == true; }
+        else {
+            for (let index = 0; index <= $scope.qtdeAnexos - 1; index++) {
+                switch (index) {
+                    case 0:
+                        if(file1Upload != undefined && file1Upload != null) {
+                            promiseList.push($scope.uploadTicketFile(file1Upload, index));
+                        }
+                        break;
+                    case 1:
+                        if(file2Upload != undefined && file2Upload != null) {
+                            promiseList.push($scope.uploadTicketFile(file2Upload, index));
+                        }
+                        break;
+                    case 2:
+                        if(file3Upload != undefined && file3Upload != null) {
+                            promiseList.push($scope.uploadTicketFile(file3Upload, index));
+                        }
+                        break;
+                    case 3:
+                        if(file4Upload != undefined && file4Upload != null) {
+                            promiseList.push($scope.uploadTicketFile(file4Upload, index));
+                        }
+                        break;
+                    case 4:
+                        if(file5Upload != undefined && file5Upload != null) {
+                            promiseList.push($scope.uploadTicketFile(file5Upload, index));
+                        }
+                        break;
+                }
             }
         }
 
@@ -277,7 +280,6 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
                             $scope.mensagem = error.data.message;
                             $scope.newTicketError = true;
                             showErrorAlert();
-                            //removeAttachments();                         
                         });
                 }
                 else {
@@ -285,7 +287,6 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
                     $scope.uploadSuccess = false;
                     $scope.uploadError = true;    
                     showErrorAlert();
-                    //removeAttachments();
                 }
             })
             .catch(function (error) {
@@ -293,7 +294,6 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
                 $scope.uploadSuccess = false;
                 $scope.uploadError = true; 
                 showErrorAlert(); 
-                //removeAttachments();
         });
     }
     

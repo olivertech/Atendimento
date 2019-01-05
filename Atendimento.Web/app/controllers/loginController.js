@@ -5,7 +5,8 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
     $scope.login.isRecoverFormSelected = false;
     $scope.isAuthenticationError = false;
     $scope.login.email = '';
-    $scope.isFullscreen = false;
+    $scope.tipos = [];
+    $scope.tipo = {};
 
     //Verifica se foi passado algum status code 401 - erro de autenticação 
     if($scope.statusCode == '401' || $scope.statusCode == '405') {
@@ -20,7 +21,7 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
 
             if($scope.login.username != '' && $scope.login.password != '') {
                 
-                loginService.login($scope.login.username, $scope.login.password, $scope.login.typeLoginForm)
+                loginService.login($scope.login.username, $scope.login.password, $scope.login.typeloginform)
                     .then(function(response) {
                         //Armazeno o token de autenticação na session
                         setLocalStorage(response);
@@ -54,12 +55,12 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
         if (usernameCookie && passwordCookie && typeCookie) {
             $scope.login.username = usernameCookie;
             $scope.login.password = window.atob(passwordCookie);
-            $scope.login.typeLoginForm = typeCookie;
+            $scope.login.typeloginform = typeCookie;
             $scope.login.rememberMe = true;
         } else {
             $scope.login.username = '';
             $scope.login.password = '';
-            $scope.login.typeLoginForm = '';
+            $scope.login.typeloginform = '';
             $scope.login.rememberMe = false;
         }
     }
@@ -75,7 +76,7 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
 
             rememberMeService.setRememberMeCookie('fMFKHVLj', encondedPassword);
             rememberMeService.setRememberMeCookie('1ipBBiRn', $scope.login.username);
-            rememberMeService.setRememberMeCookie('GeTfLi22', $scope.login.typeLoginForm);
+            rememberMeService.setRememberMeCookie('GeTfLi22', $scope.login.typeloginform);
         } else {
             rememberMeService.setRememberMeCookie('1ipBBiRn', '');
             rememberMeService.setRememberMeCookie('fMFKHVLj', '');
@@ -87,7 +88,7 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
 
         if($scope.login.email) {
                 
-            loginService.recoverPassword($scope.login.email, $scope.login.typeRecoverForm)
+            loginService.recoverPassword($scope.login.email, $scope.login.typerecoverform)
                 .then(function(response) {
                     $scope.login.isPasswordRecovered = true;
                 })
@@ -113,8 +114,8 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
         $sessionStorage.isOnDashboard = true;
         $sessionStorage.usuario = response.data.content.usuario.nome;
         $sessionStorage.idUsuario = response.data.content.usuario.id;
-        $sessionStorage.tipoLogin = $scope.login.typeLoginForm;
-        $sessionStorage.pathAnexos = "http://localhost:51765/Anexos/";
+        $sessionStorage.tipoUsuario = $scope.login.typeloginform;
+        $sessionStorage.logicalPathAnexos = "http://localhost:51765/Anexos/";
     }
 
     /** Apago todas as variáveis de sessão */
@@ -123,8 +124,9 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
         $sessionStorage.isOnDashboard = false;
         $sessionStorage.usuario = '';
         $sessionStorage.idUsuario = '';
-        $sessionStorage.tipoLogin = '';
+        $sessionStorage.tipoUsuario = '';
+        $sessionStorage.logicalPathAnexos = '';
     }
-
+    
     checkRememberMe();
 });

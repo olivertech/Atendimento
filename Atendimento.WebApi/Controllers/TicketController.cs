@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
@@ -24,7 +25,6 @@ namespace Atendimento.WebApi.Controllers
     {
         private readonly ITicketBusiness _business;
         private readonly IAnexoBusiness _anexoBusiness;
-        //private readonly IAnexoTicketBusiness _anexoTicketbusiness;
         private IHttpActionResult _result;
 
         /// <summary>
@@ -33,11 +33,9 @@ namespace Atendimento.WebApi.Controllers
         /// <param name="business"></param>
         /// <param name="anexoBusiness"></param>
         public TicketController(ITicketBusiness business, 
-                                //IAnexoTicketBusiness anexoTicketbusiness, 
                                 IAnexoBusiness anexoBusiness)
         {
             _business = business;
-            //_anexoTicketbusiness = anexoTicketbusiness;
             _anexoBusiness = anexoBusiness;
         }
 
@@ -191,19 +189,25 @@ namespace Atendimento.WebApi.Controllers
                     //Monta response
                     _result = Ok(Retorno<TicketResponse>.Criar(true, "Inclusão Realizada Com Sucesso", Mapper.Map<Ticket, TicketResponse>(entity)));
 
-                    //Zipa todos os anexos
-                    string zipName = Arquivo.Compress(ConfigurationManager.AppSettings["CaminhoFisicoAnexo"], pathAnexosUsuario, entity.Id);
-
-                    //======================================
-                    //Guarda anexo (zip) no banco de dados
-                    //======================================
-                    Anexo anexo = new Anexo
+                    if (Directory.Exists(pathAnexosUsuario))
                     {
-                        IdTicket = entity.Id,
-                        Nome = zipName
-                    };
-                                        
-                    _anexoBusiness.Insert(ref anexo);
+                        //Zipa todos os anexos
+                        string zipName = Arquivo.Compress(ConfigurationManager.AppSettings["CaminhoFisicoAnexo"], pathAnexosUsuario, entity.Id);
+
+                        //======================================
+                        //Guarda anexo (zip) no banco de dados
+                        //======================================
+                        Anexo anexo = new Anexo
+                        {
+                            IdTicket = entity.Id,
+                            Nome = zipName
+                        };
+
+                        _anexoBusiness.Insert(ref anexo);
+
+
+                        //PAREI AQUI !!! ENVIAR EMAIL PARA O CLIENTE ASSOCIADO AO TICKET. VER SE NO SISTEMA ATUAL, É ENVIADO EMAIL TB PRA ALTERAÇÃO DO STATUS DO TICKET
+                    }
                 }
 
                 //Retorna o response

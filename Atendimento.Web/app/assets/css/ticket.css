@@ -2,3 +2,8 @@
     height:550px;
     overflow-y: auto;
 }
+
+.internal-message {
+    color: red;
+    font-weight: 500;
+}

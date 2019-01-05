@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
@@ -8,6 +10,7 @@ using Atendimento.Business.Interfaces.Interfaces;
 using Atendimento.Entities.Entities;
 using Atendimento.Entities.Requests;
 using Atendimento.Entities.Responses;
+using Atendimento.Infra;
 using AutoMapper;
 
 namespace Atendimento.WebApi.Controllers
@@ -21,15 +24,18 @@ namespace Atendimento.WebApi.Controllers
     public class TicketMensagemController : ApiController
     {
         private readonly ITicketMensagemBusiness _business;
+        private readonly IAnexoBusiness _anexoBusiness;
         private IHttpActionResult _result;
 
         /// <summary>
         /// Construtor
         /// </summary>
         /// <param name="business"></param>
-        public TicketMensagemController(ITicketMensagemBusiness business)
+        public TicketMensagemController(ITicketMensagemBusiness business,
+                                        IAnexoBusiness anexoBusiness)
         {
             _business = business;
+            _anexoBusiness = anexoBusiness;
         }
 
         /// GET: api/TicketMensagem
@@ -116,6 +122,19 @@ namespace Atendimento.WebApi.Controllers
                     return BadRequest("Dados inválidos.");
 
                 var entity = Mapper.Map<TicketMensagemRequest, TicketMensagem>(request);
+                var pathAnexosUsuario = request.PathAnexos;
+
+                if (request.TipoUsuario == "Atendimento")
+                {
+                    entity.IdAtendenteEmpresa = request.IdAutor;
+                }
+                else
+                {
+                    if (request.TipoUsuario == "Cliente")
+                    {
+                        entity.IdUsuarioCliente = request.IdAutor;
+                    }
+                }
 
                 _business.Insert(ref entity);
 
@@ -123,6 +142,25 @@ namespace Atendimento.WebApi.Controllers
                 {
                     //Monta response
                     _result = Ok(Retorno<TicketMensagemResponse>.Criar(true, "Inclusão Realizada Com Sucesso", Mapper.Map<TicketMensagem, TicketMensagemResponse>(entity)));
+
+                    if (Directory.Exists(pathAnexosUsuario))
+                    {
+                        //Zipa todos os anexos
+                        string zipName = Arquivo.Compress(ConfigurationManager.AppSettings["CaminhoFisicoAnexo"], pathAnexosUsuario, entity.Id);
+
+                        //======================================
+                        //Guarda anexo (zip) no banco de dados
+                        //======================================
+                        Anexo anexo = new Anexo
+                        {
+                            IdTicketMensagem = entity.Id,
+                            Nome = zipName
+                        };
+
+                        _anexoBusiness.Insert(ref anexo);
+                    }
+
+                    //PAREI AQUI !!! ENVIAR EMAIL PARA O CLIENTE ASSOCIADO AO TICKET. VER SE NO SISTEMA ATUAL, É ENVIADO EMAIL TB PRA ALTERAÇÃO DO STATUS DO TICKET
                 }
 
                 //Retorna o response

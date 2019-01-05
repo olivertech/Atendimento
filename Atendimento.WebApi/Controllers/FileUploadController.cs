@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
-using Atendimento.Business.Classes;
 using Atendimento.WebApi.Providers;
 
 namespace Atendimento.WebApi.Controllers
@@ -32,38 +31,12 @@ namespace Atendimento.WebApi.Controllers
                 DirectoryInfo di = Directory.CreateDirectory(pathAnexosUsuario);
             }
 
-            //var httpRequest = HttpContext.Current.Request;
             var provider = new CustomMultipartFormDataStreamProvider(pathAnexosUsuario);
 
             return await Request.Content.ReadAsMultipartAsync(provider).ContinueWith<HttpResponseMessage>(t =>
             {
                 if (t.IsFaulted || t.IsCanceled)
                     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, t.Exception);
-
-                //FileUploadResponse fileUploadResponse = new FileUploadResponse();
-
-                //if (httpRequest.Files.Count > 0)
-                //{
-                //    foreach (string file in httpRequest.Files)
-                //    {
-                //        //Salvo o arquivo anexo
-                //        var postedFile = httpRequest.Files[file];
-                //        string fileName = postedFile.FileName;
-
-                //        //Comprimo o arquivo e salvo ele
-                //        string zipName = Arquivo.Compress(pathAnexosZip, pathAnexosUsuario, idUsuario, fileName);
-
-                //        Anexo anexo = new Anexo
-                //        {
-                //            Nome = zipName
-                //        };
-
-                //        //Guarda anexo no banco de dados
-                //        _anexoBusiness.Insert(ref anexo);
-
-                //        fileUploadResponse.AnexoResponse = Mapper.Map<Anexo, AnexoResponse>(anexo);
-                //    }
-                //}
 
                 return Request.CreateResponse<string>(HttpStatusCode.OK, pathAnexosUsuario);
             });

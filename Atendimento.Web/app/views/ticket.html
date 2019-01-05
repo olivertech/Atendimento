@@ -31,26 +31,6 @@
                         </div>
                     </div>
                 </div>
-                <div id="success-alert" class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <h3 class="text-success"><i class="fa fa-check-circle"></i> Sucesso.</h3>{{mensagem}}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div id="error-alert" class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <h3 class="text-success"><i class="fa fa-check-circle"></i> Erro.</h3>{{mensagem}}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>            
                 <!-- ============================================================== -->
                 <!-- End Bread crumb and right sidebar toggle -->
                 <!-- ============================================================== -->
@@ -127,31 +107,72 @@
                                             <strong>Anexo(s)</strong>
                                             <br>
                                             <ul>
-                                                <li ng-repeat="anexo in anexos track by anexo.id" class="anexos"><a href="{{pathAnexos}}{{anexo.nome}}">{{anexo.nome}}</a></li>
+                                                <li ng-repeat="anexo in anexos track by anexo.id" class="anexos"><a href="{{logicalPathAnexos}}{{anexo.nome}}">{{anexo.nome}}</a></li>
                                             </ul>
                                         </div>
                                     </div>
-                                </div>                                
-                                <div class="row">
-                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                        <div>
-                                            <button type="button" class="btn btn-info" ng-click="back()"><i class="fas fa-chevron-left"></i> Voltar</button>
-                                        </div>
+                                </div>
+
+                                <div class="row m-t-20">
+                                    <div class="col-2">
+                                        <button type="button" class="btn btn-info" ng-click="back()"><i class="fas fa-chevron-left"></i> Voltar</button>
+                                        <button type="button" class="btn btn-cyan" ng-click="updateStatusTicket(1)" ng-if="status.id == 2 || status.id == 3"><i class="fas fa-box-open"></i> Reabrir</button>
+                                    </div>  
+                                    <div class="col-1">
+                                        &nbsp;
                                     </div>                                    
+                                    <div class="col text-right">
+                                        <span>Mudar Status para: </span>&nbsp;
+                                        <button type="button" class="btn btn-danger" ng-click="updateStatusTicket(3)" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-ban fa-lg"></i> Cancelado</button>
+                                        <button type="button" class="btn btn-default" ng-click="updateStatusTicket(2)" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-check fa-lg"></i> Concluído</button>
+                                        <button type="button" class="btn" style="color: white; background-color: #fb9678; font-weight: 400" ng-click="updateStatusTicket(4)" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-user fa-lg"></i> Pendente Com Cliente</button>
+                                        <button type="button" class="btn" style="color: white; background-color: #ab8ce4; font-weight: 400" ng-click="updateStatusTicket(5)" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-eye fa-lg"></i> Em Análise</button>
+                                        <button type="button" class="btn" style="color: white; background-color: #008f6c; font-weight: 400" ng-click="updateStatusTicket(1)" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-clock fa-lg"></i> Aguardando Atendimento</button>
+                                    </div>  
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!-- Alertas de sucesso e de erro -->
+                <div id="success-alert" class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <h3 class="text-success"><i class="fa fa-check-circle"></i> Sucesso.</h3>{{mensagemAlerta}}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="error-alert" class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <h3 class="text-success"><i class="fa fa-check-circle"></i> Erro.</h3>{{mensagemAlerta}}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div> 
                 <!-- Mensagens associadas ao ticket original -->
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                    <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                                         <h4 class="font-medium m-t-10">Mensagens Associadas ao Atendimento</h4>
-                                    </div>
+                                    </div> -->
+                                    <div class="col">
+                                        <h4 class="font-medium m-t-10">Mensagens Associadas ao Atendimento</h4>
+                                    </div>  
+                                    <div class="col-4">
+                                        &nbsp;
+                                    </div>                                    
+                                    <div class="col text-right">
+                                        <button type="button" class="btn btn-cyan" ng-click="initModalNewMessage()" data-toggle="modal" data-target="#add-mensagem" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-plus"></i> Nova Mensagem</button>
+                                    </div>                                     
                                 </div>
                                 <div class="row" ng-if="messages.length == 0">   
                                     <table style="margin-left:10px; margin-right:25px" class="table m-t-20 table-hover no-wrap contact-list table-striped">
@@ -176,7 +197,10 @@
                                         <table class="table m-t-20 table-hover no-wrap contact-list table-striped">
                                             <tbody>
                                                 <tr ng-repeat="message in messages track by message.id">
-                                                    <td style="width: 10%; text-align: center">{{message.data | date : 'dd/MM/yyyy HH:mm'}}</td>
+                                                    <td style="width: 10%; text-align: center">
+                                                        {{message.data | date : 'dd/MM/yyyy HH:mm'}}<br>
+                                                        <span class="label label-rounded label-danger m-t-20" ng-if="message.interno">Mensagem Interna</span>
+                                                    </td>
                                                     <td>
                                                         <div class="row">
                                                             <div class="col-sm-12">
@@ -186,7 +210,7 @@
                                                         <div class="row m-t-20 m-b-20">
                                                             <div class="col-sm-12">
                                                                 <ul ng-if="message.anexos.length > 0" class="m-t-0 m-b-0">
-                                                                    <li class="anexos" ng-repeat="anexo in splitAnexos(message.anexos)"><a href="{{pathAnexos}}{{anexo}}">{{anexo}}</a></li>
+                                                                    <li class="anexos" ng-repeat="anexo in splitAnexos(message.anexos)"><a href="{{logicalPathAnexos}}{{anexo}}">{{anexo}}</a></li>
                                                                 </ul>
                                                             </div>
                                                         </div>
@@ -200,8 +224,6 @@
                                 <div class="row m-t-20">
                                     <div class="col">
                                         <button type="button" class="btn btn-info" ng-click="back()"><i class="fas fa-chevron-left"></i> Voltar</button>
-                                        <button type="button" class="btn btn-danger" ng-click="updateStatusTicket(3)" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-ban"></i> Cancelar Atendimento</button>
-                                        <button type="button" class="btn btn-default" ng-click="updateStatusTicket(2)" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-check"></i> Concluir Atendimento</button>
                                     </div>  
                                     <div class="col-4">
                                         &nbsp;
@@ -237,7 +259,7 @@
                                             <p><br><i class="far fa-copy fa-2x" title="Templates de Resposta" ng-click="initModalTemplates()" data-toggle="modal" data-target="#templates" style="cursor: pointer"></i></p>
                                         </label>
                                         <div class="col-sm-9">
-                                            <textarea class="form-control" cols="60" rows="8" placeholder="Descreva aqui a mensagem de resposta" 
+                                            <textarea class="form-control" cols="60" rows="12" placeholder="Descreva aqui a mensagem de resposta" 
                                                 ng-model="mensagem.descricao"
                                                 ng-required="true" 
                                                 style="white-space:pre-wrap;"></textarea>
@@ -253,37 +275,6 @@
                                             <label class="form-check-label" for="mensagemInterno" style="color: red">
                                                 Mensagem Interna
                                             </label>
-                                        </div>
-                                    </div>
-                                    <div class="form-group m-b-40">
-                                        <div class="form-group row">
-                                            <div class="col-sm-3 col-form-label"><label for="status1"><strong>Status Ticket</strong></label></div>
-                                            <div class="col-sm-9 form-check">
-                                                <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <input class="form-check-input" type="radio" name="mensagem.status" id="status1" value="4" checked>
-                                                        <label class="form-check-label" for="status1" style="color: #fb9678; font-weight: 400">
-                                                            Pendente com Cliente
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <input class="form-check-input" type="radio" name="mensagem.status" id="status2" value="5">
-                                                        <label class="form-check-label" for="status2" style="color: #ab8ce4; font-weight: 400">
-                                                            Em Análise
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <input class="form-check-input" type="radio" name="mensagem.status" id="status3" value="1">
-                                                        <label class="form-check-label" for="status3" style="color: #008f6c; font-weight: 400">
-                                                            Aguardando Atendimento
-                                                        </label>
-                                                    </div>
-                                                </div>                    
-                                            </div>                                            
                                         </div>
                                     </div>
                                     <div class="form-group">

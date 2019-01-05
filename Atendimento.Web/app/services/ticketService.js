@@ -24,13 +24,13 @@ app.factory("ticketService", function($http, config) {
         return $http.put(config.baseUrl + "/Ticket/UpdateStatusTicket", request);
     }
 
-    var _saveNewMessage = function(idTicket, idAtendente, descricao, interno, pathAnexos) {
+    var _saveNewMessage = function(idTicket, idUsuario, tipoUsuario, descricao, interno, pathAnexos) {
 
         var newMessage = 
         {
             "idTicket": idTicket,
-            "idAutor": idAtendente,
-            "tipoUsuario": $sessionStorage.tipoLogin,
+            "idAutor": idUsuario,
+            "tipoUsuario": tipoUsuario,
             "descricao": descricao,
             "interno": interno,
             "descricao": descricao,
@@ -45,6 +45,7 @@ app.factory("ticketService", function($http, config) {
         getTicket: _getTicket,
         getMessages: _getMessages,
         updateStatusTicket: _updateStatusTicket,
-        getTemplates: _getTemplates
+        getTemplates: _getTemplates,
+        saveNewMessage: _saveNewMessage
     };    
 });

@@ -1,11 +1,11 @@
-app.controller('ticketController', function($scope, $location, $q, $anchorScroll, $sessionStorage, ticketService, ngClipboard) {
+app.controller('ticketController', function($scope, $location, $q, $anchorScroll, $sessionStorage, dashboardService, ticketService, ngClipboard) {
     
     var file1Upload, file2Upload, file3Upload, file4Upload, file5Upload;
 
     $anchorScroll();
 
     $scope.idUsuario = $sessionStorage.idUsuario;
-    $scope.pathAnexos = $sessionStorage.pathAnexos;
+    $scope.logicalPathAnexos = $sessionStorage.logicalPathAnexos;
     $scope.messages = [];
 
     $scope.qtdeanexos = 0;
@@ -54,11 +54,11 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
     $scope.updateStatusTicket = function(idStatus) {
         ticketService.updateStatusTicket($scope.idTicket, idStatus)
             .then(function(response) {
-                $scope.mensagem = response.data.message;
+                $scope.mensagemAlerta = response.data.message;
                 showSuccessAlert();
                 getTicket();
             }).catch(function(error) {
-                $scope.mensagem = error.data.message;
+                $scope.mensagemAlerta = error.data.message;
                 showErrorAlert();
             });
     }   
@@ -117,38 +117,40 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
     /** Função que salva uma nova mensagem, associando a um ticket */
     $scope.saveNewMessage = function() {
     
-        $scope.idsAnexos = [];
-        $scope.nomesAnexos = [];
         var promiseList = [];
 
         //Sobe primeiro os arquivos anexos, e se for com sucesso, grava a mensagem
-        for (let index = 0; index <= $scope.qtdeAnexos - 1; index++) {
-            switch (index) {
-                case 0:
-                    if(file1Upload != undefined && file1Upload != null) {
-                        promiseList.push($scope.uploadTicketFile(file1Upload, index));
-                    }
-                    break;
-                case 1:
-                    if(file2Upload != undefined && file2Upload != null) {
-                        promiseList.push($scope.uploadTicketFile(file2Upload, index));
-                    }
-                    break;
-                case 2:
-                    if(file3Upload != undefined && file3Upload != null) {
-                        promiseList.push($scope.uploadTicketFile(file3Upload, index));
-                    }
-                    break;
-                case 3:
-                    if(file4Upload != undefined && file4Upload != null) {
-                        promiseList.push($scope.uploadTicketFile(file4Upload, index));
-                    }
-                    break;
-                case 4:
-                    if(file5Upload != undefined && file5Upload != null) {
-                        promiseList.push($scope.uploadTicketFile(file5Upload, index));
-                    }
-                    break;
+        if ($scope.qtdeAnexos == 0) { 
+            $scope.uploadSuccess = true; }
+        else {
+            for (let index = 0; index <= $scope.qtdeAnexos - 1; index++) {
+                switch (index) {
+                    case 0:
+                        if(file1Upload != undefined && file1Upload != null) {
+                            promiseList.push($scope.uploadTicketFile(file1Upload, index));
+                        }
+                        break;
+                    case 1:
+                        if(file2Upload != undefined && file2Upload != null) {
+                            promiseList.push($scope.uploadTicketFile(file2Upload, index));
+                        }
+                        break;
+                    case 2:
+                        if(file3Upload != undefined && file3Upload != null) {
+                            promiseList.push($scope.uploadTicketFile(file3Upload, index));
+                        }
+                        break;
+                    case 3:
+                        if(file4Upload != undefined && file4Upload != null) {
+                            promiseList.push($scope.uploadTicketFile(file4Upload, index));
+                        }
+                        break;
+                    case 4:
+                        if(file5Upload != undefined && file5Upload != null) {
+                            promiseList.push($scope.uploadTicketFile(file5Upload, index));
+                        }
+                        break;
+                }
             }
         }
 
@@ -158,33 +160,35 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
                     //Se todos os anexos foram incluidos com sucesso, 
                     //então faz o insert dos dados da nova mensagem
                     let idTicket = $scope.idTicket;
-                    let idAtendente = $scope.idUsuario;
+                    let idUsuario = $scope.idUsuario;
+                    let tipoUsuario = $sessionStorage.tipoUsuario;
                     let descricao = $scope.mensagem.descricao;
                     let interno = $scope.mensagem.interno;
                     //let idStatusTicket = $scope.mensagem.status;
                     let pathAnexos = $scope.pathAnexos;
 
-                    dashboardService.saveNewMessage(idTicket, idAtendente, descricao, interno, pathAnexos)
+                    ticketService.saveNewMessage(idTicket, idUsuario, tipoUsuario, descricao, interno, pathAnexos)
                         .then(function(response) {
-                            $scope.mensagem = response.data.message;
+                            $scope.mensagemAlerta = response.data.message;
                             $scope.newMessageSuccess = true;
+                            getMessages();
                             showSuccessAlert();
                         })
                         .catch(function(error) {
-                            $scope.mensagem = error.data.message;
+                            $scope.mensagemAlerta = error.data.message;
                             $scope.newMessageError = true;
                             showErrorAlert();
                         });
                 }
                 else {
-                    $scope.mensagem = "Erro no envio de um ou mais arquivos.";
+                    $scope.mensagemAlerta = "Erro no envio de um ou mais arquivos.";
                     $scope.uploadSuccess = false;
                     $scope.uploadError = true;    
                     showErrorAlert();
                 }
             })
             .catch(function (error) {
-                $scope.mensagem = "Erro no envio de um ou mais arquivos.";
+                $scope.mensagemAlerta = "Erro no envio de um ou mais arquivos.";
                 $scope.uploadSuccess = false;
                 $scope.uploadError = true; 
                 showErrorAlert(); 
@@ -200,7 +204,7 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
                 $scope.uploadError = false;
             })
             .catch(function(error) {
-                $scope.mensagem = "Erro no envio de anexo.";
+                $scope.mensagemAlerta = "Erro no envio de anexo.";
                 $scope.uploadSuccess = false;
                 $scope.uploadError = true;
             }));

@@ -16,6 +16,5 @@ namespace Atendimento.Entities.Responses
     {
         public int IdStatusTicket { get; set; }
         public int TotalRegistros { get; set; }
-
     }
 }

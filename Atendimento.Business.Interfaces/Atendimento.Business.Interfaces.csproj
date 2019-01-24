@@ -15,6 +15,7 @@
     <Compile Remove="Interfaces\IAnexoTicketBusiness.cs" />
     <Compile Remove="Interfaces\IAnexoTicketMensagemBusiness.cs" />
     <Compile Remove="Interfaces\IFileUploadBusiness.cs" />
+    <Compile Remove="Interfaces\IGrupoBusiness.cs" />
     <Compile Remove="Interfaces\IServico.cs" />
   </ItemGroup>
 

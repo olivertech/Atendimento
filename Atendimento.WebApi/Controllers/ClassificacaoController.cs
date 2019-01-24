@@ -32,17 +32,20 @@ namespace Atendimento.WebApi.Controllers
             _business = business;
         }
 
-        /// GET: api/Classificacao
-        [Route("GetAll")]
+        /// <summary>
+        /// Recupera todas as classificações
+        /// </summary>
+        /// <returns></returns>
+        [Route(nameof(GetAll))]
         [HttpGet]
         public IHttpActionResult GetAll()
         {
             try
             {
                 //Mapeia os dados da fonte (source class) para o destino (destiny class)
-                IEnumerable<ClassificacaoResponse> lista = _business.GetAll().ToList().Select(Mapper.Map<Classificacao, ClassificacaoResponse>);
+                var lista = _business.GetAll().ToList().Select(Mapper.Map<Classificacao, ClassificacaoResponse>);
 
-                int totalRegistros = lista.Count();
+                var totalRegistros = lista.Count();
 
                 //Monta response
                 _result = Ok(Retorno<IEnumerable<ClassificacaoResponse>>.Criar(true, "Consulta Realizada Com Sucesso", lista, totalRegistros, totalRegistros));
@@ -56,8 +59,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// GET: api/Classificacao/5
-        [Route("GetById")]
+        /// <summary>
+        /// Recupera uma classificação
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route(nameof(GetById))]
         [HttpGet]
         public IHttpActionResult GetById(int id)
         {
@@ -80,8 +87,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// POST: api/Classificacao
-        [Route("Insert")]
+        /// <summary>
+        /// Insere classificação
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route(nameof(Insert))]
         [HttpPost]
         public IHttpActionResult Insert([FromBody]ClassificacaoRequest request)
         {
@@ -110,8 +121,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// POST: api/Classificacao
-        [Route("InsertList")]
+        /// <summary>
+        /// Insere lista de classificações
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(InsertList))]
         [HttpPost]
         public IHttpActionResult InsertList(IEnumerable<ClassificacaoRequest> list)
         {
@@ -130,7 +145,7 @@ namespace Atendimento.WebApi.Controllers
                     entityList.Add(entity);
                 }
 
-                int rows = _business.Insert(entityList);
+                var rows = _business.Insert(entityList);
 
                 if (rows > 0)
                 {
@@ -149,8 +164,13 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// PUT: api/Classificacao/5
-        [Route("Update")]
+        /// <summary>
+        /// Atualiza classificação
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route(nameof(Update))]
         [HttpPut]
         public IHttpActionResult Update(int id, [FromBody]ClassificacaoRequest request)
         {
@@ -160,7 +180,7 @@ namespace Atendimento.WebApi.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest("Dados inválidos.");
 
-                Classificacao entityInDb = _business.GetById(id);
+                var entityInDb = _business.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -186,8 +206,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// PUT: api/Classificacao/5
-        [Route("UpdateList")]
+        /// <summary>
+        /// Atualiza lista de classificações
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(UpdateList))]
         [HttpPut]
         public IHttpActionResult UpdateList(IEnumerable<ClassificacaoUpdate> list)
         {
@@ -201,7 +225,7 @@ namespace Atendimento.WebApi.Controllers
 
                 foreach (var item in list)
                 {
-                    Classificacao entityInDb = _business.GetById(item.Id);
+                    var entityInDb = _business.GetById(item.Id);
 
                     //Verifica se objeto existe
                     if (entityInDb == null)
@@ -230,14 +254,18 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// DELETE: api/Classificacao/5
-        [Route("Delete")]
+        /// <summary>
+        /// Deleta uma classificação
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route(nameof(Delete))]
         [HttpDelete]
         public IHttpActionResult Delete(int id)
         {
             try
             {
-                Classificacao entityInDb = _business.GetById(id);
+                var entityInDb = _business.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -260,8 +288,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// DELETE: api/Classificacao/5
-        [Route("DeleteList")]
+        /// <summary>
+        /// Deleta lista de classificações
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(DeleteList))]
         [HttpDelete]
         public IHttpActionResult DeleteList([FromBody]int[] list)
         {
@@ -273,7 +305,7 @@ namespace Atendimento.WebApi.Controllers
                 {
                     foreach (var id in list)
                     {
-                        Classificacao entityInDb = _business.GetById(id);
+                        var entityInDb = _business.GetById(id);
 
                         //Verifica se objeto existe
                         if (entityInDb == null)

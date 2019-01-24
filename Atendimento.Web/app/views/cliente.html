@@ -1,0 +1,374 @@
+<!-- ============================================================== -->
+<!-- Main wrapper - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<div id="main-wrapper">
+    <!-- header -->
+    <top-header></top-header>
+    <!-- left side bar -->
+    <left-side-bar></left-side-bar>
+    <!-- ============================================================== -->
+    <!-- Page wrapper  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <!-- ============================================================== -->
+        <!-- Container fluid  -->
+        <!-- ============================================================== -->
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center">
+                    <h4 class="text-themecolor">Cadastro de Cliente</h4>
+                </div>
+                <div class="col-md-7 align-self-center text-right">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item active">Cadastro de Cliente</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div id="success-alert" class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <h3 class="text-success"><i class="fa fa-check-circle"></i> Sucesso.</h3>{{mensagem}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="error-alert" class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <h3 class="text-danger"><i class="fa fa-check-circle"></i> Erro.</h3>{{mensagem}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>            
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Start Page Content -->
+            <!-- ============================================================== -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- grid header -->
+                            <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-t-10 text-left">
+                                    <button type="button" class="btn btn-info" ng-click="newCliente()" data-toggle="modal" data-target="#add-cliente"><i class="fas fa-plus"></i> Novo Cliente</button>
+                                </div>
+                            </div>
+                            <!-- grid de templates -->
+                            <div class="table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
+                                <div class="row justify-content-md-center m-t-20">
+                                    <div class="col">
+                                        <nav aria-label="Page navigation example" ng-if="clientes.length > 0">
+                                            <!-- Paginação -->
+                                            <ul class="pagination">
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="getPage(1,orderBy,direction)">Primeiro</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage - 1,orderBy,direction)"><i class="fas fa-chevron-left"></i></a>
+                                                </li>
+                                                <li class="page-item" ng-repeat="page in pagination.pages track by $index" ng-class="{active:pagination.currentPage === page}">
+                                                    <a class="page-link" ng-click="getPage(page,orderBy,direction)">{{page}}</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage + 1,orderBy,direction)"><i class="fas fa-chevron-right"></i></a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="getPage(pagination.totalPages,orderBy,direction)">Último</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    <div class="col-4">
+                                        &nbsp;
+                                    </div>
+                                    <!-- Contagem de páginas -->
+                                    <div class="col text-right" ng-if="clientes.length > 0">
+                                        <label class="">Mostrando página {{pagination.currentPage}} de {{pagination.totalPages}}</label>
+                                    </div>
+                                </div>
+                                <table id="clientes" class="table m-t-20 no-wrap" ng-if="clientes.length == 0">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Não foram encontrados clientes cadastrados.
+                                            </th>
+                                        </td>
+                                    </tr>
+                                </table>                              
+                                <table id="clientes" class="table m-t-20 table-hover no-wrap contact-list table-striped" ng-if="clientes.length > 0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th><a href="" ng-click="ordenarPor('id')">Cliente #</a></th>
+                                            <th><a href="" ng-click="ordenarPor('nome')">Nome</a></th>
+                                            <th>Email Corporativo</th>
+                                            <th>Telefone Fixo Corporativo</th>
+                                            <th>Telefone Celular Corporativo</th>
+                                            <th class="text-center"><a href="" ng-click="ordenarPor('ativo')">Ativo</a></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="cliente in clientes track by cliente.id" ng-click="showCliente(cliente.id)" style="cursor: pointer;" data-toggle="modal" data-target="#add-cliente">
+                                            <td>{{pagination.startIndex + $index + 1}}</td>
+                                            <td>{{cliente.id}}</td>
+                                            <td>{{cliente.nome}}</td>
+                                            <td>{{cliente.email | ifEmpty:'Não Informado'}}</td>
+                                            <td>{{cliente.telefoneFixo | ifEmpty:'Não Informado'}}</td>
+                                            <td>{{cliente.telefoneCelular | ifEmpty:'Não Informado'}}</td>
+                                            <td class="text-center"><i class="fas fa-check-circle" style="color:#008f6c" ng-if="cliente.ativo"></i><i class="fas fa-times-circle" style="color:#fb9678" ng-if="!cliente.ativo"></i></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- Grid Footer -->
+                                <div class="row justify-content-md-center m-t-20">
+                                    <div class="col">
+                                        <nav aria-label="Page navigation example" ng-if="clientes.length > 0">
+                                            <!-- Paginação -->
+                                            <ul class="pagination">
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="getPage(1,orderBy,direction)">Primeiro</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage - 1,orderBy,direction)"><i class="fas fa-chevron-left"></i></a>
+                                                </li>
+
+                                                <li class="page-item" ng-repeat="page in pagination.pages track by $index" ng-class="{active:pagination.currentPage === page}">
+                                                    <a class="page-link" ng-click="getPage(page,orderBy,direction)">{{page}}</a>
+                                                </li>
+                                                
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage + 1,orderBy,direction)"><i class="fas fa-chevron-right"></i></a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="getPage(pagination.totalPages,orderBy,direction)">Último</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    <div class="col-4">
+                                        &nbsp;
+                                    </div>
+                                    <!-- Contagem de páginas -->
+                                    <div class="col text-right" ng-if="clientes.length > 0">
+                                        <label class="">Mostrando página {{pagination.currentPage}} de {{pagination.totalPages}}</label>
+                                    </div>
+                                </div>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Page Content -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Begin Modal de cadastro/atualização cliente -->
+            <!-- ============================================================== -->
+            <div id="add-cliente" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel" ng-if="cliente.id == 0">Novo Cliente</h4>
+                            <h4 class="modal-title" id="myModalLabel" ng-if="cliente.id != 0">Atualizar Cliente</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal form-material" name="novoClienteForm">
+                                <input type="hidden" name="cliente.id" ng-model="cliente.id">
+                                <div class="form-group">
+                                    <div class="form-group row" ng-if="idCliente == 0">
+                                        <label for="ticket" class="col-sm-2 col-form-label"><strong>Empresa</strong></label>
+                                        <div class="col-sm-10">
+                                            <select class="form-control"
+                                                    ng-required="true"
+                                                    ng-init="cliente.idEmpresa = cliente.idEmpresa || options[0].value"
+                                                    ng-model="cliente.idEmpresa"
+                                                    ng-options="empresa.id as empresa.nome for empresa in empresas | orderBy: 'nome'">
+                                                <option value="">Selecione a Empresa Responsável pelo Atendimento</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="nome" class="col-sm-2 col-form-label"><strong>Nome</strong></label>
+                                        <div class="col-sm-10">
+                                            <input id="nome" type="text" class="form-control" placeholder="Nome da cliente" 
+                                                ng-model="cliente.nome"
+                                                ng-required="true">
+                                        </div> 
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="email" class="col-sm-2 col-form-label"><strong>Email</strong></label>
+                                        <div class="col-sm-10">
+                                            <input id="email" type="text" class="form-control" placeholder="Email Corporativo" 
+                                                ng-model="cliente.email"
+                                                ng-required="true">
+                                        </div> 
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="email" class="col-sm-2 col-form-label">Cnpj</label>
+                                        <div class="col-sm-10">
+                                            <input id="email" type="text" class="form-control" placeholder="Cnpj da empresa" 
+                                                ng-model="cliente.cnpj"
+                                                mask="99.999.999/0001-99" clean="false">
+                                        </div> 
+                                    </div>                                    
+                                    <div class="form-group row">
+                                        <label for="telefoneFixo" class="col-sm-2 col-form-label">Telefone Fixo</label>
+                                        <div class="col-sm-4">
+                                            <input id="telefoneFixo" type="text" class="form-control" placeholder="Nº Corporativo - (99) 9999-9999" 
+                                                ng-model="cliente.telefoneFixo"
+                                                mask="(99) 9999-9999" clean="false">
+                                        </div> 
+                                        <label for="telefoneCelular" class="col-sm-2 col-form-label">Telefone Celular</label>
+                                        <div class="col-sm-4">
+                                            <input id="telefoneCelular" type="text" class="form-control" placeholder="Nº Corporativo - (99) 99999-9999" 
+                                                ng-model="cliente.telefoneCelular"
+                                                mask="(99) 99999-9999" clean="false">
+                                        </div> 
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="logradouro" class="col-sm-2 col-form-label">Logradouro</label>
+                                        <div class="col-sm-4">
+                                            <input id="logradouro" type="text" class="form-control" placeholder="Rua, Avenida, Estrada, Travessa, ..." 
+                                                ng-model="cliente.logradouro">
+                                        </div> 
+                                        <label for="numerologradouro" class="col-sm-2 col-form-label">Número</label>
+                                        <div class="col-sm-4">
+                                            <input id="numerologradouro" type="text" class="form-control" placeholder="Nº do Logradouro" 
+                                                ng-model="cliente.numeroLogradouro">
+                                        </div> 
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="complementologradouro" class="col-sm-2 col-form-label">Complemento</label>
+                                        <div class="col-sm-10">
+                                            <input id="complementologradouro" type="text" class="form-control" placeholder="Complemento do Logradouro" 
+                                                ng-model="cliente.complementoLogradouro">
+                                        </div> 
+                                    </div>
+                                    <div class="form-group row" ng-if="idCliente == 0">
+                                        <label for="estado" class="col-sm-2 col-form-label">Estado</label>
+                                        <div class="col-sm-4">
+                                            <select class="form-control" 
+                                                    id="estado"
+                                                    ng-model="cliente.estado">
+                                                    <option value="">Selecione o Estado</option>
+                                                    <option value="AL">Alagoas</option>
+                                                    <option value="AP">Amapá</option>
+                                                    <option value="AM">Amazonas</option>
+                                                    <option value="BA">Bahia</option>
+                                                    <option value="CE">Ceará</option>
+                                                    <option value="DF">Distrito Federal</option>
+                                                    <option value="ES">Espírito Santo</option>
+                                                    <option value="GO">Goiás</option>
+                                                    <option value="MA">Maranhão</option>
+                                                    <option value="MT">Mato Grosso</option>
+                                                    <option value="MS">Mato Grosso do Sul</option>
+                                                    <option value="MG">Minas Gerais</option>
+                                                    <option value="PA">Pará</option>
+                                                    <option value="PB">Paraíba</option>
+                                                    <option value="PR">Paraná</option>
+                                                    <option value="PE">Pernambuco</option>
+                                                    <option value="PI">Piauí</option>
+                                                    <option value="RJ">Rio de Janeiro</option>
+                                                    <option value="RN">Rio Grande do Norte</option>
+                                                    <option value="RS">Rio Grande do Sul</option>
+                                                    <option value="RO">Rondônia</option>
+                                                    <option value="RR">Roraima</option>
+                                                    <option value="SC">Santa Catarina</option>
+                                                    <option value="SP">São Paulo</option>
+                                                    <option value="SE">Sergipe</option>
+                                                    <option value="TO">Tocantins</option>
+                                                    <option value="ES">Estrangeiro</option>
+                                            </select>
+                                        </div>
+                                        <label for="cidade" class="col-sm-2 col-form-label">Cidade</label>
+                                        <div class="col-sm-4">
+                                            <input id="cidade" type="text" class="form-control" placeholder="Cidade do Logradouro" 
+                                                ng-model="cliente.cidade">
+                                        </div> 
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="bairro" class="col-sm-2 col-form-label">Bairro</label>
+                                        <div class="col-sm-4">
+                                            <input id="bairro" type="text" class="form-control" placeholder="Bairro do Logradouro" 
+                                                ng-model="cliente.bairro">
+                                        </div> 
+                                        <label for="cep" class="col-sm-2 col-form-label">Cep</label>
+                                        <div class="col-sm-4">
+                                            <input id="cep" type="text" class="form-control" placeholder="CEP do Logradouro" 
+                                                ng-model="cliente.cep">
+                                        </div> 
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="descricao" class="col-sm-2 col-form-label">Descrição</label>
+                                        <div class="col-sm-10">
+                                            <textarea id="descricao" class="form-control" cols="60" rows="3" placeholder="Breve descrição da cliente" 
+                                                ng-model="cliente.descricao"
+                                                style="white-space:pre-wrap;"></textarea>
+                                        </div> 
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-2"></div>
+                                        <div class="col-sm-10 form-check m-t-10 m-b-10">&nbsp;&nbsp;
+                                            <input class="form-check-input" type="checkbox" value="1" id="ativo"
+                                                ng-true-value="true"
+                                                ng-false-value="false"
+                                                ng-model="cliente.ativo">
+                                            <label class="form-check-label" for="ativo" style="color: red">
+                                                Ativo
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="row">
+                                <div class="col-3">
+                                    <button type="button" id="submit" ng-click="deleteCliente(cliente.id);" class="btn btn-danger waves-effect" data-dismiss="modal" ng-if="cliente.id != 0 && usuarios == 0"><i class="fas fa-trash-alt"></i> Remover</button>
+                                </div>
+                                <div class="col-9 text-right">
+                                    <button type="button" id="submit" ng-click="saveCliente();" class="btn btn-info waves-effect" data-dismiss="modal" ng-disabled="novoClienteForm.$invalid"><i class="fas fa-check"></i> Salvar</button>
+                                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal"><i class="fas fa-ban"></i> Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Modal cadastro/atualização cliente  -->
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Page wrapper  -->
+    <!-- ============================================================== -->
+    <app-footer></app-footer>
+</div>
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->
+
+<!-- Esse arquivo tem que importar aqui, pois senão os elementos não são achados pelo jquery -->
+<script src="./app/assets/scripts/custom.js"></script>
+<script src="./app/assets/scripts/sidebarmenu.js"></script>
+<script src="./app/assets/scripts/utilities.js"></script>
+<script src="./app/assets/scripts/fullscreen.js"></script>
+<script src="./app/assets/scripts/dashboard.js"></script>
+<!-- Estilo Local -->
+<link href="./app/assets/css/cliente.css" rel="stylesheet">

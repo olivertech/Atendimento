@@ -14,11 +14,13 @@ namespace Atendimento.Repository.Mapping
             Map(m => m.Username).ToColumn("username");
             Map(m => m.Password).ToColumn("password");
             Map(m => m.Email).ToColumn("email");
-            Map(m => m.Telefone).ToColumn("telefone");
+            Map(m => m.TelefoneFixo).ToColumn("telefone_fixo");
+            Map(m => m.TelefoneCelular).ToColumn("telefone_celular");
             Map(m => m.Ativo).ToColumn("ativo");
             Map(m => m.Copia).ToColumn("copia");
             Map(m => m.Provisorio).ToColumn("provisorio");
             Map(m => m.IsAdmin).ToColumn("is_admin");
+            Map(m => m.IsDefault).ToColumn("is_default");
             Map(m => m.Empresa).Ignore();
         }
     }

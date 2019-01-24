@@ -1,0 +1,43 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+string appConfig = this.Host.ResolvePath("App.config");
+if(!File.Exists(appConfig))
+{
+	Error("App.config not exists");
+}
+
+ExeConfigurationFileMap configFile = new ExeConfigurationFileMap();
+configFile.ExeConfigFilename = appConfig;
+var configuration = ConfigurationManager.OpenMappedExeConfiguration(configFile, ConfigurationUserLevel.None);
+var connectionString = configuration.ConnectionStrings.ConnectionStrings["connectionstring"].ConnectionString;
+
+SqlConnection sqlConnection = new SqlConnection(connectionString);
+ServerConnection serverConnection = new ServerConnection(sqlConnection);
+Server server = new Server(serverConnection);
+var tables = server.Databases[server.ConnectionContext.DatabaseName].Tables;
+#>
+namespace <#= server.ConnectionContext.DatabaseName #>.Entities
+{
+<#
+foreach(Table table in tables)
+{
+#>
+public sealed partial class <#= CleanName(table.Name) #>
+{
+<#
+foreach(Column column in table.Columns)
+{
+#>
+	public <#= ToClrType(column.DataType, column.Nullable) #> <#= CleanName(column.Name) #> { get; set; }
+<#
+}
+#>
+}
+<#
+}
+#>
+}

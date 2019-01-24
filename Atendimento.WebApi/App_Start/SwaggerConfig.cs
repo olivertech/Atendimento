@@ -39,7 +39,7 @@ namespace Atendimento.WebApi
                         // hold additional metadata for an API. Version and title are required but you can also provide
                         // additional fields by chaining methods off SingleApiVersion.
                         //
-                        c.SingleApiVersion("v1", "XXX");
+                        c.SingleApiVersion("v1", "Atendimento.WebApi");
 
                         // If you want the output Swagger docs to be indented properly, enable the "PrettyPrint" option.
                         //
@@ -152,10 +152,10 @@ namespace Atendimento.WebApi
                         //
                         c.DescribeAllEnumsAsStrings();
 
-                        //Classe que permite passar o jwt atravï¿½s do Swagger UI
+                        //Classe que permite passar o jwt através do Swagger UI
 
                         //##################################################################
-                        //LINHA ABAIXO DEVE SER DESCOMENTADA PARA TESTES REAIS E PRODUï¿½ï¿½O
+                        //LINHA ABAIXO DEVE SER DESCOMENTADA PARA TESTES REAIS E PRODUÇÃO
                         //##################################################################
                         c.OperationFilter<AddAuthorizationHeader>();
 

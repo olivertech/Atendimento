@@ -8,7 +8,7 @@ namespace Atendimento.Repository.Mapping
         public CategoriaMapping()
         {
             ToTable("Categoria");
-            Map(m => m.Id).ToColumn("id_categoria").IsKey().IsIdentity();
+            Map(m => m.Id).ToColumn("id_categoria").IsKey().IsIdentity(); //manter id_categoria em função dos joins
             Map(m => m.Nome).ToColumn("nome");
         }
     }

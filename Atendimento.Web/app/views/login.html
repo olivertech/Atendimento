@@ -6,7 +6,7 @@
         <div class="card-body">
 
             <!-- Formulário de Login -->
-            <div class="div-view-animation box-login" ng-if="!login.isRecoverFormSelected">
+            <div class="div-view-animation box-login" ng-if="!login.isRecoverFormSelected && !login.changePassword">
                 <div class="layout">
                     <div class="center-title">
                         <!-- <a href="#" class="db"><img src="app/assets/images/logo-text.png" alt="Home" /></a> -->
@@ -17,7 +17,7 @@
                     <!-- <a href="#" class="db"><img src="app/assets/images/logo-text.png" alt="Home" /></a> -->
                     <div class="form-group m-t-40">
                         <div class="col-xs-12">
-                            <input class="form-control" type="text" required="" placeholder="Usuário" ng-model="login.username" ng-required="true">
+                            <input class="form-control" type="text" required="" placeholder="Usuário" ng-model="login.username" ng-required="true" ng-blur="resetCookies()">
                         </div>
                     </div>
                     <div class="form-group">
@@ -52,17 +52,17 @@
                     </div>
                     <div class="form-group text-center m-t-20">
                         <div class="col-xs-12">
-                            <button class="btn btn-info btn-lg btn-block text-uppercase btn-rounded" ng-click="login()" ng-disabled="loginForm.$invalid">Acessar</button>
+                            <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect btn-rounded" ng-click="login()" ng-disabled="loginForm.$invalid">Acessar</button>
                         </div>
                     </div>
                 </form>
                 <div ng-show="isAuthenticationError" class="alert alert-danger">
-                    Sessão expirada ou autenticação inválida.<br>Faça o login novamente.
+                    Sessão expirada ou autenticação inválida.<br><br>Certifique-se de que os dados informados estão corretos e faça o login novamente.<br><br>Caso o erro persista, informe ao suporte.
                 </div>   
             </div>
 
             <!-- Formulário de recuperação de senha -->
-            <div class="div-view-animation box-recover" ng-if="login.isRecoverFormSelected">
+            <div class="div-view-animation box-recover" ng-if="login.isRecoverFormSelected && !login.changePassword">
                 <div class="layout">
                     <div class="center-title">
                         Recuperar Senha
@@ -88,7 +88,7 @@
                     </div>       
                     <div class="form-group text-center m-t-20">
                         <div class="col-xs-12">
-                            <button class="btn btn-primary btn-lg btn-block text-uppercase waves-effect waves-light" ng-click="recoverPassword()" ng-disabled="recoverForm.$invalid">Solicitar Reenvio de Senha</button>
+                            <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect btn-rounded" ng-click="recoverPassword()" ng-disabled="recoverForm.$invalid">Solicitar Reenvio de Senha</button>
                         </div>
                     </div>
                     <div ng-show="login.isPasswordRecovered" class="alert alert-success">
@@ -97,7 +97,70 @@
                     <a href="#" ng-click="showHideRecoverForm()"><i class="fas fa-angle-left m-r-5"></i>Voltar</a>                   
                 </form>
             </div>
-                
+
+            <!-- Formulário de troca de senha provisória -->
+            <div class="div-view-animation box-recover" ng-if="login.changePassword">
+                <div class="layout">
+                    <div class="center-title">
+                        Cadastrar Nova Senha
+                    </div>
+                </div> 
+                <div class="row m-t-20">
+                    <div class="col text-left">
+                        Esse é o seu primeiro acesso ao sistema. Favor trocar sua senha provisória por uma nova senha.
+                    </div>
+                </div>               
+                <form class="form-horizontal form-material m-t-20" name="changePasswordForm" novalidate="">
+                    <div class="form-group m-t-20">
+                        <div class="row">
+                            <div class="col-sm-10">
+                                <input id="senhaProvisoria" class="form-control" type="password" placeholder="Informe sua senha provisória" ng-model="login.senhaProvisoria" ng-required="true">
+                            </div>
+                            <div class="col-sm-2 m-t-10">
+                                <button id="changeType1" type="button" ng-click="showHidePwd('senhaProvisoria');" class="btn btn-cyan btn-sm waves-effect m-l-5" style="color:white" title="Mostrar/Esconder senha"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group m-t-20">
+                        <div class="row">
+                            <div class="col-sm-10">
+                                <input id="novaSenha" class="form-control" type="password" placeholder="Informe uma nova senha" ng-model="login.novaSenha" ng-required="true">
+                            </div>
+                            <div class="col-sm-2 m-t-10">
+                                <button id="changeType2" type="button" ng-click="showHidePwd('novaSenha');" class="btn btn-cyan btn-sm waves-effect m-l-5" style="color:white" title="Mostrar/Esconder senha"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group m-t-20">
+                        <div class="row">
+                            <div class="col-sm-10">
+                                <input id="senhaConfirmada" class="form-control" type="password" placeholder="Confirmar nova senha" ng-model="login.novaSenhaConfirmada" ng-required="true">
+                            </div>
+                            <div class="col-sm-2 m-t-10">
+                                <button id="changeType3" type="button" ng-click="showHidePwd('senhaConfirmada');" class="btn btn-cyan btn-sm waves-effect m-l-5" style="color:white" title="Mostrar/Esconder senha"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group m-t-20">
+                        <div class="col-xs-12">
+                            <select class="form-control" name="typechangepwdform" id="typechangepwdform" 
+                                    ng-required="true"
+                                    ng-model="login.typechangepwdform">
+                                <option value="" selected>Selecione o tipo do usuário</option>
+                                <option value="Atendimento">Atendimento</option>
+                                <option value="Cliente">Cliente</option>
+                            </select>
+                        </div>
+                    </div>       
+                    <div class="form-group text-center m-t-20">
+                        <div class="col-xs-12">
+                            <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect btn-rounded" ng-click="changePassword()" ng-disabled="changePasswordForm.$invalid">Trocar Senha e Acessar Sistema</button>
+                        </div>
+                    </div>
+                    <a href="#" ng-click="showHideChangePasswordForm()"><i class="fas fa-angle-left m-r-5"></i>Voltar</a>                   
+                </form>
+            </div>
+
         </div>
     </div>
 </section>

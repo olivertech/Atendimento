@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28010.2048
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - Front", "1 - Front", "{8A9EB3AC-0C46-4D29-A246-91CED79ACAFB}"
-	ProjectSection(SolutionItems) = preProject
-		README.txt = README.txt
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Back", "2 - Back", "{789A368F-5574-47D7-AAB0-02C03896BDE3}"
 EndProject
@@ -36,7 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atendimento.WebApi", "Atend
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2.7 - Infra", "2.7 - Infra", "{B9034DF0-1731-4214-97E5-FF3A531EF6BC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atendimento.Infra", "Atendimento.Infra\Atendimento.Infra.csproj", "{CB0AE674-C90B-4472-8C8E-2CE0D7D58E29}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atendimento.Infra", "Atendimento.Infra\Atendimento.Infra.csproj", "{CB0AE674-C90B-4472-8C8E-2CE0D7D58E29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

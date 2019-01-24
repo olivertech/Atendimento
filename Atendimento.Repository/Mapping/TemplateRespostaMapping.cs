@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Atendimento.Entities.Entities;
+﻿using Atendimento.Entities.Entities;
 using Dapper.FluentMap.Dommel.Mapping;
 
 namespace Atendimento.Repository.Mapping

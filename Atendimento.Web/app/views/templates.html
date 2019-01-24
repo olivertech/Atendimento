@@ -1,0 +1,246 @@
+<!-- ============================================================== -->
+<!-- Main wrapper - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<div id="main-wrapper">
+    <!-- header -->
+    <top-header></top-header>
+    <!-- left side bar -->
+    <left-side-bar></left-side-bar>
+    <!-- ============================================================== -->
+    <!-- Page wrapper  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <!-- ============================================================== -->
+        <!-- Container fluid  -->
+        <!-- ============================================================== -->
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center">
+                    <h4 class="text-themecolor">Cadastro de Templates - Suporte</h4>
+                </div>
+                <div class="col-md-7 align-self-center text-right">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <ol class="breadcrumb">
+                            <!-- <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li> -->
+                            <li class="breadcrumb-item active">Cadastro de Templates</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div id="success-alert" class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <h3 class="text-success"><i class="fa fa-check-circle"></i> Sucesso.</h3>{{mensagem}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="error-alert" class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <h3 class="text-danger"><i class="fa fa-check-circle"></i> Erro.</h3>{{mensagem}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>            
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Start Page Content -->
+            <!-- ============================================================== -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- grid header -->
+                            <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-t-10 text-left">
+                                    <button type="button" class="btn btn-info" ng-click="newTemplate()" data-toggle="modal" data-target="#add-template"><i class="fas fa-plus"></i> Novo Template</button>
+                                </div>
+                            </div>
+                            <!-- grid de templates -->
+                            <div class="table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
+                                <div class="row justify-content-md-center m-t-20">
+                                    <div class="col">
+                                        <nav aria-label="Page navigation example" ng-if="templates.length > 0">
+                                            <!-- Paginação -->
+                                            <ul class="pagination">
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="getPage(1)">Primeiro</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage - 1)"><i class="fas fa-chevron-left"></i></a>
+                                                </li>
+                                                <li class="page-item" ng-repeat="page in pagination.pages track by $index" ng-class="{active:pagination.currentPage === page}">
+                                                    <a class="page-link" ng-click="getPage(page)">{{page}}</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage + 1)"><i class="fas fa-chevron-right"></i></a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="getPage(pagination.totalPages)">Último</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    <div class="col-4">
+                                        &nbsp;
+                                    </div>
+                                    <!-- Contagem de páginas -->
+                                    <div class="col text-right" ng-if="templates.length > 0">
+                                        <label class="">Mostrando página {{pagination.currentPage}} de {{pagination.totalPages}}</label>
+                                    </div>
+                                </div>
+                                <table id="templates" class="table m-t-20 no-wrap" ng-if="templates.length == 0">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Não foram encontrados templates cadastrados.
+                                            </th>
+                                        </td>
+                                    </tr>
+                                </table>                              
+                                <table id="templates" class="table m-t-20 table-hover no-wrap contact-list table-striped" ng-if="templates.length > 0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th><a href="" ng-click="ordenarPor('id')">Template #</a></th>
+                                            <th><a href="" ng-click="ordenarPor('titulo')">Título</a></th>
+                                            <th>Conteúdo</th>
+                                            <!-- <th>&nbsp;</th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="template in templates track by template.id" ng-click="showTemplate(template.id)" style="cursor: pointer;" data-toggle="modal" data-target="#add-template">
+                                            <td>{{pagination.startIndex + $index + 1}}</td>
+                                            <td>{{template.id}}</td>
+                                            <td>{{template.titulo}}</td>
+                                            <td>{{template.conteudo | ellipsis:150}}</td>
+                                            <!-- <td><button type="button" class="btn btn-danger" title="Remover template" ng-click="showTemplate(template.id)"><i class="fas fa-trash-alt"></i></button></td> -->
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- Grid Footer -->
+                                <div class="row justify-content-md-center m-t-20">
+                                    <div class="col">
+                                        <nav aria-label="Page navigation example" ng-if="templates.length > 0">
+                                            <!-- Paginação -->
+                                            <ul class="pagination">
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="getPage(1)">Primeiro</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage - 1)"><i class="fas fa-chevron-left"></i></a>
+                                                </li>
+
+                                                <li class="page-item" ng-repeat="page in pagination.pages track by $index" ng-class="{active:pagination.currentPage === page}">
+                                                    <a class="page-link" ng-click="getPage(page)">{{page}}</a>
+                                                </li>
+                                                
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage + 1)"><i class="fas fa-chevron-right"></i></a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="getPage(pagination.totalPages)">Último</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    <div class="col-4">
+                                        &nbsp;
+                                    </div>
+                                    <!-- Contagem de páginas -->
+                                    <div class="col text-right" ng-if="templates.length > 0">
+                                        <label class="">Mostrando página {{pagination.currentPage}} de {{pagination.totalPages}}</label>
+                                    </div>
+                                </div>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Page Content -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Begin Modal Novo Template -->
+            <!-- ============================================================== -->
+            <div id="add-template" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel" ng-if="template.id == 0">Novo Template</h4>
+                            <h4 class="modal-title" id="myModalLabel" ng-if="template.id != 0">Atualizar Template</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal form-material" name="novoTemplateForm">
+                                <input type="hidden" name="template.id" ng-model="template.id">
+                                <div class="form-group">
+                                    <div class="form-group row">
+                                        <label for="ticket" class="col-sm-3 col-form-label"><strong>Título</strong></label>
+                                        <div class="col-sm-9">
+                                            <input type="text "class="form-control" placeholder="Título do Template" 
+                                                ng-model="template.titulo"
+                                                ng-required="true">
+                                        </div> 
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="ticket" class="col-sm-3 col-form-label"><strong>Descrição</strong></label>
+                                        <div class="col-sm-9">
+                                            <textarea class="form-control" cols="60" rows="4" placeholder="Breve descrição do que é o template" 
+                                                ng-model="template.descricao"
+                                                ng-required="true" 
+                                                style="white-space:pre-wrap;"></textarea>
+                                        </div> 
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="ticket" class="col-sm-3 col-form-label"><strong>Conteúdo</strong></label>
+                                        <div class="col-sm-9">
+                                            <textarea class="form-control" cols="60" rows="12" placeholder="Texto que vai compor a mensagem" 
+                                                ng-model="template.conteudo"
+                                                ng-required="true" 
+                                                style="white-space:pre-wrap;"></textarea>
+                                        </div> 
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="submit" ng-click="deleteTemplate(template.id);" class="btn btn-danger waves-effect" data-dismiss="modal" ng-if="template.id != 0"><i class="fas fa-trash-alt"></i> Remover</button>
+                            <button type="button" id="submit" ng-click="saveTemplate();" class="btn btn-info waves-effect" data-dismiss="modal" ng-disabled="novoTemplateForm.$invalid"><i class="fas fa-check"></i> Salvar</button>
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal"><i class="fas fa-ban"></i> Cancelar</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Modal Novo Atendimento  -->
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Page wrapper  -->
+    <!-- ============================================================== -->
+    <app-footer></app-footer>
+</div>
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->
+
+<!-- Esse arquivo tem que importar aqui, pois senão os elementos não são achados pelo jquery -->
+<script src="./app/assets/scripts/custom.js"></script>
+<script src="./app/assets/scripts/sidebarmenu.js"></script>
+<script src="./app/assets/scripts/utilities.js"></script>
+<script src="./app/assets/scripts/fullscreen.js"></script>
+<script src="./app/assets/scripts/dashboard.js"></script>

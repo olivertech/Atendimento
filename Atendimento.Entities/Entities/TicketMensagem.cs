@@ -11,9 +11,9 @@ namespace Atendimento.Entities.Entities
         /** COLUNAS DE CHAVE ESTRANGEIRA */
         public int IdTicket { get; set; }
         public Ticket Ticket { get; set; }
-        public int IdUsuarioCliente { get; set; }
+        public int? IdUsuarioCliente { get; set; }
         public UsuarioCliente UsuarioCliente { get; set; }
-        public int IdAtendenteEmpresa { get; set; }
+        public int? IdAtendenteEmpresa { get; set; }
         public AtendenteEmpresa AtendenteEmpresa { get; set; }
     }
 }

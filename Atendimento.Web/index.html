@@ -28,6 +28,9 @@
         <!-- App Css -->
         <link href="./app/assets/css/app.css" rel="stylesheet">
 
+        <!-- App Css - Parametrização de Cores -->
+        <link href="./app/assets/css/cores.css" rel="stylesheet">
+        
         <!-- Favicon icon -->
         <link rel="icon" type="image/png" sizes="16x16" href="./app/assets/images/favicon.ico">
 
@@ -40,8 +43,6 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->        
     </head>
-    <!-- <body ng-class="{'horizontal-nav skin-megna fixed-layout': $sessionStorage.isOnDashboard}"> -->
-    <!-- <body ng-class="{'horizontal-nav skin-blue-dark fixed-layout': $sessionStorage.isOnDashboard}"> -->
     <body id="body" class="horizontal-nav skin-blue fixed-layout">
         <!-- ============================================================== -->
         <!-- Loading - style you can find in spinners.css -->
@@ -58,7 +59,7 @@
     </body>
 
     <!-- Jquery lib -->
-    <script src="./app/assets/libs/jquery-3.2.1.min.js"></script>
+    <script src="./app/assets/libs/jquery-3.3.1.min.js"></script>
     <script src="./app/assets/libs/jquery-ui.min.js"></script>
     
     <!-- Angular libs -->
@@ -70,8 +71,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular-cookies.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular-animate.min.js"></script>
     <script src="./app/assets/libs/ng-file-upload.min.js"></script>
-    <script src="./app/assets/libs/ng-file-upload.min.js"></script>
     <script src="./app/assets/libs/ngClipboard.js"></script>
+    <script src="./app/assets/libs/ngMask.js"></script>
     
     <!-- Angular root -->
     <script src="./app/app.js"></script>
@@ -81,36 +82,50 @@
     <script src="./app/config/routeConfig.js"></script>
 
     <!-- controllers -->
+    <script src="./app/controllers/atendenteEmpresaController.js"></script>
+    <script src="./app/controllers/clienteController.js"></script>
     <script src="./app/controllers/dashboardController.js"></script>
     <script src="./app/controllers/errorController.js"></script>
+    <script src="./app/controllers/empresaController.js"></script>
     <script src="./app/controllers/leftSideBarController.js"></script>
     <script src="./app/controllers/loginController.js"></script>
+    <script src="./app/controllers/templateController.js"></script>
     <script src="./app/controllers/ticketController.js"></script>
     <script src="./app/controllers/topHeaderController.js"></script>
+    <script src="./app/controllers/usuarioClienteController.js"></script>
     
     <!-- directives -->
     <script src="./app/directives/cardDirective.js"></script>
+    <script src="./app/directives/footerDirective.js"></script>
     <script src="./app/directives/leftSideBarDirective.js"></script>
     <script src="./app/directives/loadingDirective.js"></script>
     <script src="./app/directives/topHeaderDirective.js"></script>
     <script src="./app/directives/uiAccordionDirective.js"></script>
         
     <!-- filters -->
-    
+    <script src="./app/filters/ellipsisFilter.js"></script>
+    <script src="./app/filters/ifEmptyFilter.js"></script>
+
     <!-- interceptors -->
     <script src="./app/interceptors/errorInterceptor.js"></script>
     <script src="./app/interceptors/loadingInterceptor.js"></script>
     <script src="./app/interceptors/requestInterceptor.js"></script>
     <script src="./app/interceptors/timestampInterceptor.js"></script>
 
-    <!-- providers -->
+    <!-- modules -->
+    <script src="./app/modules/utilityModule.js"></script>
 
     <!-- services -->
+    <script src="./app/services/atendenteEmpresaService.js"></script>
+    <script src="./app/services/clienteService.js"></script>
     <script src="./app/services/dashboardService.js"></script>
+    <script src="./app/services/empresaService.js"></script>
     <script src="./app/services/loginService.js"></script>
     <script src="./app/services/paginationService.js"></script>
     <script src="./app/services/rememberMeService.js"></script>
+    <script src="./app/services/templateService.js"></script>
     <script src="./app/services/ticketService.js"></script>
+    <script src="./app/services/usuarioClienteService.js"></script>
         
     <!-- values -->
     <script src="./app/values/configValues.js"></script>
@@ -120,10 +135,5 @@
     <script src="./app/assets/libs/bootstrap.min.js"></script>
     <script src="./app/assets/libs/loading-bar.js"></script>
     <script src="./app/assets/scripts/waves.js"></script>
-
-    <!-- <script src="./app/assets/scripts/sidebarmenu.js"></script> -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sparklines/2.1.2/jquery.sparkline.min.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.10/angular-material.min.js"></script>
 </html>

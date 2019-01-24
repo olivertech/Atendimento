@@ -1,63 +1,105 @@
 app.factory("dashboardService", function($http, config) {
     
     /** Retorna os totais de todos os status */
-    var _getTotals = function() {
-        return $http.get(config.baseUrl + "/Ticket/GetCounts");
+    var _getTotals = function(idCliente) {
+        return $http({
+            method: "GET",
+            url: config.baseUrl + "/Ticket/GetCounts?idCliente=" + idCliente,
+            async: true,
+            cache: false
+        }); 
     }
 
     /** Retorna todos os tickets paginando */
-    var _getPagedTicket = function(offSet, numRows, idsStatusTicket, idTicket, titulo, descricao, dataInicial, dataFinal, idCliente, idCategoria) {
+    var _getTickets = function(offSet, numRows, orderBy, direction, idsStatusTicket, idCliente, idTicketFiltro, tituloFiltro, descricaoFiltro, dataInicialFiltro, dataFinalFiltro, idClienteFiltro, idCategoriaFiltro) {
         var filter = {
             "offset": offSet,
             "numrows": numRows,
-            "idTicket": idTicket,
-            "titulo": titulo,
-            "descricao": descricao,
-            "dataInicial": dataInicial,
-            "dataFinal": dataFinal,
-            "idCliente": idCliente,
-            "idCategoria": idCategoria,
-            "idsStatus": idsStatusTicket
+            "orderBy": orderBy,
+            "direction": direction,
+            "idTicket": idTicketFiltro,
+            "titulo": tituloFiltro,
+            "descricao": descricaoFiltro,
+            "dataInicial": dataInicialFiltro,
+            "dataFinal": dataFinalFiltro,
+            "idCliente": idClienteFiltro,
+            "idCategoria": idCategoriaFiltro,
+            "idsStatus": idsStatusTicket,
+            "idClienteSession": idCliente
           };
 
-        return $http.post(config.baseUrl + "/Ticket/GetAllPaged", filter);
+        return $http({
+            method: "POST",
+            url: config.baseUrl + "/Ticket/GetAllPaged",
+            data: filter,
+            async: true,
+            cache: false
+        });  
     }
 
     /** Retorna todos os clientes */
     var _getClientes = function() {
-        return $http.get(config.baseUrl + "/Cliente/GetAll");
+        return $http({
+            method: "GET",
+            url: config.baseUrl + "/Cliente/GetAll",
+            async: true,
+            cache: false
+        });
     }
 
     /** Retorna os usuarios associados a um cliente */
     var _getUsuarios = function(idCliente) {
-        return $http.get(config.baseUrl + "/UsuarioCliente/GetAllById?idCliente=" + idCliente);
+        return $http({
+            method: "GET",
+            url: config.baseUrl + "/UsuarioCliente/GetAllById?idCliente=" + idCliente,
+            async: true,
+            cache: false
+        });
     }
 
     /** Retorna todas as categorias */
     var _getCategorias = function() {
-        return $http.get(config.baseUrl + "/Categoria/GetAll");
+        return $http({
+            method: "GET",
+            url: config.baseUrl + "/Categoria/GetAll",
+            async: true,
+            cache: false
+        });
     }
 
     /** Retorna todas as classificacoes */
     var _getClassificacoes = function() {
-        return $http.get(config.baseUrl + "/Classificacao/GetAll");
+        return $http({
+            method: "GET",
+            url: config.baseUrl + "/Classificacao/GetAll",
+            async: true,
+            cache: false
+        });
     }
 
     /** Salva um novo ticket */
-    var _saveNewSupport = function(idUsuario, idCategoria, idClassificacao, assunto, descricao, pathAnexos) {
+    var _saveNewSupport = function(idUsuarioFiltro, idCategoriaFiltro, idClassificacaoFiltro, assuntoFiltro, descricaoFiltro, pathAnexos, tipoUsuario, idAtendente) {
 
         var newSupport = 
         {
             "idStatusTicket": 1,
-            "idUsuarioCliente": idUsuario,
-            "idCategoria": idCategoria,
-            "idClassificacao": idClassificacao,
-            "titulo": assunto,
-            "descricao": descricao,
-            "pathAnexos": pathAnexos
+            "idUsuarioCliente": idUsuarioFiltro,
+            "idCategoria": idCategoriaFiltro,
+            "idClassificacao": idClassificacaoFiltro,
+            "titulo": assuntoFiltro,
+            "descricao": descricaoFiltro,
+            "pathAnexos": pathAnexos,
+            "userTypeAgent": (tipoUsuario == "Atendimento" ? "S" : "C"),
+            "idAtendente": idAtendente
         }
 
-        return $http.post(config.baseUrl + "/Ticket/Insert", newSupport);
+        return $http({
+            method: "POST",
+            url: config.baseUrl + "/Ticket/Insert",
+            data: newSupport,
+            async: true,
+            cache: false
+        });         
     }
 
     /** Faz o upload de um arquivo */
@@ -86,7 +128,7 @@ app.factory("dashboardService", function($http, config) {
 
     return {
         getTotals: _getTotals,
-        getPagedTicket: _getPagedTicket,
+        getTickets: _getTickets,
         getClientes: _getClientes,
         getUsuarios: _getUsuarios,
         getCategorias: _getCategorias,

@@ -1,10 +1,13 @@
-app.controller('ticketController', function($scope, $location, $q, $anchorScroll, $sessionStorage, dashboardService, ticketService, ngClipboard) {
+app.controller('ticketController', function($scope, $location, $q, $anchorScroll, $sessionStorage, dashboardService, ticketService, generalUtility, ngClipboard) {
     
     var file1Upload, file2Upload, file3Upload, file4Upload, file5Upload;
 
     $anchorScroll();
 
     $scope.idUsuario = $sessionStorage.idUsuario;
+    $scope.idCliente = $sessionStorage.idCliente;
+    $scope.isAdmin = $sessionStorage.isAdmin;
+    $scope.nomeCliente = $sessionStorage.nomeCliente;
     $scope.logicalPathAnexos = $sessionStorage.logicalPathAnexos;
     $scope.messages = [];
 
@@ -12,7 +15,9 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
 
     $scope.mensagem = {};
     $scope.status = {};
-   
+    $scope.autor = {};
+    $scope.classificacao = {};
+
     $scope.uploadSuccess = false;
     $scope.uploadError = false;
     $scope.newMessageSuccess = false;
@@ -52,16 +57,28 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
 
     /** Função que altera o status do ticket */
     $scope.updateStatusTicket = function(idStatus) {
-        ticketService.updateStatusTicket($scope.idTicket, idStatus)
+        ticketService.updateStatusTicket($scope.idTicket, idStatus, $scope.autor.id, $sessionStorage.tipoUsuario)
             .then(function(response) {
-                $scope.mensagemAlerta = response.data.message;
-                showSuccessAlert();
+                $scope.mensagem = response.data.message;
+                generalUtility.showSuccessAlert();
                 getTicket();
             }).catch(function(error) {
-                $scope.mensagemAlerta = error.data.message;
-                showErrorAlert();
+                $scope.mensagem = "Ocorreu um erro ao atualizar o status do atendimento.";
+                generalUtility.showErrorAlert();
             });
     }   
+
+    $scope.updateClassificacao = function(idClassificacao) {
+        ticketService.updateClassificacao($scope.idTicket, idClassificacao, $scope.autor.id, $sessionStorage.tipoUsuario)
+        .then(function(response) {
+            $scope.mensagem = response.data.message;
+            generalUtility.showSuccessAlert();
+            getTicket();
+        }).catch(function(error) {
+            $scope.mensagem = "Ocorreu um erro ao atualizar a classificação do atendimento.";
+            generalUtility.showErrorAlert();
+        });
+    }
 
     /** Função que monta a dropdown de quantidade de anexos */
     $scope.getQtdes = function() {
@@ -161,37 +178,38 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
                     //então faz o insert dos dados da nova mensagem
                     let idTicket = $scope.idTicket;
                     let idUsuario = $scope.idUsuario;
-                    let tipoUsuario = $sessionStorage.tipoUsuario;
+                    let tipoUsuarioAgente = $sessionStorage.tipoUsuario;
                     let descricao = $scope.mensagem.descricao;
                     let interno = $scope.mensagem.interno;
                     //let idStatusTicket = $scope.mensagem.status;
                     let pathAnexos = $scope.pathAnexos;
 
-                    ticketService.saveNewMessage(idTicket, idUsuario, tipoUsuario, descricao, interno, pathAnexos)
+                    ticketService.saveNewMessage(idTicket, idUsuario, tipoUsuarioAgente, descricao, interno, pathAnexos)
                         .then(function(response) {
-                            $scope.mensagemAlerta = response.data.message;
+                            $scope.mensagem = response.data.message;
                             $scope.newMessageSuccess = true;
+                            getTicket();
                             getMessages();
-                            showSuccessAlert();
+                            generalUtility.showSuccessAlert();
                         })
                         .catch(function(error) {
-                            $scope.mensagemAlerta = error.data.message;
+                            $scope.mensagem = "Ocorreu um erro ao salvar mensagem";
                             $scope.newMessageError = true;
-                            showErrorAlert();
+                            generalUtility.showErrorAlert();
                         });
                 }
                 else {
-                    $scope.mensagemAlerta = "Erro no envio de um ou mais arquivos.";
+                    $scope.mensagem = "Erro no envio de um ou mais arquivos. Observar tamanho máximo de 5MB por arquivo.";
                     $scope.uploadSuccess = false;
                     $scope.uploadError = true;    
-                    showErrorAlert();
+                    generalUtility.showErrorAlert();
                 }
             })
             .catch(function (error) {
-                $scope.mensagemAlerta = "Erro no envio de um ou mais arquivos.";
+                $scope.mensagem = "Erro no envio de um ou mais arquivos. Observar tamanho máximo de 5MB por arquivo.";
                 $scope.uploadSuccess = false;
                 $scope.uploadError = true; 
-                showErrorAlert(); 
+                generalUtility.showErrorAlert(); 
         });
     }
     
@@ -204,7 +222,7 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
                 $scope.uploadError = false;
             })
             .catch(function(error) {
-                $scope.mensagemAlerta = "Erro no envio de anexo.";
+                $scope.mensagem = "Erro no envio de um ou mais arquivos. Observar tamanho máximo de 5MB por arquivo.";
                 $scope.uploadSuccess = false;
                 $scope.uploadError = true;
             }));
@@ -213,7 +231,6 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
     /** Watch que observa a escolha do template para alimentar o campo de conteudo com a opção escolhida */
     $scope.$watch("template.templateresposta", function() {
         if ($scope.template.templateresposta != undefined) {
-            //$scope.template = {};
             $scope.template.conteudo = $scope.template.templateresposta.conteudo;
         }
     });
@@ -222,30 +239,19 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
      *  INTERNAL FUNCTIONS
      */
 
-    /** Função que mostra alerta de sucesso */
-    var showSuccessAlert = function() {
-        $("#success-alert").fadeTo(5000, 500).slideUp(500, function(){
-            $("#success-alert").slideUp(500);
-        });
-    }
-
-    /** Função que mostra alerta de erro */
-    var showErrorAlert = function() {
-        $("#error-alert").fadeTo(5000, 500).slideUp(500, function(){
-            $("#error-alert").slideUp(500);
-        });
-    }
-
     /** Função busca os dados do atendimento original (ticket) */
     var getTicket = function() {
 
         ticketService.getTicket($scope.idTicket)
             .then(function(response) {
                 $scope.categoria = response.data.content.categoria.nome;
-                $scope.classificacao = response.data.content.classificacao.nome;
+                $scope.classificacao.id = response.data.content.classificacao.id;
+                $scope.classificacao.nome = response.data.content.classificacao.nome;
                 $scope.status.id = response.data.content.statusTicket.id;
                 $scope.status.nome = response.data.content.statusTicket.nome;
-                $scope.autor = response.data.content.usuarioCliente.nome + "( " + response.data.content.usuarioCliente.email + " )";
+                $scope.autor.id = response.data.content.usuarioCliente.id;
+                $scope.autor.nome = response.data.content.usuarioCliente.nome + " (" + response.data.content.usuarioCliente.email + ")";
+                $scope.autor.cliente = response.data.content.usuarioCliente.cliente.nome;
                 $scope.data = response.data.content.dataHoraInicial;
                 $scope.titulo = response.data.content.titulo;
                 $scope.descricao = response.data.content.descricao;
@@ -259,7 +265,7 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
     /** Função que recupera todas as mensagens associadas ao ticket */
     var getMessages = function() {
 
-        ticketService.getMessages($scope.idTicket)
+        ticketService.getMessages($scope.idTicket, $scope.idCliente)
             .then(function(response) {
                 $scope.messages = response.data.content;
             })

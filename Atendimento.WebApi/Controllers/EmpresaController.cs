@@ -32,17 +32,20 @@ namespace Atendimento.WebApi.Controllers
             _business = business;
         }
 
-        /// GET: api/Empresa
-        [Route("GetAll")]
+        /// <summary>
+        /// Recupera todas as empresas
+        /// </summary>
+        /// <returns></returns>
+        [Route(nameof(GetAll))]
         [HttpGet]
         public IHttpActionResult GetAll()
         {
             try
             {
                 //Mapeia os dados da fonte (source class) para o destino (destiny class)
-                IEnumerable<EmpresaResponse> lista = _business.GetAll().ToList().Select(Mapper.Map<Empresa, EmpresaResponse>);
+                var lista = _business.GetAll().ToList().Select(Mapper.Map<Empresa, EmpresaResponse>);
 
-                int totalRegistros = lista.Count();
+                var totalRegistros = lista.Count();
 
                 //Monta response
                 _result = Ok(Retorno<IEnumerable<EmpresaResponse>>.Criar(true, "Consulta Realizada Com Sucesso", lista, totalRegistros, totalRegistros));
@@ -56,8 +59,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// GET: api/Empresa/5
-        [Route("GetById")]
+        /// <summary>
+        /// Recupera uma empresa
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route(nameof(GetById))]
         [HttpGet]
         public IHttpActionResult GetById(int id)
         {
@@ -80,8 +87,41 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// POST: api/Empresa
-        [Route("Insert")]
+        /// <summary>
+        /// Recupera lista paginada de empresas
+        /// </summary>
+        /// <param name="advancedFilter"></param>
+        /// <returns></returns>
+        [Route(nameof(GetAllPaged))]
+        [HttpPost]
+        public IHttpActionResult GetAllPaged(FilterEmpresaRequest advancedFilter)
+        {
+            try
+            {
+                var result = _business.GetAllPaged(advancedFilter);
+
+                var lista = result.Empresas.ToList().Select(Mapper.Map<Empresa, EmpresaResponse>);
+                var totalGeral = result.TotalGeral;
+                var totalLinhas = lista.Count();
+
+                //Monta response
+                _result = Ok(Retorno<IEnumerable<EmpresaResponse>>.Criar(true, "Consulta Realizada Com Sucesso", lista, totalGeral));
+
+                //Retorna o response
+                return _result;
+            }
+            catch (Exception)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Insere empresa
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route(nameof(Insert))]
         [HttpPost]
         public IHttpActionResult Insert([FromBody]EmpresaRequest request)
         {
@@ -110,8 +150,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// POST: api/Empresa
-        [Route("InsertList")]
+        /// <summary>
+        /// Insere lista de empresas
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(InsertList))]
         [HttpPost]
         public IHttpActionResult InsertList(IEnumerable<EmpresaRequest> list)
         {
@@ -130,7 +174,7 @@ namespace Atendimento.WebApi.Controllers
                     entityList.Add(entity);
                 }
 
-                int rows = _business.Insert(entityList);
+                var rows = _business.Insert(entityList);
 
                 if (rows > 0)
                 {
@@ -149,8 +193,13 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// PUT: api/Empresa/5
-        [Route("Update")]
+        /// <summary>
+        /// Atualiza empresa
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route(nameof(Update))]
         [HttpPut]
         public IHttpActionResult Update(int id, [FromBody]EmpresaRequest request)
         {
@@ -160,7 +209,7 @@ namespace Atendimento.WebApi.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest("Dados inválidos.");
 
-                Empresa entityInDb = _business.GetById(id);
+                var entityInDb = _business.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -186,8 +235,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// PUT: api/Empresa/5
-        [Route("UpdateList")]
+        /// <summary>
+        /// Atualiza lista de empresas
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(UpdateList))]
         [HttpPut]
         public IHttpActionResult UpdateList(IEnumerable<EmpresaUpdate> list)
         {
@@ -201,7 +254,7 @@ namespace Atendimento.WebApi.Controllers
 
                 foreach (var item in list)
                 {
-                    Empresa entityInDb = _business.GetById(item.Id);
+                    var entityInDb = _business.GetById(item.Id);
 
                     //Verifica se objeto existe
                     if (entityInDb == null)
@@ -230,14 +283,18 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// DELETE: api/Empresa/5
-        [Route("Delete")]
+        /// <summary>
+        /// Deleta empresa
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route(nameof(Delete))]
         [HttpDelete]
         public IHttpActionResult Delete(int id)
         {
             try
             {
-                Empresa entityInDb = _business.GetById(id);
+                var entityInDb = _business.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -260,8 +317,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// DELETE: api/Empresa/5
-        [Route("DeleteList")]
+        /// <summary>
+        /// Deleta lista de empresas
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(DeleteList))]
         [HttpDelete]
         public IHttpActionResult DeleteList([FromBody]int[] list)
         {
@@ -273,7 +334,7 @@ namespace Atendimento.WebApi.Controllers
                 {
                     foreach (var id in list)
                     {
-                        Empresa entityInDb = _business.GetById(id);
+                        var entityInDb = _business.GetById(id);
 
                         //Verifica se objeto existe
                         if (entityInDb == null)

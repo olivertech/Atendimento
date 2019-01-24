@@ -24,6 +24,9 @@ namespace Atendimento.WebApi.Controllers
     public class TicketMensagemController : ApiController
     {
         private readonly ITicketMensagemBusiness _business;
+        private readonly ITicketBusiness _ticketBusiness;
+        private readonly IUsuarioClienteBusiness _usuarioClienteBusiness;
+        private readonly IAtendenteEmpresaBusiness _atendenteEmpresaBusiness;
         private readonly IAnexoBusiness _anexoBusiness;
         private IHttpActionResult _result;
 
@@ -31,24 +34,37 @@ namespace Atendimento.WebApi.Controllers
         /// Construtor
         /// </summary>
         /// <param name="business"></param>
+        /// <param name="usuarioClienteBusiness"></param>
+        /// <param name="atendenteEmpresaBusiness"></param>
+        /// <param name="ticketBusiness"></param>
+        /// <param name="anexoBusiness"></param>
         public TicketMensagemController(ITicketMensagemBusiness business,
+                                        IUsuarioClienteBusiness usuarioClienteBusiness,
+                                        IAtendenteEmpresaBusiness atendenteEmpresaBusiness,
+                                        ITicketBusiness ticketBusiness,
                                         IAnexoBusiness anexoBusiness)
         {
             _business = business;
+            _ticketBusiness = ticketBusiness;
+            _usuarioClienteBusiness = usuarioClienteBusiness;
+            _atendenteEmpresaBusiness = atendenteEmpresaBusiness;
             _anexoBusiness = anexoBusiness;
         }
 
-        /// GET: api/TicketMensagem
-        [Route("GetAll")]
+        /// <summary>
+        /// Recupera todas as mensagens
+        /// </summary>
+        /// <returns></returns>
+        [Route(nameof(GetAll))]
         [HttpGet]
         public IHttpActionResult GetAll()
         {
             try
             {
                 //Mapeia os dados da fonte (source class) para o destino (destiny class)
-                IEnumerable<TicketMensagemResponse> lista = _business.GetAll().ToList().Select(Mapper.Map<TicketMensagem, TicketMensagemResponse>);
+                var lista = _business.GetAll().ToList().Select(Mapper.Map<TicketMensagem, TicketMensagemResponse>);
 
-                int totalRegistros = lista.Count();
+                var totalRegistros = lista.Count();
 
                 //Monta response
                 _result = Ok(Retorno<IEnumerable<TicketMensagemResponse>>.Criar(true, "Consulta Realizada Com Sucesso", lista, totalRegistros, totalRegistros));
@@ -62,17 +78,21 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// GET: api/TicketMensagem
-        [Route("GetAllByTicketId")]
-        [HttpGet]
-        public IHttpActionResult GetAllByTicketId(int idTicket)
+        /// <summary>
+        /// Recupera todas as mensagens associada a um ticket
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route(nameof(GetAllByTicketId))]
+        [HttpPost]
+        public IHttpActionResult GetAllByTicketId(TicketMensagensRequest request)
         {
             try
             {
                 //Mapeia os dados da fonte (source class) para o destino (destiny class)
-                IEnumerable<TicketMensagemResponse> lista = _business.GetAllByTicketId(idTicket).ToList();
+                IEnumerable<TicketMensagemResponse> lista = _business.GetAllByTicketId(request).ToList();
 
-                int totalRegistros = lista.Count();
+                var totalRegistros = lista.Count();
 
                 //Monta response
                 _result = Ok(Retorno<IEnumerable<TicketMensagemResponse>>.Criar(true, "Consulta Realizada Com Sucesso", lista, totalRegistros, totalRegistros));
@@ -86,8 +106,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// GET: api/TicketMensagem/5
-        [Route("GetById")]
+        /// <summary>
+        /// Recupera uma mensagem
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route(nameof(GetById))]
         [HttpGet]
         public IHttpActionResult GetById(int id)
         {
@@ -110,11 +134,20 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// POST: api/TicketMensagem
-        [Route("Insert")]
+        /// <summary>
+        /// Insere mensagem
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route(nameof(Insert))]
         [HttpPost]
         public IHttpActionResult Insert([FromBody]TicketMensagemRequest request)
         {
+            UsuarioCliente usuarioCliente = null;
+            AtendenteEmpresa atendenteEmpresa = null;
+            Ticket ticket = null;
+            List<AtendenteEmpresa> listaAtendentes = null;
+
             try
             {
                 //Valida objeto
@@ -124,34 +157,56 @@ namespace Atendimento.WebApi.Controllers
                 var entity = Mapper.Map<TicketMensagemRequest, TicketMensagem>(request);
                 var pathAnexosUsuario = request.PathAnexos;
 
-                if (request.TipoUsuario == "Atendimento")
+                ticket = _ticketBusiness.GetById(request.IdTicket);
+
+                ticket.DataHoraAlteracao = DateTime.Now;
+                ticket.DataHoraUltimaMensagem = DateTime.Now;
+
+                //Se for uma mensagem interna enviada pelo suporte
+                if (request.UserType == "S" && request.Interno)
                 {
                     entity.IdAtendenteEmpresa = request.IdAutor;
+                    ticket.IdStatusTicket = 5; //Em Análise
                 }
                 else
                 {
-                    if (request.TipoUsuario == "Cliente")
+                    //Se for uma mensagem enviada pelo suporte
+                    if (request.UserType == "S" && !request.Interno)
                     {
-                        entity.IdUsuarioCliente = request.IdAutor;
+                        entity.IdAtendenteEmpresa = request.IdAutor;
+                        ticket.IdStatusTicket = 4; //Pendente com Cliente
+                    }
+                    else
+                    {
+                        //Se for uma mensagem enviada pelo usuário cliente
+                        if (request.UserType == "C")
+                        {
+                            entity.IdUsuarioCliente = request.IdAutor;
+                            ticket.IdStatusTicket = 1; //Aguardando Atendimento
+                        }
                     }
                 }
 
+                //Insere a nova mensagem
                 _business.Insert(ref entity);
 
                 if (entity.Id > 0)
                 {
+                    //Atualiza o status do ticket, para refletir o novo momento do atendimento
+                    _ticketBusiness.UpdateStatusTicket(ticket);
+
                     //Monta response
                     _result = Ok(Retorno<TicketMensagemResponse>.Criar(true, "Inclusão Realizada Com Sucesso", Mapper.Map<TicketMensagem, TicketMensagemResponse>(entity)));
 
                     if (Directory.Exists(pathAnexosUsuario))
                     {
                         //Zipa todos os anexos
-                        string zipName = Arquivo.Compress(ConfigurationManager.AppSettings["CaminhoFisicoAnexo"], pathAnexosUsuario, entity.Id);
+                        var zipName = Arquivo.Compress(ConfigurationManager.AppSettings["CaminhoFisicoAnexo"], pathAnexosUsuario, entity.Id);
 
                         //======================================
                         //Guarda anexo (zip) no banco de dados
                         //======================================
-                        Anexo anexo = new Anexo
+                        var anexo = new Anexo
                         {
                             IdTicketMensagem = entity.Id,
                             Nome = zipName
@@ -160,7 +215,54 @@ namespace Atendimento.WebApi.Controllers
                         _anexoBusiness.Insert(ref anexo);
                     }
 
-                    //PAREI AQUI !!! ENVIAR EMAIL PARA O CLIENTE ASSOCIADO AO TICKET. VER SE NO SISTEMA ATUAL, É ENVIADO EMAIL TB PRA ALTERAÇÃO DO STATUS DO TICKET
+                    //===========================================================================================
+                    //Enviar email de confirmação de nova mensagem
+                    //===========================================================================================
+
+                    var response = _ticketBusiness.GetByIdFilled(request.IdTicket, false);
+
+                    //Faz o mapeamento pontual aqui, para não precisar fazer um método especifico pra isso,
+                    //pois nem todas as propriedades da classe TicketResponse serão mapeadas para a classe Ticket
+                    ticket = Mapper.Map<TicketResponse, Ticket>(response,
+                                        opt => opt.ConfigureMap()
+                                            .ForMember(dest => dest.Categoria, m => m.MapFrom(src => src.Categoria))
+                                            .ForMember(dest => dest.Classificacao, m => m.MapFrom(src => src.Classificacao))
+                                            .ForMember(dest => dest.DataHoraAlteracao, m => m.MapFrom(src => src.DataHoraAlteracao))
+                                            .ForMember(dest => dest.DataHoraFinal, m => m.MapFrom(src => src.DataHoraFinal))
+                                            .ForMember(dest => dest.DataHoraInicial, m => m.MapFrom(src => src.DataHoraInicial))
+                                            .ForMember(dest => dest.DataHoraUltimaMensagem, m => m.MapFrom(src => src.DataHoraUltimaMensagem))
+                                            .ForMember(dest => dest.Descricao, m => m.MapFrom(src => src.Descricao))
+                                            .ForMember(dest => dest.Id, m => m.MapFrom(src => src.Id))
+                                            .ForMember(dest => dest.StatusTicket, m => m.MapFrom(src => src.StatusTicket))
+                                            .ForMember(dest => dest.Titulo, m => m.MapFrom(src => src.Titulo))
+                                            .ForMember(dest => dest.UsuarioCliente, m => m.MapFrom(src => src.UsuarioCliente))
+                                            //Abaixo a condição sempre será falsa, forçando ser desconsideradas as propriedades no mapeamento
+                                            .ForMember(dest => dest.IdCategoria, m => m.Ignore())
+                                            .ForMember(dest => dest.IdClassificacao, m => m.Ignore())
+                                            .ForMember(dest => dest.IdStatusTicket, m => m.Ignore())
+                                            .ForMember(dest => dest.IdUsuarioCliente, m => m.Ignore())
+                                        );
+
+                    ticket.UsuarioCliente = _usuarioClienteBusiness.GetById(ticket.UsuarioCliente.Id);
+
+                    if (request.UserType == "S")
+                    {
+                        atendenteEmpresa = _atendenteEmpresaBusiness.GetById(request.IdAutor);
+
+                        if (atendenteEmpresa.Copia)
+                        {
+                            listaAtendentes = _atendenteEmpresaBusiness.GetList(x => x.IdEmpresa == atendenteEmpresa.IdEmpresa && x.Id != atendenteEmpresa.Id).ToList();
+                        }
+                    }
+                    else
+                    {
+                        listaAtendentes = _atendenteEmpresaBusiness.GetAll(atendenteEmpresa.IdEmpresa).ToList();
+                    }
+
+                    if (request.UserType == "C") { usuarioCliente = _usuarioClienteBusiness.GetById(request.IdAutor); }
+
+                    _business.EnviarEmailConfirmacao(request, entity, ticket, atendenteEmpresa, usuarioCliente, listaAtendentes);
+                    //===========================================================================================
                 }
 
                 //Retorna o response
@@ -172,8 +274,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// POST: api/TicketMensagem
-        [Route("InsertList")]
+        /// <summary>
+        /// Insere lista de mensagens
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(InsertList))]
         [HttpPost]
         public IHttpActionResult InsertList(IEnumerable<TicketMensagemRequest> list)
         {
@@ -192,7 +298,7 @@ namespace Atendimento.WebApi.Controllers
                     entityList.Add(entity);
                 }
 
-                int rows = _business.Insert(entityList);
+                var rows = _business.Insert(entityList);
 
                 if (rows > 0)
                 {
@@ -211,8 +317,13 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// PUT: api/TicketMensagem/5
-        [Route("Update")]
+        /// <summary>
+        /// Atualiza mensagem
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route(nameof(Update))]
         [HttpPut]
         public IHttpActionResult Update(int id, [FromBody]TicketMensagemRequest request)
         {
@@ -222,7 +333,7 @@ namespace Atendimento.WebApi.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest("Dados inválidos.");
 
-                TicketMensagem entityInDb = _business.GetById(id);
+                var entityInDb = _business.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -248,8 +359,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// PUT: api/TicketMensagem/5
-        [Route("UpdateList")]
+        /// <summary>
+        /// Atualiza lista de mensagens
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(UpdateList))]
         [HttpPut]
         public IHttpActionResult UpdateList(IEnumerable<TicketMensagemUpdate> list)
         {
@@ -263,7 +378,7 @@ namespace Atendimento.WebApi.Controllers
 
                 foreach (var item in list)
                 {
-                    TicketMensagem entityInDb = _business.GetById(item.Id);
+                    var entityInDb = _business.GetById(item.Id);
 
                     //Verifica se objeto existe
                     if (entityInDb == null)
@@ -292,14 +407,18 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// DELETE: api/TicketMensagem/5
-        [Route("Delete")]
+        /// <summary>
+        /// Deleta mensagem
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route(nameof(Delete))]
         [HttpDelete]
         public IHttpActionResult Delete(int id)
         {
             try
             {
-                TicketMensagem entityInDb = _business.GetById(id);
+                var entityInDb = _business.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -322,8 +441,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// DELETE: api/TicketMensagem/5
-        [Route("DeleteList")]
+        /// <summary>
+        /// Deleta lista de mensagens
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(DeleteList))]
         [HttpDelete]
         public IHttpActionResult DeleteList([FromBody]int[] list)
         {
@@ -335,7 +458,7 @@ namespace Atendimento.WebApi.Controllers
                 {
                     foreach (var id in list)
                     {
-                        TicketMensagem entityInDb = _business.GetById(id);
+                        var entityInDb = _business.GetById(id);
 
                         //Verifica se objeto existe
                         if (entityInDb == null)

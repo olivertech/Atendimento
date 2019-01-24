@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Atendimento.Business.Interfaces.Interfaces;
 using Atendimento.Entities.Entities;
+using Atendimento.Entities.Requests;
+using Atendimento.Entities.Responses;
 using Atendimento.Repository.Interfaces.Interfaces;
 
 namespace Atendimento.Business.Classes
@@ -59,6 +61,26 @@ namespace Atendimento.Business.Classes
         public bool Delete(IEnumerable<AtendenteEmpresa> list)
         {
             return _repository.Delete(list);
+        }
+
+        public IEnumerable<AtendenteEmpresa> GetAll(int idEmpresa)
+        {
+            return _repository.GetAll(idEmpresa);
+        }
+
+        public AtendentesEmpresaResponse GetAllPaged(FilterAtendenteEmpresaRequest advancedFilter)
+        {
+            return _repository.GetAllPaged(advancedFilter);
+        }
+
+        public AtendenteEmpresa GetByUsernameAndPassword(string username, string password)
+        {
+            return _repository.GetByUsernameAndPassword(username, password);
+        }
+
+        public bool UpdatePassword(AtendenteEmpresa atendente)
+        {
+            return _repository.UpdatePassword(atendente);
         }
     }
 }

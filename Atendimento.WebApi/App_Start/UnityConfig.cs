@@ -21,6 +21,10 @@ namespace Atendimento.WebApi
         {
             var container = new UnityContainer();
 
+            //GENÉRICO - TODO : TENTAR MIGRAR TODAS AS CLASSES BUSINESS E REPOSITORY PARA CLASSES GENERICAS
+            //container.RegisterType(typeof(IBusiness<>), typeof(Business<>));
+            //container.RegisterType(typeof(IRepository<>), typeof(RepositoryBase<>));
+
             //LOGIN
             container.RegisterType<ILoginRepository, LoginRepository>();
             container.RegisterType<ILoginBusiness, LoginBusiness>();
@@ -36,10 +40,6 @@ namespace Atendimento.WebApi
             // STATUS TICKET
             container.RegisterType<IStatusTicketRepository, StatusTicketRepository>();
             container.RegisterType<IStatusTicketBusiness, StatusTicketBusiness>();
-
-            // GRUPO
-            container.RegisterType<IGrupoRepository, GrupoRepository>();
-            container.RegisterType<IGrupoBusiness, GrupoBusiness>();
 
             // EMPRESA
             container.RegisterType<IEmpresaRepository, EmpresaRepository>();
@@ -72,6 +72,8 @@ namespace Atendimento.WebApi
             // TEMPLATE RESPOSTA
             container.RegisterType<ITemplateRespostaRepository, TemplateRespostaRepository>();
             container.RegisterType<ITemplateRespostaBusiness, TemplateRespostaBusiness>();
+
+            //container.RegisterInstance(mapper);
 
             DependencyResolver.SetResolver(new Unity.Mvc5.UnityDependencyResolver(container));
             GlobalConfiguration.Configuration.DependencyResolver = new Unity.WebApi.UnityDependencyResolver(container);

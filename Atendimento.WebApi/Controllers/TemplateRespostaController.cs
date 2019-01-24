@@ -33,17 +33,20 @@ namespace Atendimento.WebApi.Controllers
             _business = business;
         }
 
-        /// GET: api/TemplateResposta
-        [Route("GetAll")]
+        /// <summary>
+        /// Recupera todos os templates
+        /// </summary>
+        /// <returns></returns>
+        [Route(nameof(GetAll))]
         [HttpGet]
         public IHttpActionResult GetAll()
         {
             try
             {
                 //Mapeia os dados da fonte (source class) para o destino (destiny class)
-                IEnumerable<TemplateRespostaResponse> lista = _business.GetAll().ToList().Select(Mapper.Map<TemplateResposta, TemplateRespostaResponse>);
+                var lista = _business.GetAll().ToList().Select(Mapper.Map<TemplateResposta, TemplateRespostaResponse>);
 
-                int totalRegistros = lista.Count();
+                var totalRegistros = lista.Count();
 
                 //Monta response
                 _result = Ok(Retorno<IEnumerable<TemplateRespostaResponse>>.Criar(true, "Consulta Realizada Com Sucesso", lista, totalRegistros, totalRegistros));
@@ -57,8 +60,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// GET: api/TemplateResposta/5
-        [Route("GetById")]
+        /// <summary>
+        /// Recupera um template
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route(nameof(GetById))]
         [HttpGet]
         public IHttpActionResult GetById(int id)
         {
@@ -81,8 +88,42 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// POST: api/TemplateResposta
-        [Route("Insert")]
+        /// <summary>
+        /// Recupera lista paginada de templates
+        /// </summary>
+        /// <param name="advancedFilter"></param>
+        /// <returns></returns>
+        [Route(nameof(GetAllPaged))]
+        [HttpPost]
+        //[AllowAnonymous]
+        public IHttpActionResult GetAllPaged(FilterTemplateRequest advancedFilter)
+        {
+            try
+            {
+                var result = _business.GetAllPaged(advancedFilter);
+
+                var lista = result.Templates.ToList().Select(Mapper.Map<TemplateResposta, TemplateRespostaResponse>);
+                var totalGeral = result.TotalGeral;
+                var totalLinhas = lista.Count();
+
+                //Monta response
+                _result = Ok(Retorno<IEnumerable<TemplateRespostaResponse>>.Criar(true, "Consulta Realizada Com Sucesso", lista, totalGeral));
+
+                //Retorna o response
+                return _result;
+            }
+            catch (Exception)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Insere template
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route(nameof(Insert))]
         [HttpPost]
         public IHttpActionResult Insert([FromBody]TemplateRespostaRequest request)
         {
@@ -111,8 +152,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// POST: api/TemplateResposta
-        [Route("InsertList")]
+        /// <summary>
+        /// Insere lista de templates
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(InsertList))]
         [HttpPost]
         public IHttpActionResult InsertList(IEnumerable<TemplateRespostaRequest> list)
         {
@@ -131,7 +176,7 @@ namespace Atendimento.WebApi.Controllers
                     entityList.Add(entity);
                 }
 
-                int rows = _business.Insert(entityList);
+                var rows = _business.Insert(entityList);
 
                 if (rows > 0)
                 {
@@ -150,8 +195,13 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// PUT: api/TemplateResposta/5
-        [Route("Update")]
+        /// <summary>
+        /// Atualiza template
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route(nameof(Update))]
         [HttpPut]
         public IHttpActionResult Update(int id, [FromBody]TemplateRespostaRequest request)
         {
@@ -161,7 +211,7 @@ namespace Atendimento.WebApi.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest("Dados inválidos.");
 
-                TemplateResposta entityInDb = _business.GetById(id);
+                var entityInDb = _business.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -187,8 +237,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// PUT: api/TemplateResposta/5
-        [Route("UpdateList")]
+        /// <summary>
+        /// Atualiza lista de templates
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(UpdateList))]
         [HttpPut]
         public IHttpActionResult UpdateList(IEnumerable<TemplateRespostaUpdate> list)
         {
@@ -202,7 +256,7 @@ namespace Atendimento.WebApi.Controllers
 
                 foreach (var item in list)
                 {
-                    TemplateResposta entityInDb = _business.GetById(item.Id);
+                    var entityInDb = _business.GetById(item.Id);
 
                     //Verifica se objeto existe
                     if (entityInDb == null)
@@ -231,14 +285,18 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// DELETE: api/TemplateResposta/5
-        [Route("Delete")]
+        /// <summary>
+        /// Deleta template
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route(nameof(Delete))]
         [HttpDelete]
         public IHttpActionResult Delete(int id)
         {
             try
             {
-                TemplateResposta entityInDb = _business.GetById(id);
+                var entityInDb = _business.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -261,8 +319,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// DELETE: api/TemplateResposta/5
-        [Route("DeleteList")]
+        /// <summary>
+        /// Deleta lista de templates
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(DeleteList))]
         [HttpDelete]
         public IHttpActionResult DeleteList([FromBody]int[] list)
         {
@@ -274,7 +336,7 @@ namespace Atendimento.WebApi.Controllers
                 {
                     foreach (var id in list)
                     {
-                        TemplateResposta entityInDb = _business.GetById(id);
+                        var entityInDb = _business.GetById(id);
 
                         //Verifica se objeto existe
                         if (entityInDb == null)

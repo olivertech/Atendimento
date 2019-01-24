@@ -7,7 +7,11 @@
   <ItemGroup>
     <Compile Remove="Entities\AnexoTicket.cs" />
     <Compile Remove="Entities\AnexoTicketMensagem.cs" />
+    <Compile Remove="Entities\Grupo.cs" />
+    <Compile Remove="Requests\GrupoRequest.cs" />
+    <Compile Remove="Requests\GrupoUpdate.cs" />
     <Compile Remove="Requests\TicketInsert.cs" />
+    <Compile Remove="Responses\GrupoResponse.cs" />
   </ItemGroup>
 
   <ItemGroup>

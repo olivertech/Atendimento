@@ -15,10 +15,11 @@
             }
         }
 
-        public string Logomarca { get; set; }
         public string Site { get; set; }
-        public string Facebook { get; set; }
-        public string Twitter { get; set; }
-        public string Instagram { get; set; }
+        public string Background { get; set; }
+        public string LogomarcaGrande { get; set; }
+        public string LogomarcaPequena { get; set; }
+        public string Favicon { get; set; }
+        public string EmailHeader { get; set; }
     }
 }

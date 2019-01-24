@@ -32,17 +32,20 @@ namespace Atendimento.WebApi.Controllers
             _business = business;
         }
 
-        /// GET: api/UsuarioCliente
-        [Route("GetAll")]
+        /// <summary>
+        /// Recupera todos os usuarios de cliente
+        /// </summary>
+        /// <returns></returns>
+        [Route(nameof(GetAll))]
         [HttpGet]
         public IHttpActionResult GetAll()
         {
             try
             {
                 //Mapeia os dados da fonte (source class) para o destino (destiny class)
-                IEnumerable<UsuarioClienteResponse> lista = _business.GetAll().ToList().Select(Mapper.Map<UsuarioCliente, UsuarioClienteResponse>);
+                var lista = _business.GetAll().ToList().Select(Mapper.Map<UsuarioCliente, UsuarioClienteResponse>);
 
-                int totalRegistros = lista.Count();
+                var totalRegistros = lista.Count();
 
                 //Monta response
                 _result = Ok(Retorno<IEnumerable<UsuarioClienteResponse>>.Criar(true, "Consulta Realizada Com Sucesso", lista, totalRegistros, totalRegistros));
@@ -56,16 +59,20 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// GET: api/UsuarioCliente/5
-        [Route("GetAllById")]
+        /// <summary>
+        /// Recupera todos os usuarios associados a um terminado cliente
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <returns></returns>
+        [Route(nameof(GetAllById))]
         [HttpGet]
         public IHttpActionResult GetAllById(int idCliente)
         {
             try
             {
-                IEnumerable<UsuarioClienteResponse> lista = _business.GetAllById(idCliente).ToList().Select(Mapper.Map<UsuarioCliente, UsuarioClienteResponse>);
+                var lista = _business.GetAllById(idCliente).ToList().Select(Mapper.Map<UsuarioCliente, UsuarioClienteResponse>);
 
-                int totalRegistros = lista.Count();
+                var totalRegistros = lista.Count();
 
                 //Monta response
                 _result = Ok(Retorno<IEnumerable<UsuarioClienteResponse>>.Criar(true, "Consulta Realizada Com Sucesso", lista, totalRegistros, totalRegistros));
@@ -79,8 +86,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// GET: api/UsuarioCliente/5
-        [Route("GetById")]
+        /// <summary>
+        /// Recupera um usuario do cliente
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route(nameof(GetById))]
         [HttpGet]
         public IHttpActionResult GetById(int id)
         {
@@ -103,8 +114,68 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// POST: api/UsuarioCliente
-        [Route("Insert")]
+        /// <summary>
+        /// Recupera total de tickets
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <returns></returns>
+        [Route(nameof(GetCount))]
+        [HttpGet]
+        //[AllowAnonymous]
+        public IHttpActionResult GetCount(int idCliente)
+        {
+            try
+            {
+                //Recupera o total de registros de usuarios associados ao cliente
+                var total = _business.GetCount(idCliente);
+
+                //Monta response
+                _result = Ok(Retorno<int>.Criar(true, "Consulta Realizada Com Sucesso", total));
+
+                //Retorna o response
+                return _result;
+            }
+            catch (Exception)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Recupera lista paginada de usuarios
+        /// </summary>
+        /// <param name="advancedFilter"></param>
+        /// <returns></returns>
+        [Route(nameof(GetAllPaged))]
+        [HttpPost]
+        public IHttpActionResult GetAllPaged(FilterUsuarioRequest advancedFilter)
+        {
+            try
+            {
+                var result = _business.GetAllPaged(advancedFilter);
+
+                var lista = result.Usuarios.ToList().Select(Mapper.Map<UsuarioCliente, UsuarioClienteResponse>);
+                var totalGeral = result.TotalGeral;
+                var totalLinhas = lista.Count();
+
+                //Monta response
+                _result = Ok(Retorno<IEnumerable<UsuarioClienteResponse>>.Criar(true, "Consulta Realizada Com Sucesso", lista, totalGeral));
+
+                //Retorna o response
+                return _result;
+            }
+            catch (Exception)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Insere usuario do cliente
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route(nameof(Insert))]
         [HttpPost]
         public IHttpActionResult Insert([FromBody]UsuarioClienteRequest request)
         {
@@ -133,8 +204,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// POST: api/UsuarioCliente
-        [Route("InsertList")]
+        /// <summary>
+        /// Insere lista de usuarios do cliente
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(InsertList))]
         [HttpPost]
         public IHttpActionResult InsertList(IEnumerable<UsuarioClienteRequest> list)
         {
@@ -153,7 +228,7 @@ namespace Atendimento.WebApi.Controllers
                     entityList.Add(entity);
                 }
 
-                int rows = _business.Insert(entityList);
+                var rows = _business.Insert(entityList);
 
                 if (rows > 0)
                 {
@@ -172,8 +247,13 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// PUT: api/UsuarioCliente/5
-        [Route("Update")]
+        /// <summary>
+        /// Atualiza usuario do cliente
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route(nameof(Update))]
         [HttpPut]
         public IHttpActionResult Update(int id, [FromBody]UsuarioClienteRequest request)
         {
@@ -183,7 +263,7 @@ namespace Atendimento.WebApi.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest("Dados inválidos.");
 
-                UsuarioCliente entityInDb = _business.GetById(id);
+                var entityInDb = _business.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -209,12 +289,16 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// PUT: api/UsuarioCliente/5
-        [Route("UpdateList")]
+        /// <summary>
+        /// Atualiza lista de usuarios do cliente
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(UpdateList))]
         [HttpPut]
         public IHttpActionResult UpdateList(IEnumerable<UsuarioClienteUpdate> list)
         {
-            IList<UsuarioCliente> entityList = new List<UsuarioCliente>();
+            var entityList = new List<UsuarioCliente>();
 
             try
             {
@@ -224,7 +308,7 @@ namespace Atendimento.WebApi.Controllers
 
                 foreach (var item in list)
                 {
-                    UsuarioCliente entityInDb = _business.GetById(item.Id);
+                    var entityInDb = _business.GetById(item.Id);
 
                     //Verifica se objeto existe
                     if (entityInDb == null)
@@ -253,14 +337,18 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// DELETE: api/UsuarioCliente/5
-        [Route("Delete")]
+        /// <summary>
+        /// deleta usuario do cliente
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route(nameof(Delete))]
         [HttpDelete]
         public IHttpActionResult Delete(int id)
         {
             try
             {
-                UsuarioCliente entityInDb = _business.GetById(id);
+                var entityInDb = _business.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -283,8 +371,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// DELETE: api/UsuarioCliente/5
-        [Route("DeleteList")]
+        /// <summary>
+        /// Deleta lista de usuarios do cliente
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(DeleteList))]
         [HttpDelete]
         public IHttpActionResult DeleteList([FromBody]int[] list)
         {
@@ -296,7 +388,7 @@ namespace Atendimento.WebApi.Controllers
                 {
                     foreach (var id in list)
                     {
-                        UsuarioCliente entityInDb = _business.GetById(id);
+                        var entityInDb = _business.GetById(id);
 
                         //Verifica se objeto existe
                         if (entityInDb == null)

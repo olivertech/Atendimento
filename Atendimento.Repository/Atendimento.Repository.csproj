@@ -13,10 +13,12 @@
   <ItemGroup>
     <Compile Remove="Mapping\AnexoTicketMapping.cs" />
     <Compile Remove="Mapping\AnexoTicketMensagemMapping.cs" />
+    <Compile Remove="Mapping\GrupoMapping.cs" />
     <Compile Remove="Repositories\AnexoTicketRepository.cs" />
     <Compile Remove="Repositories\BaseEntityRepository.cs" />
     <Compile Remove="Repositories\Base\DapperRepositoryBase.cs" />
     <Compile Remove="Repositories\Base\RepositoryBaseOLD.cs" />
+    <Compile Remove="Repositories\GrupoRepository.cs" />
     <Compile Remove="Repositories\TicketRepositoryOLD.cs" />
   </ItemGroup>
 

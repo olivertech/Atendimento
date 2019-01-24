@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Atendimento.Business.Interfaces.Interfaces;
 using Atendimento.Entities.Entities;
+using Atendimento.Entities.Requests;
 using Atendimento.Entities.Responses;
 using Atendimento.Repository.Interfaces.Interfaces;
 
@@ -62,9 +63,40 @@ namespace Atendimento.Business.Classes
             return _repository.Delete(list);
         }
 
-        public IEnumerable<TicketMensagemResponse> GetAllByTicketId(int idTicket)
+        public IEnumerable<TicketMensagemResponse> GetAllByTicketId(TicketMensagensRequest request)
         {
-            return _repository.GetAllByTicketId(idTicket);
+            return _repository.GetAllByTicketId(request);
+        }
+
+        public void EnviarEmailConfirmacao(TicketMensagemRequest request, 
+                                           TicketMensagem ticketMensagem, 
+                                           Ticket ticket, 
+                                           AtendenteEmpresa atendenteEmpresa, 
+                                           UsuarioCliente usuarioCliente, 
+                                           List<AtendenteEmpresa> listaAtendentes)
+        {
+            //Se for mensagem enviada pelo atendimento (suporte) e interno
+            if (request.UserType == "S" && request.Interno)
+            {
+                //Se for nova mensagem interna criada pelo suporte
+                Emailer.EnviarEmailInterno(ticket, ticketMensagem, atendenteEmpresa, listaAtendentes);
+            }
+            else
+            {
+                if(request.UserType == "S" && !request.Interno)
+                {
+                    //Se for nova mensagem (não interna) criada pelo suporte
+                    Emailer.EnviarEmailNovaMensagemCliente(ticket, ticketMensagem);
+                }
+                else
+                {
+                    if (request.UserType == "C")
+                    {
+                        //Se for nova mensagem criada pelo cliente
+                        Emailer.EnviarEmailNovaMensagemSuporte(ticket, ticketMensagem, usuarioCliente, listaAtendentes);
+                    }
+                }
+            }
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Atendimento.Repository.Mapping
         public ClassificacaoMapping()
         {
             ToTable("Classificacao");
-            Map(m => m.Id).ToColumn("id").IsKey().IsIdentity();
+            Map(m => m.Id).ToColumn("id_classificacao").IsKey().IsIdentity(); //manter id_classificacao em funcao dos joins
             Map(m => m.Nome).ToColumn("nome");
         }
     }

@@ -18,9 +18,12 @@
             <!-- Bread crumb and right sidebar toggle -->
             <!-- ============================================================== -->
             <div class="row page-titles">
-                <div class="col-md-5 align-self-center">
-                    <h4 class="text-themecolor">Dashboard De Atendimentos</h4>
+                <div class="col-md-5 align-self-center" ng-if="idCliente == 0">
+                    <h4 class="text-themecolor">Dashboard De Atendimentos - Suporte</h4>
                 </div>
+                <div class="col-md-5 align-self-center" ng-if="idCliente != 0">
+                    <h4 class="text-themecolor">Dashboard De Atendimentos - {{nomeCliente}}</h4>
+                </div>                
                 <div class="col-md-7 align-self-center text-right">
                     <div class="d-flex justify-content-end align-items-center">
                         <ol class="breadcrumb">
@@ -64,39 +67,39 @@
                             <div class="row">
                                 <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 m-t-10 text-center">
                                     <!-- Botões -->
-                                    <button type="button" class="btn btn-warning" ng-click="updateTicketList()"><i class="fas fa-sync-alt"></i> Atualiza Lista</button>
-                                    <button type="button" class="btn btn-info" ng-click="initModalNewSupport()" data-toggle="modal" data-target="#add-atendimento"><i class="fas fa-plus"></i> Novo Atendimento</button>
-                                    <button type="button" class="btn btn-cyan" ng-click="initModalFilter()" data-toggle="modal" data-target="#add-filtro"><i class="fas fa-filter"></i> Filtros Avançados</button>
+                                    <button type="button" class="btn btn-warning waves-effect" ng-click="updateTicketList()"><i class="fas fa-sync-alt"></i> Atualiza Lista</button>
+                                    <button type="button" class="btn btn-cyan waves-effect" ng-click="initModalFilter()" data-toggle="modal" data-target="#add-filtro"><i class="fas fa-filter"></i> Filtros Avançados</button>
+                                    <button type="button" class="btn btn-info waves-effect" ng-click="initModalNewSupport()" data-toggle="modal" data-target="#add-atendimento" ng-if="isAdmin"><i class="fas fa-plus"></i> Novo Atendimento</button>
                                 </div>
                                 <!-- filtros -->
                                 <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 text-center m-t-20">
                                     <div class="custom-control custom-radio custom-control-inline">
                                         <input type="radio" id="todos" name="status" class="custom-control-input" value="0" ng-model="idsStatusTicket" ng-click="updateListByStatus('0')">
-                                        <label class="custom-control-label" for="todos" style="font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalAtendimentos}} atendimentos">Todos</label>
+                                        <label class="custom-control-label custom-radio-pointer" for="todos" style="font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalAtendimentos}} atendimentos">Todos</label>
                                     </div>
                                     <div class="custom-control custom-radio custom-control-inline">
                                         <input type="radio" id="emaberto" name="status" class="custom-control-input" value="1,4,5" ng-model="idsStatusTicket" ng-click="updateListByStatus('1,4,5')">
-                                        <label class="custom-control-label" for="emaberto" style="font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalEmAberto}} atendimentos">Em Aberto</label>
+                                        <label class="custom-control-label custom-radio-pointer" for="emaberto" style="font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalEmAberto}} atendimentos">Em Aberto</label>
                                     </div>
                                     <div class="custom-control custom-radio custom-control-inline">
                                         <input type="radio" id="aguardando" name="status" class="custom-control-input" value="1" ng-model="idsStatusTicket" ng-click="updateListByStatus('1')">
-                                        <label class="custom-control-label" for="aguardando" style="color: #008f6c; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalAguardando}} atendimentos">Aguardando Atendimento</label>
+                                        <label class="custom-control-label custom-radio-pointer" for="aguardando" style="color: #008f6c; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalAguardando}} atendimentos">Aguardando Atendimento</label>
                                     </div>
                                     <div class="custom-control custom-radio custom-control-inline">
                                         <input type="radio" id="pendente" name="status" class="custom-control-input" value="4" ng-model="idsStatusTicket" ng-click="updateListByStatus('4')">
-                                        <label class="custom-control-label" for="pendente" style="color: #fb9678; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalPendente}} atendimentos">Pendente com Cliente</label>
+                                        <label class="custom-control-label custom-radio-pointer" for="pendente" style="color: #fb9678; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalPendente}} atendimentos">Pendente com Cliente</label>
                                     </div>
                                     <div class="custom-control custom-radio custom-control-inline">
                                         <input type="radio" id="emanalise" name="status" class="custom-control-input" value="5" ng-model="idsStatusTicket" ng-click="updateListByStatus('5')">
-                                        <label class="custom-control-label" for="emanalise" style="color: #ab8ce4; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalEmAnalise}} atendimentos">Em Análise</label>
+                                        <label class="custom-control-label custom-radio-pointer" for="emanalise" style="color: #ab8ce4; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalEmAnalise}} atendimentos">Em Análise</label>
                                     </div>
                                     <div class="custom-control custom-radio custom-control-inline">
                                         <input type="radio" id="concluido" name="status" class="custom-control-input" value="2" ng-model="idsStatusTicket" ng-click="updateListByStatus('2')">
-                                        <label class="custom-control-label" for="concluido" style="color: #d19e01; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalConcluido}} atendimentos">Concluído</label>
+                                        <label class="custom-control-label custom-radio-pointer" for="concluido" style="color: #d19e01; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalConcluido}} atendimentos">Concluído</label>
                                     </div>
                                     <div class="custom-control custom-radio custom-control-inline">
                                         <input type="radio" id="cancelado" name="status" class="custom-control-input" value="3" ng-model="idsStatusTicket" ng-click="updateListByStatus('3')">
-                                        <label class="custom-control-label" for="cancelado" style="color: darkslategrey; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalCancelado}} atendimentos">Cancelado</label>
+                                        <label class="custom-control-label custom-radio-pointer" for="cancelado" style="color: darkslategrey; font-weight: 400" data-toggle="tooltip" data-placement="top" title="Total de {{totalCancelado}} atendimentos">Cancelado</label>
                                     </div>
                                 </div>
                             </div>
@@ -108,21 +111,21 @@
                                             <!-- Paginação -->
                                             <ul class="pagination">
                                                 <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
-                                                    <a class="page-link" ng-click="setPage(1)">Primeiro</a>
+                                                    <a class="page-link" ng-click="getPage(1,orderBy,direction)">Primeiro</a>
                                                 </li>
                                                 <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
-                                                    <a class="page-link" ng-click="setPage(pagination.currentPage - 1)"><i class="fas fa-chevron-left"></i></a>
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage - 1,orderBy,direction)"><i class="fas fa-chevron-left"></i></a>
                                                 </li>
     
                                                 <li class="page-item" ng-repeat="page in pagination.pages track by $index" ng-class="{active:pagination.currentPage === page}">
-                                                    <a class="page-link" ng-click="setPage(page)">{{page}}</a>
+                                                    <a class="page-link" ng-click="getPage(page,orderBy,direction)">{{page}}</a>
                                                 </li>
                                                 
                                                 <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
-                                                    <a class="page-link" ng-click="setPage(pagination.currentPage + 1)"><i class="fas fa-chevron-right"></i></a>
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage + 1,orderBy,direction)"><i class="fas fa-chevron-right"></i></a>
                                                 </li>
                                                 <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
-                                                    <a class="page-link" ng-click="setPage(pagination.totalPages)">Último</a>
+                                                    <a class="page-link" ng-click="getPage(pagination.totalPages,orderBy,direction)">Último</a>
                                                 </li>
                                             </ul>
                                         </nav>
@@ -147,10 +150,11 @@
                                 <table id="tickets" class="table m-t-20 table-hover no-wrap contact-list table-striped" ng-if="tickets.length > 0">
                                     <thead>
                                         <tr>
+                                            <th><i class="fas fa-exclamation-triangle" title="Classificação do Atendimento"></i></th>
                                             <th>#</th>
-                                            <th>Ticket #</th>
+                                            <th><a href="" ng-click="ordenarPor('id')">Ticket #</a></th>
+                                            <th><a href="" ng-click="ordenarPor('titulo')">Assunto</a></th>
                                             <th>Usuário</th>
-                                            <th>Assunto</th>
                                             <th>Status</th>
                                             <th>Categoria</th>
                                             <th>Data</th>
@@ -158,10 +162,15 @@
                                     </thead>
                                     <tbody>
                                         <tr ng-repeat="ticket in tickets track by ticket.id" ng-click="showTicket(ticket.id)" style="cursor: pointer;">
+                                            <td>
+                                                <i class="fas fa-chevron-circle-down fa-lg" style="color: #03a9f3" ng-if="ticket.classificacao.id == 1" title="Prioridade Baixa"></i>
+                                                <i class="fas fa-minus-circle fa-lg" style="color: #008f6c" ng-if="ticket.classificacao.id == 2" title="Prioridade Média"></i>
+                                                <i class="fas fa-chevron-circle-up fa-lg" style="color: #fb9678" ng-if="ticket.classificacao.id == 3" title="Prioridade Alta"></i>
+                                            </td>
                                             <td>{{pagination.startIndex + $index + 1}}</td>
                                             <td>{{ticket.id}}</td>
-                                            <td>{{ticket.usuarioCliente.nome}}</td>
                                             <td>{{ticket.titulo}}</td>
+                                            <td>{{ticket.usuarioCliente.nome}}</td>
                                             <td ng-switch on="ticket.statusTicket.id">
                                                 <span class="label label-status label-success" ng-switch-when="1">{{ticket.statusTicket.nome}}</span>
                                                 <span class="label label-status label-warning" ng-switch-when="2">{{ticket.statusTicket.nome}}</span>
@@ -181,21 +190,21 @@
                                             <!-- Paginação -->
                                             <ul class="pagination">
                                                 <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
-                                                    <a class="page-link" ng-click="setPage(1)">Primeiro</a>
+                                                    <a class="page-link" ng-click="getPage(1,orderBy,direction)">Primeiro</a>
                                                 </li>
                                                 <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
-                                                    <a class="page-link" ng-click="setPage(pagination.currentPage - 1)"><i class="fas fa-chevron-left"></i></a>
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage - 1,orderBy,direction)"><i class="fas fa-chevron-left"></i></a>
                                                 </li>
 
                                                 <li class="page-item" ng-repeat="page in pagination.pages track by $index" ng-class="{active:pagination.currentPage === page}">
-                                                    <a class="page-link" ng-click="setPage(page)">{{page}}</a>
+                                                    <a class="page-link" ng-click="getPage(page,orderBy,direction)">{{page}}</a>
                                                 </li>
                                                 
                                                 <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
-                                                    <a class="page-link" ng-click="setPage(pagination.currentPage + 1)"><i class="fas fa-chevron-right"></i></a>
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage + 1,orderBy,direction)"><i class="fas fa-chevron-right"></i></a>
                                                 </li>
                                                 <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
-                                                    <a class="page-link" ng-click="setPage(pagination.totalPages)">Último</a>
+                                                    <a class="page-link" ng-click="getPage(pagination.totalPages,orderBy,direction)">Último</a>
                                                 </li>
                                             </ul>
                                         </nav>
@@ -229,7 +238,7 @@
                         <div class="modal-body">
                             <form class="form-horizontal form-material" name="novoAtendimentoForm">
                                 <div class="form-group">
-                                    <div class="form-group row">
+                                    <div class="form-group row" ng-if="idCliente == 0">
                                         <label for="ticket" class="col-sm-3 col-form-label"><strong>Cliente</strong></label>
                                         <div class="col-sm-9">
                                             <select class="form-control"
@@ -242,7 +251,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="form-group row">
+                                    <div class="form-group row" ng-if="idCliente == 0">
                                         <label for="ticket" class="col-sm-3 col-form-label"><strong>Usuário</strong></label>
                                         <div class="col-sm-9">
                                             <select class="form-control"
@@ -448,8 +457,14 @@
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" id="submit" ng-click="saveNewTicket();" class="btn btn-info waves-effect" data-dismiss="modal" ng-disabled="novoAtendimentoForm.$invalid">Salvar</button>
-                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cancelar</button>
+                            <div class="row">
+                                <div class="col-3">
+                                </div>
+                                <div class="col-9 text-right">
+                                    <button type="button" id="submit" ng-click="saveNewTicket();" class="btn btn-info waves-effect" data-dismiss="modal" ng-disabled="novoAtendimentoForm.$invalid"><i class="fas fa-check"></i> Salvar</button>
+                                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal"><i class="fas fa-ban"></i> Cancelar</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -539,21 +554,13 @@
             </div>
             <!-- ============================================================== -->
             <!-- End Modal Filtro  -->
-            <!-- ============================================================== -->
+            <!-- ============================================================== -->       
         </div>
     </div>
     <!-- ============================================================== -->
     <!-- End Page wrapper  -->
     <!-- ============================================================== -->
-    <!-- ============================================================== -->
-    <!-- footer -->
-    <!-- ============================================================== -->
-    <footer class="footer">
-        © 2018 Sistema de Atendimento by Algorix Sistemas de Informática
-    </footer>
-    <!-- ============================================================== -->
-    <!-- End footer -->
-    <!-- ============================================================== -->
+    <app-footer></app-footer>
 </div>
 <!-- ============================================================== -->
 <!-- End Wrapper -->

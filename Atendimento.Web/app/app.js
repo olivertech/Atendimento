@@ -1,4 +1,4 @@
-var app = angular.module('atendimento', ["ngMessages", "ngStorage", "ngCookies", "ngAnimate", "ui.router", "angular-loading-bar", "ngFileUpload", "ngClipboard"]);
+var app = angular.module('atendimento', ["utilityModule", "ngMessages", "ngStorage", "ngCookies", "ngAnimate", "ui.router", "angular-loading-bar", "ngFileUpload", "ngClipboard", "ngMask"]);
 
 /** 
  * Código que é executado assim que a aplicação angular levanta.

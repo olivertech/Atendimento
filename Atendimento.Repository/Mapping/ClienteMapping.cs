@@ -9,10 +9,12 @@ namespace Atendimento.Repository.Mapping
         {
             ToTable("Cliente");
             Map(m => m.Id).ToColumn("id").IsKey().IsIdentity();
+            Map(m => m.IdEmpresa).ToColumn("id_empresa");
             Map(m => m.Nome).ToColumn("nome");
             Map(m => m.Cnpj).ToColumn("cnpj");
             Map(m => m.Email).ToColumn("email");
-            Map(m => m.Telefone).ToColumn("telefone");
+            Map(m => m.TelefoneFixo).ToColumn("telefone_fixo");
+            Map(m => m.TelefoneCelular).ToColumn("telefone_celular");
             Map(m => m.Endereco.Logradouro).ToColumn("logradouro");
             Map(m => m.Endereco.NumeroLogradouro).ToColumn("numero_logradouro");
             Map(m => m.Endereco.ComplementoLogradouro).ToColumn("complemento_logradouro");
@@ -20,10 +22,9 @@ namespace Atendimento.Repository.Mapping
             Map(m => m.Endereco.Cidade).ToColumn("cidade");
             Map(m => m.Endereco.Bairro).ToColumn("bairro");
             Map(m => m.Endereco.Cep).ToColumn("cep");
-            Map(m => m.Endereco.Latitude).ToColumn("latitude");
-            Map(m => m.Endereco.Longitude).ToColumn("longitude");
             Map(m => m.Descricao).ToColumn("descricao");
             Map(m => m.Ativo).ToColumn("ativo");
+            Map(m => m.Empresa).Ignore();
         }
     }
 }

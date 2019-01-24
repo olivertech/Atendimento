@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Atendimento.Business.Interfaces.Interfaces;
 using Atendimento.Entities.Entities;
+using Atendimento.Entities.Requests;
+using Atendimento.Entities.Responses;
 using Atendimento.Repository.Interfaces.Interfaces;
 
 namespace Atendimento.Business.Classes
@@ -64,6 +66,26 @@ namespace Atendimento.Business.Classes
         public IEnumerable<UsuarioCliente> GetAllById(int idCliente)
         {
             return _repository.GetAllById(idCliente);
+        }
+
+        public UsuarioCliente GetByUsernameAndPassword(string username, string password)
+        {
+            return _repository.GetByUsernameAndPassword(username, password);
+        }
+
+        public bool UpdatePassword(UsuarioCliente usuarioCliente)
+        {
+            return _repository.UpdatePassword(usuarioCliente);
+        }
+
+        public int GetCount(int idCliente)
+        {
+            return _repository.GetCount(idCliente);
+        }
+
+        public UsuariosClienteResponse GetAllPaged(FilterUsuarioRequest advancedFilter)
+        {
+            return _repository.GetAllPaged(advancedFilter);
         }
     }
 }

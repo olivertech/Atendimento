@@ -17,7 +17,6 @@ namespace Atendimento.WebApi.Mappers
             CreateMap<Categoria, CategoriaResponse>();
             CreateMap<Classificacao, ClassificacaoResponse>();
             CreateMap<StatusTicket, StatusTicketResponse>();
-            CreateMap<Grupo, GrupoResponse>();
             CreateMap<Empresa, EmpresaResponse>();
             CreateMap<AtendenteEmpresa, AtendenteEmpresaResponse>();
             CreateMap<Cliente, ClienteResponse>();

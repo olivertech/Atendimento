@@ -23,15 +23,16 @@ namespace Atendimento.Entities.Requests
         [StringLength(100)]
         public string Email { get; set; }
 
+        [StringLength(14)]
+        public string TelefoneFixo { get; set; }
+
         [StringLength(15)]
-        public string Telefone { get; set; }
+        public string TelefoneCelular { get; set; }
 
         public bool Ativo { get; set; }
 
         public bool Copia { get; set; }
 
         public bool Provisorio { get; set; }
-
-        public bool IsAdmin { get; set; }
     }
 }

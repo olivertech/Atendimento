@@ -45,11 +45,11 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
             url: '/dashboard',
             templateUrl: 'app/views/dashboard.html',
             cache: false,
-            controller: "dashboardController"
+            controller: 'dashboardController'
         })
 
-        .state('ticket', {
-            url: '/ticket/:idTicket',
+        .state('tickets', {
+            url: '/tickets/:idTicket',
             templateUrl: 'app/views/ticket.html',
             cache: false,
             controller: function($scope, $stateParams) {
@@ -58,18 +58,53 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
               }
         })
 
+        .state('templates', {
+            url: '/templates',
+            templateUrl: 'app/views/templates.html',
+            cache: false,
+            controller: 'templateController'
+        })
+
+        .state('empresas', {
+            url: '/empresas',
+            templateUrl: 'app/views/empresa.html',
+            cache: false,
+            controller: 'empresaController'
+        })
+
+        .state('atendentes', {
+            url: '/atendentes',
+            templateUrl: 'app/views/atendenteEmpresa.html',
+            cache: false,
+            controller: 'atendenteEmpresaController'
+        })
+
+        .state('clientes', {
+            url: '/clientes',
+            templateUrl: 'app/views/cliente.html',
+            cache: false,
+            controller: 'clienteController'
+        })
+
+        .state('usuarios', {
+            url: '/usuarios',
+            templateUrl: 'app/views/usuarioCliente.html',
+            cache: false,
+            controller: 'usuarioController'
+        })
+
         .state('error', {
             url: '/error',
             cache: false,
             templateUrl: 'app/views/error.html',
-            controller: "errorController"
+            controller: 'errorController'
         })
 
         .state('authorizederror', {
             url: '/authorizederror',
             cache: false,
             templateUrl: 'app/views/authorizederror.html',
-            controller: "errorController"
+            controller: 'errorController'
         })
 
     // use the HTML5 History API

@@ -22,7 +22,7 @@ namespace Atendimento.Repository.Repositories.Base
                     return conn.Get<T>(id);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return null;
             }
@@ -183,7 +183,7 @@ namespace Atendimento.Repository.Repositories.Base
                     return conn.Delete(entity);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }

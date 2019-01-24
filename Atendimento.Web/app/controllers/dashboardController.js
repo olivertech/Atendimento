@@ -1,9 +1,13 @@
-app.controller('dashboardController', function($scope, $sessionStorage, $location, $q, dashboardService, paginationService) {
+app.controller('dashboardController', function($scope, $sessionStorage, $location, $q, $interval, dashboardService, paginationService, generalUtility) {
 
     var file1Upload, file2Upload, file3Upload, file4Upload, file5Upload;
 
     $scope.idUsuario = $sessionStorage.idUsuario;
     $scope.usuario = $sessionStorage.usuario;
+    $scope.isAdmin = $sessionStorage.isAdmin;
+    $scope.idCliente = $sessionStorage.idCliente;
+    $scope.nomeCliente = $sessionStorage.nomeCliente;
+    
     $scope.token = $sessionStorage.tokenAuthentication;
     $scope.totalAtendimentos = 0;
     $scope.totalAguardando = 0;
@@ -17,6 +21,7 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
     $scope.idsStatusTicket = "1,4,5";
     $scope.totalRecords = 0;
 
+    $scope.mensagem = "";
     $scope.uploadSuccess = false;
     $scope.uploadError = false;
     $scope.newTicketSuccess = false;
@@ -24,29 +29,32 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
     $scope.pagination = {};
     $scope.qtdeanexos = 0;
 
+    $scope.orderBy = "";
+    $scope.direction = "";
+    
     /** Função que controla a paginação da grid de tickets */
-    $scope.setPage = function(page) {
+    $scope.getPage = function(page, orderBy, direction) {
 
         let offset = (page - 1) * $scope.numRows;
-        let idTicket = "";
-        let titulo = "";
-        let descricao = "";
-        let dataInicial = "";
-        let dataFinal = "";
-        let idCliente = 0;
-        let idCategoria = 0;
+        let idTicketFiltro = "";
+        let tituloFiltro = "";
+        let descricaoFiltro = "";
+        let dataInicialFiltro = "";
+        let dataFinalFiltro = "";
+        let idClienteFiltro = 0;
+        let idCategoriaFiltro = 0;
 
         if ($scope.filtro != undefined) {
-            idTicket = $scope.filtro.idTicket;
-            titulo = $scope.filtro.titulo;
-            descricao = $scope.filtro.descricao;
-            dataInicial = $scope.filtro.dataInicial;
-            dataFinal = $scope.filtro.dataFinal;
-            idCliente = $scope.filtro.idCliente;
-            idCategoria = $scope.filtro.idCategoria;
+            idTicketFiltro = $scope.filtro.idTicket;
+            tituloFiltro = $scope.filtro.titulo;
+            descricaoFiltro = $scope.filtro.descricao;
+            dataInicialFiltro = $scope.filtro.dataInicial;
+            dataFinalFiltro = $scope.filtro.dataFinal;
+            idClienteFiltro = $scope.filtro.idCliente;
+            idCategoriaFiltro = $scope.filtro.idCategoria;
         }
 
-        dashboardService.getPagedTicket(offset, $scope.numRows, $scope.idsStatusTicket, idTicket, titulo, descricao, dataInicial, dataFinal, idCliente, idCategoria)
+        dashboardService.getTickets(offset, $scope.numRows, orderBy, direction, $scope.idsStatusTicket, $scope.idCliente, idTicketFiltro, tituloFiltro, descricaoFiltro, dataInicialFiltro, dataFinalFiltro, idClienteFiltro, idCategoriaFiltro)
             .then(function(response) {
                 $scope.tickets = response.data.content;
                 $scope.totalRecords = response.data.totalRecordsFiltered;
@@ -62,19 +70,25 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
     }
 
     $scope.filterTickets = function() {
-        $scope.setPage(1);
+        $scope.orderBy = "";
+        $scope.direction = "";
+        $scope.getPage(1, $scope.orderBy, $scope.direction);
     }
 
     /** Função associada ao botão de atualizar lista */
     $scope.updateTicketList = function() {
         $scope.idsStatusTicket = "1,4,5";
-        $scope.setPage(1);
+        $scope.orderBy = "";
+        $scope.direction = "";
+        $scope.getPage(1, $scope.orderBy, $scope.direction);
     }
     
     /** Função que atualização a lista de tickets */
     $scope.updateListByStatus = function(idsStatusTicket) {
         $scope.idsStatusTicket = idsStatusTicket;
-        $scope.setPage(1);
+        $scope.orderBy = "";
+        $scope.direction = "";
+        $scope.getPage(1, $scope.orderBy, $scope.direction);
     }
 
     /** Função que alimenta a dropdown de clientes da modal de abertura de novo atendimento */
@@ -122,7 +136,7 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
                 $scope.clientes = response.data.content;
             })
             .catch(function(error) {
-                showErrorAlert(); 
+                generalUtility.showErrorAlert(); 
             });
     }
 
@@ -135,7 +149,8 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
                     $scope.usuarios = response.data.content;
                 })
                 .catch(function(error) {
-                    showErrorAlert(); 
+                    $scope.mensagem = "Ocorreu um erro ao recuperar usuários.";
+                    generalUtility.showErrorAlert(); 
                 });
         }
         else {
@@ -150,7 +165,8 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
                 $scope.categorias = response.data.content;
             })
             .catch(function(error) {
-                showErrorAlert(); 
+                $scope.mensagem = "Ocorreu um erro ao recuperar categorias.";
+                generalUtility.showErrorAlert(); 
             });
     }
 
@@ -161,7 +177,8 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
                 $scope.classificacoes = response.data.content;
             })
             .catch(function(error) {
-                showErrorAlert(); 
+                $scope.mensagem = "Ocorreu um erro ao recuperar classificações.";
+                generalUtility.showErrorAlert(); 
             });
     }
     
@@ -216,7 +233,7 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
         $scope.atendimento.file5 = "";
     }
 
-    /** Função que salva o novo atendimento, criado pelo suporte */
+    /** Função que salva o novo atendimento (ticket), criado pelo suporte */
     $scope.saveNewTicket = function() {
         
         $scope.idsAnexos = [];
@@ -224,7 +241,8 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
         var promiseList = [];
 
         //Sobe primeiro os arquivos anexos, e se for com sucesso, grava o ticket
-        if ($scope.qtdeAnexos == 0) { $scope.uploadSuccess == true; }
+        if ($scope.qtdeAnexos == 0) { 
+            $scope.uploadSuccess = true; }
         else {
             for (let index = 0; index <= $scope.qtdeAnexos - 1; index++) {
                 switch (index) {
@@ -262,53 +280,58 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
                 if ($scope.uploadSuccess) {
                     //Se todos os anexos foram incluidos com sucesso, 
                     //então faz o insert dos dados do novo atendimento
-                    let usuario = $scope.atendimento.usuario;
-                    let categoria = $scope.atendimento.categoria;
-                    let classificacao = $scope.atendimento.classificacao;
-                    let assunto = $scope.atendimento.assunto;
-                    let descricao = $scope.atendimento.descricao;
-                    let pathAnexos = $scope.pathAnexos;
 
-                    dashboardService.saveNewSupport(usuario, categoria, classificacao, assunto, descricao, pathAnexos)
+                    //Se a session for de um cliente, o idCliente != 0    ===> Pega o idUsuario da session
+                    //Se a session for de um atendente, o idCliente == 0  ===> Pega o idUsuario da dropdown de usuario
+                    let idUsuarioFiltro = $scope.idCliente == 0 || $scope.idCliente == undefined ? $scope.atendimento.usuario : $scope.idUsuario;
+                    let idCategoriaFiltro = $scope.atendimento.categoria;
+                    let idClassificacaoFiltro = $scope.atendimento.classificacao;
+                    let assuntoFiltro = $scope.atendimento.assunto;
+                    let descricaoFiltro = $scope.atendimento.descricao;
+                    let pathAnexos = $scope.pathAnexos;
+                    let tipoUsuario = $sessionStorage.tipoUsuario;
+                    let idAtendente = $sessionStorage.tipoUsuario == "Atendimento" ? $sessionStorage.idUsuario : 0;
+
+                    dashboardService.saveNewSupport(idUsuarioFiltro, idCategoriaFiltro, idClassificacaoFiltro, assuntoFiltro, descricaoFiltro, pathAnexos, tipoUsuario, idAtendente)
                         .then(function(response) {
                             $scope.idTicket = response.data.content.id;
                             $scope.mensagem = response.data.message;
                             $scope.newTicketSuccess = true;
-                            showSuccessAlert();
+                            $scope.updateTicketList();
+                            generalUtility.showSuccessAlert();
                         })
                         .catch(function(error) {
-                            $scope.mensagem = error.data.message;
+                            $scope.mensagem = "Ocorreu um erro ao salvar o atendimento."; //prever não vir o texto da mensagem aqui e colocar uma default...
                             $scope.newTicketError = true;
-                            showErrorAlert();
+                            generalUtility.showErrorAlert();
                         });
                 }
                 else {
-                    $scope.mensagem = "Erro no envio de um ou mais arquivos.";
+                    $scope.mensagem = "Erro no envio de um ou mais arquivos. Observar tamanho máximo de 5MB por arquivo.";
                     $scope.uploadSuccess = false;
-                    $scope.uploadError = true;    
-                    showErrorAlert();
+                    $scope.uploadError = true;
+                    generalUtility.showErrorAlert();
                 }
             })
             .catch(function (error) {
-                $scope.mensagem = "Erro no envio de um ou mais arquivos.";
+                $scope.mensagem = "Erro no envio de um ou mais arquivos. Observar tamanho máximo de 5MB por arquivo.";
                 $scope.uploadSuccess = false;
-                $scope.uploadError = true; 
-                showErrorAlert(); 
+                $scope.uploadError = true;
+                generalUtility.showErrorAlert();
         });
     }
     
     /** Função que faz o upload dos arquivos de anexo, um a um */
     $scope.uploadTicketFile = function(file, index) {
-        return $q.when(dashboardService.uploadFile(file, $scope.atendimento.usuario)
+        let idUsuario = $scope.idCliente == undefined ? $scope.atendimento.usuario : $scope.idUsuario;
+        return $q.when(dashboardService.uploadFile(file, idUsuario)
             .then(function(response) {
-                //Guardo os ids dos anexos gravados na tabela Anexo, pra poder relaciona-los com o novo ticket
-                //$scope.idsAnexos[index] = response.data.anexoResponse.id;
                 $scope.pathAnexos = response.data;
                 $scope.uploadSuccess = true;
                 $scope.uploadError = false;
             })
             .catch(function(error) {
-                $scope.mensagem = "Erro no envio de anexo.";
+                $scope.mensagem = "Erro no envio de anexo. Observar tamanho máximo de 5MB por arquivo.";
                 $scope.uploadSuccess = false;
                 $scope.uploadError = true;
             }));
@@ -318,26 +341,29 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
     $scope.showTicket = function(idTicket)
     {
         $location.hash("inicio");
-        $location.path("/ticket/" + idTicket);
+        $location.path("/tickets/" + idTicket);
     }
 
+    /** Função que recupera a lista de clientes com determinada ordenação */
+    $scope.ordenarPor = function(campo) {
+        $scope.orderBy = campo;
+        $scope.direction = $scope.direction === "ASC" ? "DESC" : "ASC";
+        $scope.getPage(1, $scope.orderBy, $scope.direction);
+    }
+    
     /**
      *  INTERNAL FUNCTIONS
      */
 
-     /** Função que mostra alerta de sucesso */
-    var showSuccessAlert = function() {
-        $("#success-alert").fadeTo(5000, 500).slideUp(500, function(){
-            $("#success-alert").slideUp(500);
-        });
-    }
-
-    /** Função que mostra alerta de erro */
-    var showErrorAlert = function() {
-        $("#error-alert").fadeTo(5000, 500).slideUp(500, function(){
-            $("#error-alert").slideUp(500);
-        });
-    }
+    /** Função que recarrega o dashboard a cada 2 minutos */
+    var auto = $interval(function() {
+        $scope.offSet = 0;
+        $scope.numRows = 20;
+        $scope.orderBy = "";
+        $scope.direction = "";
+        $scope.idsStatusTicket = "1,4,5";
+        $scope.getPage(1, $scope.orderBy, $scope.direction);
+      }, 120000);
 
     /** Função que realiza a remoção de imagens que foram enviadas para o serviço,
      * mas que por algum motivo, deu erro no processo de cadastro do novo 
@@ -356,7 +382,11 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
 
     /** Função interna que recupera os totais de atendimento por status */
     var loadTotalStatusTicket = function() {
-        dashboardService.getTotals()
+        
+        //Será undefined se o acesso se der pelo atendimento, e com isso atribuo 0
+        if ($scope.idCliente == undefined) { $scope.idCliente = 0; }
+
+        dashboardService.getTotals($scope.idCliente)
             .then(function(response) {
     
                 //Percorre todos os totais retornados
@@ -388,7 +418,8 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
                 $scope.totalEmAberto = $scope.totalAguardando + $scope.totalPendente + $scope.totalEmAnalise;
             })
             .catch(function(error) {
-                showErrorAlert();
+                $scope.mensagem = "Ocorreu um erro ao recuperar os totais de atendimentos por status.";
+                generalUtility.showErrorAlert();
             });
     }
 
@@ -406,5 +437,5 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
     loadTotalStatusTicket();
 
     /** Carrega a primeira página de tickets */
-    $scope.setPage(1);
+    $scope.getPage(1,"","");
 });

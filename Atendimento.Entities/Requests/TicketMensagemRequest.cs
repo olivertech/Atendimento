@@ -11,9 +11,8 @@ namespace Atendimento.Entities.Requests
         [Required(ErrorMessage = "Informe o id do autor.")]
         public int IdAutor { get; set; }
 
-        [Required(ErrorMessage = "Informe o tipo do autor.")]
-        [StringLength(1, ErrorMessage = "Informe 'A' para Atendente ou 'C' para cliente.")]
-        public string TipoUsuario { get; set; }
+        [Required(ErrorMessage = "O campo 'UserType' deve ser informado com a letra 'S' para Suporte ou 'C' para cliente")]
+        public string UserType { get; set; } = "C";
 
         [Required(ErrorMessage = "Informe o texto descritivo da mensagem.")]
         [StringLength(10000)]
@@ -22,5 +21,8 @@ namespace Atendimento.Entities.Requests
         public DateTime DataHoraMensagem { get; set; } = DateTime.Now;
 
         public bool Interno { get; set; } = false;
+
+        //Propriedade usada pra receber temporariamente o nome da pasta temporaria onde foram gravados os anexos
+        public string PathAnexos { get; set; }
     }
 }

@@ -2,6 +2,13 @@ app.controller('topHeaderController', function($scope, $location, $sessionStorag
     /** Função de saída do app */
     $scope.logout = function() {
         $sessionStorage.tokenAuthentication = '';
+        $sessionStorage.isOnDashboard = false;
+        $sessionStorage.usuario = '';
+        $sessionStorage.idUsuario = '';
+        $sessionStorage.idCliente = '';
+        $sessionStorage.nomeCliente = '';
+        $sessionStorage.tipoUsuario = '';
+        $sessionStorage.logicalPathAnexos = '';
         $location.path("/");
     }
 });

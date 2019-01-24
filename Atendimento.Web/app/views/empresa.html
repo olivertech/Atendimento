@@ -1,0 +1,267 @@
+<!-- ============================================================== -->
+<!-- Main wrapper - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<div id="main-wrapper">
+    <!-- header -->
+    <top-header></top-header>
+    <!-- left side bar -->
+    <left-side-bar></left-side-bar>
+    <!-- ============================================================== -->
+    <!-- Page wrapper  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <!-- ============================================================== -->
+        <!-- Container fluid  -->
+        <!-- ============================================================== -->
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center">
+                    <h4 class="text-themecolor">Cadastro de Empresa</h4>
+                </div>
+                <div class="col-md-7 align-self-center text-right">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item active">Cadastro de Empresa</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div id="success-alert" class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <h3 class="text-success"><i class="fa fa-check-circle"></i> Sucesso.</h3>{{mensagem}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="error-alert" class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <h3 class="text-danger"><i class="fa fa-check-circle"></i> Erro.</h3>{{mensagem}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>            
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Start Page Content -->
+            <!-- ============================================================== -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- grid header -->
+                            <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-t-10 text-left">
+                                    <button type="button" class="btn btn-info" ng-click="newEmpresa()" data-toggle="modal" data-target="#add-empresa"><i class="fas fa-plus"></i> Nova Empresa</button>
+                                </div>
+                            </div>
+                            <!-- grid de templates -->
+                            <div class="table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
+                                <div class="row justify-content-md-center m-t-20">
+                                    <div class="col">
+                                        <nav aria-label="Page navigation example" ng-if="empresas.length > 0">
+                                            <!-- Paginação -->
+                                            <ul class="pagination">
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="getPage(1)">Primeiro</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage - 1)"><i class="fas fa-chevron-left"></i></a>
+                                                </li>
+                                                <li class="page-item" ng-repeat="page in pagination.pages track by $index" ng-class="{active:pagination.currentPage === page}">
+                                                    <a class="page-link" ng-click="getPage(page)">{{page}}</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage + 1)"><i class="fas fa-chevron-right"></i></a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="getPage(pagination.totalPages)">Último</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    <div class="col-4">
+                                        &nbsp;
+                                    </div>
+                                    <!-- Contagem de páginas -->
+                                    <div class="col text-right" ng-if="empresas.length > 0">
+                                        <label class="">Mostrando página {{pagination.currentPage}} de {{pagination.totalPages}}</label>
+                                    </div>
+                                </div>
+                                <table id="empresas" class="table m-t-20 no-wrap" ng-if="empresas.length == 0">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Não foram encontradas empresas cadastradas.
+                                            </th>
+                                        </td>
+                                    </tr>
+                                </table>                              
+                                <table id="empresas" class="table m-t-20 table-hover no-wrap contact-list table-striped" ng-if="empresas.length > 0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Empresa #</th>
+                                            <th>Nome</th>
+                                            <th>Email Corporativo</th>
+                                            <th>Telefone Fixo Corporativo</th>
+                                            <th>Telefone Celular Corporativo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="empresa in empresas track by empresa.id" ng-click="showEmpresa(empresa.id)" style="cursor: pointer;" data-toggle="modal" data-target="#add-empresa">
+                                            <td>{{pagination.startIndex + $index + 1}}</td>
+                                            <td>{{empresa.id}}</td>
+                                            <td>{{empresa.nome}}</td>
+                                            <td>{{empresa.email}}</td>
+                                            <td>{{empresa.telefoneFixo | ifEmpty:'Não Informado'}}</td>
+                                            <td>{{empresa.telefoneCelular | ifEmpty:'Não Informado'}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- Grid Footer -->
+                                <div class="row justify-content-md-center m-t-20">
+                                    <div class="col">
+                                        <nav aria-label="Page navigation example" ng-if="empresas.length > 0">
+                                            <!-- Paginação -->
+                                            <ul class="pagination">
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="getPage(1)">Primeiro</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage - 1)"><i class="fas fa-chevron-left"></i></a>
+                                                </li>
+
+                                                <li class="page-item" ng-repeat="page in pagination.pages track by $index" ng-class="{active:pagination.currentPage === page}">
+                                                    <a class="page-link" ng-click="getPage(page)">{{page}}</a>
+                                                </li>
+                                                
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="getPage(pagination.currentPage + 1)"><i class="fas fa-chevron-right"></i></a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                    <a class="page-link" ng-click="getPage(pagination.totalPages)">Último</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    <div class="col-4">
+                                        &nbsp;
+                                    </div>
+                                    <!-- Contagem de páginas -->
+                                    <div class="col text-right" ng-if="empresas.length > 0">
+                                        <label class="">Mostrando página {{pagination.currentPage}} de {{pagination.totalPages}}</label>
+                                    </div>
+                                </div>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Page Content -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Begin Modal de cadastro/atualização Empresa -->
+            <!-- ============================================================== -->
+            <div id="add-empresa" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel" ng-if="empresa.id == 0">Nova Empresa</h4>
+                            <h4 class="modal-title" id="myModalLabel" ng-if="empresa.id != 0">Atualizar Empresa</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal form-material" name="novaEmpresaForm">
+                                <input type="hidden" name="empresa.id" ng-model="empresa.id">
+                                <div class="form-group">
+                                    <div class="form-group row">
+                                        <label for="nome" class="col-sm-4 col-form-label"><strong>Nome</strong></label>
+                                        <div class="col-sm-8">
+                                            <input id="nome" type="text" class="form-control" placeholder="Nome da Empresa" 
+                                                ng-model="empresa.nome"
+                                                ng-required="true">
+                                        </div> 
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="email" class="col-sm-4 col-form-label"><strong>Email</strong></label>
+                                        <div class="col-sm-8">
+                                            <input id="email" type="text" class="form-control" placeholder="Email Corporativo" 
+                                                ng-model="empresa.email"
+                                                ng-required="true">
+                                        </div> 
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="telefoneFixo" class="col-sm-4 col-form-label">Telefone Fixo</label>
+                                        <div class="col-sm-8">
+                                            <input id="telefoneFixo" type="text" class="form-control" placeholder="Nº Corporativo - (99) 9999-9999" 
+                                                ng-model="empresa.telefoneFixo"
+                                                mask="(99) 9999-9999" clean="false">
+                                        </div> 
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="telefoneCelular" class="col-sm-4 col-form-label">Telefone Celular</label>
+                                        <div class="col-sm-8">
+                                            <input id="telefoneCelular" type="text" class="form-control" placeholder="Nº Corporativo - (99) 99999-9999" 
+                                                ng-model="empresa.telefoneCelular"
+                                                mask="(99) 99999-9999" clean="false">
+                                        </div> 
+                                    </div>                                    
+                                    <div class="form-group row">
+                                        <label for="descricao" class="col-sm-4 col-form-label">Descrição</label>
+                                        <div class="col-sm-8">
+                                            <textarea id="descricao" class="form-control" cols="60" rows="4" placeholder="Breve descrição da empresa" 
+                                                ng-model="empresa.descricao"
+                                                style="white-space:pre-wrap;"></textarea>
+                                        </div> 
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="row">
+                                <div class="col-3">
+                                    <button type="button" id="submit" ng-click="deleteEmpresa(empresa.id);" class="btn btn-danger waves-effect" data-dismiss="modal" ng-if="empresa.id != 0 && empresa.id != 1"><i class="fas fa-trash-alt"></i> Remover</button>
+                                </div>
+                                <div class="col-9 text-right">
+                                    <button type="button" id="submit" ng-click="saveEmpresa();" class="btn btn-info waves-effect" data-dismiss="modal" ng-disabled="novaEmpresaForm.$invalid"><i class="fas fa-check"></i> Salvar</button>
+                                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal"><i class="fas fa-ban"></i> Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Modal cadastro/atualização Empresa  -->
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Page wrapper  -->
+    <!-- ============================================================== -->
+    <app-footer></app-footer>
+</div>
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->
+
+<!-- Esse arquivo tem que importar aqui, pois senão os elementos não são achados pelo jquery -->
+<script src="./app/assets/scripts/custom.js"></script>
+<script src="./app/assets/scripts/sidebarmenu.js"></script>
+<script src="./app/assets/scripts/utilities.js"></script>
+<script src="./app/assets/scripts/fullscreen.js"></script>
+<script src="./app/assets/scripts/dashboard.js"></script>

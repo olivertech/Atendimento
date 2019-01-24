@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Configuration;
 using Atendimento.Business.Interfaces.Interfaces;
 using Atendimento.Entities.Entities;
 using Atendimento.Entities.Enums;
 using Atendimento.Entities.Responses;
-using Atendimento.Infra;
 using Atendimento.Repository.Interfaces.Interfaces;
 
 namespace Atendimento.Business.Classes
@@ -25,7 +23,7 @@ namespace Atendimento.Business.Classes
         /// <returns></returns>
         public LoginResponse DoLogin(UserLogin userLogin)
         {
-            LoginResponse response = new LoginResponse();
+            LoginResponse response = null;
 
             var atendenteEmpresa = (AtendenteEmpresa)null;
             var usuarioCliente = (UsuarioCliente)null;
@@ -37,8 +35,11 @@ namespace Atendimento.Business.Classes
 
                     if (atendenteEmpresa != null)
                     {
-                        response.Usuario = atendenteEmpresa;
-                        response.TipoUsuario = "Atendimento";
+                        response = new LoginResponse
+                        {
+                            Usuario = atendenteEmpresa,
+                            TipoUsuario = nameof(Atendimento)
+                        };
                     }
 
                     break;
@@ -47,10 +48,15 @@ namespace Atendimento.Business.Classes
 
                     if (usuarioCliente != null)
                     {
-                        response.Usuario = usuarioCliente;
-                        response.TipoUsuario = "Cliente";
+                        response = new LoginResponse
+                        {
+                            Usuario = usuarioCliente,
+                            TipoUsuario = nameof(Cliente)
+                        };
                     }
 
+                    break;
+                default:
                     break;
             }
 
@@ -63,8 +69,7 @@ namespace Atendimento.Business.Classes
         /// <param name="userLogin"></param>
         public RecoverResponse DoRecover(UserLogin userLogin)
         {
-            string email = userLogin.Email.ToLower().Trim();
-
+            var email = userLogin.Email.ToLower().Trim();
             var atendenteEmpresa = (AtendenteEmpresa)null;
             var usuarioCliente = (UsuarioCliente)null;
 
@@ -84,8 +89,10 @@ namespace Atendimento.Business.Classes
                             userLogin.Password = atendenteEmpresa.Password;
                             EnviarEmailRecover(userLogin);
 
-                            response = new RecoverResponse();
-                            response.NomeUsuario = atendenteEmpresa.Nome;
+                            response = new RecoverResponse
+                            {
+                                NomeUsuario = atendenteEmpresa.Nome
+                            };
                         }
 
 
@@ -100,18 +107,22 @@ namespace Atendimento.Business.Classes
                             userLogin.Password = usuarioCliente.Password;
                             EnviarEmailRecover(userLogin);
 
-                            response = new RecoverResponse();
-                            response.NomeUsuario = usuarioCliente.Nome;
+                            response = new RecoverResponse
+                            {
+                                NomeUsuario = usuarioCliente.Nome
+                            };
                         }
 
+                        break;
+                    default:
                         break;
                 }
 
                 return response;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -139,23 +150,7 @@ namespace Atendimento.Business.Classes
 
         private void EnviarEmailRecover(UserLogin userLogin)
         {
-            string subject = string.Empty;
-            string emailFrom = string.Empty;
-            string emailTo = string.Empty;
-            string emailReply = string.Empty;
-
-            try
-            {
-                subject = "Senha de acesso ao sistema de atendimento Algorix";
-                emailFrom = ConfigurationManager.AppSettings["EmailSuporte"].ToString();
-                emailTo = userLogin.Email;
-
-                Email.SendNetEmail(emailFrom, emailTo, emailReply, Email.FormatarCorpoEmailEsqueciSenha(userLogin), subject, false, System.Net.Mail.MailPriority.High);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            Emailer.EnviarEmailRecover(userLogin);
         }
 
         #endregion

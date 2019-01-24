@@ -14,48 +14,51 @@ namespace Atendimento.Infra
         /// <param name="pathZip"></param>
         /// <param name="pathAnexosUsuario"></param>
         /// <param name="idUsuario"></param>
-        /// <param name="fullFileName"></param>
         /// <returns></returns>
         public static string Compress(string pathZip, string pathAnexosUsuario, int idUsuario)
         {
-            ZipFile zip = new ZipFile();
-
-            DirectoryInfo info = new DirectoryInfo(pathAnexosUsuario);
-
-            FileInfo[] files = info.GetFiles();
-
-            for (int i = 0; i < files.Length; i++)
+            using (var zip = new ZipFile())
             {
-                zip.AddFile(pathAnexosUsuario + "/" + files[i].Name, "");
+                var info = new DirectoryInfo(pathAnexosUsuario);
+
+                var files = info.GetFiles();
+
+                for (int i = 0; i < files.Length; i++)
+                {
+                    zip.AddFile(pathAnexosUsuario + "/" + files[i].Name, "");
+                }
+
+                var zipName = FormatarNomeArquivoZip(idUsuario);
+
+                zip.Save(pathZip + "/" + zipName);
+
+                Directory.Delete(pathAnexosUsuario, true);
+
+                return zipName;
             }
-
-            string zipName = FormatarNomeArquivoZip(idUsuario);
-
-            zip.Save(pathZip + "/" + zipName);
-
-            Directory.Delete(pathAnexosUsuario, true);
-
-            return zipName;
         }
 
         /// <summary>
         /// Método que muda o nome do arquivo zipado pra que todos sigam um mesmo
-        /// padrão de nomenclatura no sistema, formado da seguinte maneira:
-        /// 
-        /// IdUsuario_<nome-original-do-anexo-sem-extensao>-<milisegundos>-<numero-aleatorio-de-4-digitos>.extens
-        /// 
+        /// padrão de nomenclatura no sistema
         /// </summary>
         /// <param name="idUsuario"></param>
         /// <returns></returns>
         public static string FormatarNomeArquivoZip(int idUsuario)
         {
             var miliseconds = (DateTime.Now - DateTime.MinValue).Ticks.ToString();
-            return idUsuario.ToString() + "_anexos_" + miliseconds + "_" + RandomNumber(1000, 9999) + ".zip";
+            return idUsuario + "_anexos_" + miliseconds + ".zip";
         }
 
+        /// <summary>
+        /// Gera numero randomico dentro do intervalor informado
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
         public static string RandomNumber(int min, int max)
         {
-            Random random = new Random();
+            var random = new Random();
             return random.Next(min, max).ToString();
         }
     }

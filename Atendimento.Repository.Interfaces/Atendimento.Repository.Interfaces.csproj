@@ -14,6 +14,11 @@
     <Compile Remove="Interfaces\Base\IRepositoryOLD.cs" />
     <Compile Remove="Interfaces\IAnexoTicketMensagemRepository.cs" />
     <Compile Remove="Interfaces\IAnexoTicketRepository.cs" />
+    <Compile Remove="Interfaces\IGrupoRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Interfaces\ITicketRepository.cs~RF169c8dcf.TMP" />
   </ItemGroup>
 
   <ItemGroup>

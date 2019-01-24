@@ -44,7 +44,8 @@ namespace Atendimento.Repository.Repositories
                                     uc.id_cliente,
                                     uc.nome,
                                     uc.email,
-                                    uc.telefone,
+                                    uc.telefone_fixo,
+                                    uc.telefone_celular,
                                     uc.copia,
                                     uc.provisorio,
                                     uc.ativo
@@ -90,24 +91,26 @@ namespace Atendimento.Repository.Repositories
                     return result;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
         /// <summary>
-        /// Método que sobreescreve o GetByID default do CRUD para atender as necessidades de JOIN
+        /// Método que recupera determinado tickek, com todas as subclasses preenchidas,
+        /// podendo carregar ou não os anexos
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="withAnexos"></param>
         /// <returns></returns>
-        public TicketResponse GetByIdWithAnexos(int id)
+        public TicketResponse GetByIdFilled(int id, bool withAnexos)
         {
-            TicketResponse response = new TicketResponse();
+            var response = new TicketResponse();
             Ticket result1;
             List<Anexo> result2;
 
-            string sql1 = @"SELECT 
+            var sql1 = @"SELECT 
                                     t.id,
                                     t.id_status_ticket,
                                     t.id_usuario_cliente,
@@ -135,19 +138,23 @@ namespace Atendimento.Repository.Repositories
                                     uc.id_cliente,
                                     uc.nome,
                                     uc.email,
-                                    uc.telefone,
+                                    uc.telefone_fixo,
+                                    uc.telefone_celular,
                                     uc.copia,
                                     uc.provisorio,
-                                    uc.ativo
+                                    uc.ativo,
+                                    c.id                        AS id_cliente,
+                                    c.nome
                             FROM dbo.Ticket t
                             LEFT JOIN dbo.Categoria ct          ON t.id_categoria = ct.id
                             LEFT JOIN dbo.Classificacao cl      ON t.id_classificacao = cl.id
                             LEFT JOIN dbo.Status_Ticket st      ON t.id_status_ticket = st.id
                             LEFT JOIN dbo.Usuario_Cliente uc    ON t.id_usuario_cliente = uc.id 
+                            LEFT JOIN dbo.Cliente c             ON uc.id_cliente = c.id
                             WHERE t.id = " + id;
 
 
-            string sql2 = @"SELECT
+            var sql2 = @"SELECT
                                     a.id,
                                     a.nome
                         FROM		Anexo a
@@ -158,19 +165,24 @@ namespace Atendimento.Repository.Repositories
             {
                 using (var conn = CreateConnection())
                 {
-                    result1 = conn.Query<Ticket, Categoria, Classificacao, StatusTicket, UsuarioCliente, Ticket>(sql1,
-                                map: (ticket, categoria, classificacao, status, usuario) =>
+                    result1 = conn.Query<Ticket, Categoria, Classificacao, StatusTicket, UsuarioCliente, Cliente, Ticket>(sql1,
+                                map: (ticket, categoria, classificacao, status, usuario, cliente) =>
                                 {
                                     ticket.Categoria = categoria;
                                     ticket.Classificacao = classificacao;
                                     ticket.StatusTicket = status;
                                     ticket.UsuarioCliente = usuario;
+                                    ticket.UsuarioCliente.Cliente = cliente;
 
                                     return ticket;
                                 },
-                                splitOn: "id_categoria,id_classificacao,id_status_ticket,id_usuario_cliente").SingleOrDefault();
+                                splitOn: "id_categoria,id_classificacao,id_status_ticket,id_usuario_cliente,id_cliente").SingleOrDefault();
 
-                    result2 = conn.Query<Anexo>(sql2).ToList();
+                    if (withAnexos)
+                    {
+                        result2 = conn.Query<Anexo>(sql2).ToList();
+                        response.Anexos = result2;
+                    }
 
                     response.Categoria = result1.Categoria;
                     response.Classificacao = result1.Classificacao;
@@ -183,26 +195,25 @@ namespace Atendimento.Repository.Repositories
                     response.StatusTicket = result1.StatusTicket;
                     response.Titulo = result1.Titulo;
                     response.UsuarioCliente = result1.UsuarioCliente;
-                    response.Anexos = result2;
 
                     return response;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
         /// <summary>
         /// Recupera o total de tickets de um determinado status
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="idStatusTicket"></param>
         /// <returns></returns>
         public int GetCount(int idStatusTicket)
         {
-            int result = 0;
-            string sql = string.Empty;
+            var result = 0;
+            var sql = string.Empty;
 
             try
             {
@@ -213,67 +224,110 @@ namespace Atendimento.Repository.Repositories
 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Recupera o total de tickets associados a um usuario
+        /// </summary>
+        /// <param name="idUsuario"></param>
+        /// <returns></returns>
+        public int GetTotalTicketsUsuario(int idUsuario)
+        {
+            var result = 0;
+            var sql = string.Empty;
+
+            try
+            {
+                using (var conn = CreateConnection())
+                {
+                    result = conn.Select<Ticket>(q => q.IdUsuarioCliente == idUsuario).Count();
+                }
+
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
         /// <summary>
         /// Recupera todos os totais de tickets por status
         /// </summary>
+        /// <param name="idCliente"></param>
         /// <returns></returns>
-        public CountsResponse GetCounts()
+        public CountsResponse GetCounts(int idCliente)
         {
-            CountsResponse result = new CountsResponse();
-            int total = 0;
+            var result = new CountsResponse();
+            var total = 0;
 
             try
             {
                 using (var conn = CreateConnection())
                 {
+                    //Recupera todos os ids dos status cadastrados
+                    var statusTickets = conn.Query<int>(@"SELECT id FROM Status_Ticket").ToArray();
 
-                    var ids = conn.Query<int>(@"SELECT id FROM Status_Ticket").ToArray();
-
-                    var totalAtendimentos = conn.GetAll<Ticket>().Count();
-
-                    result.AddItem(0, totalAtendimentos);
-
-                    for (int i = 0; i < ids.Length; i++)
+                    if (idCliente > 0)
                     {
-                        if (ids[i] == 0)
-                        {
-                            total = conn.ExecuteScalar<int>(@"SELECT COUNT(*) FROM Ticket");
-                        }
-                        else
-                        {
-                            total = conn.ExecuteScalar<int>(@"SELECT COUNT(*) FROM Ticket WHERE id_status_ticket = @Id", new { Id = ids[i] });
-                        }
+                        var sql = @"SELECT COUNT(*)
+                                    FROM Ticket t
+                                    INNER JOIN Usuario_Cliente uc ON t.id_usuario_cliente = uc.id
+                                    INNER JOIN Cliente c ON uc.id_cliente = c.id ";
 
-                        result.AddItem(ids[i], total);
+                        var builder = new StringBuilder();
+
+                        builder.Append(sql);
+                        builder.Append("WHERE c.id = " + idCliente);
+
+                        total = conn.ExecuteScalar<int>(builder.ToString());
+                        result.AddItem(0, total);
+
+                        for (int i = 0; i < statusTickets.Length; i++)
+                        {
+                            builder.Clear();
+                            builder.Append(sql);
+                            builder.Append("WHERE c.id = " + idCliente + " AND id_status_ticket = " + statusTickets[i]);
+
+                            total = conn.ExecuteScalar<int>(builder.ToString());
+                            result.AddItem(statusTickets[i], total);
+                        }
+                    }
+                    else
+                    {
+                        total = conn.ExecuteScalar<int>(@"SELECT COUNT(*) FROM Ticket");
+                        result.AddItem(0, total);
+
+                        for (int i = 0; i < statusTickets.Length; i++)
+                        {
+                            total = conn.ExecuteScalar<int>(@"SELECT COUNT(*) FROM Ticket WHERE id_status_ticket = @Id", new { Id = statusTickets[i] });
+                            result.AddItem(statusTickets[i], total);
+                        }
                     }
                 }
 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
         /// <summary>
         /// Recupera de forma paginada os tickets, com as referencias populadas
         /// </summary>
-        /// <param name="offset">Número de linhas que deve ser pulado</param>
-        /// <param name="numRows">Número de linhas que deve ser retornado</param>
-        /// <param name="tipoConsulta">Se a consulta vai ou não retornar com ou sem paginação</param>
+        /// <param name="advancedFilter"></param>
         /// <returns></returns>
         public TicketsResponse GetAllPaged(FilterRequest advancedFilter)
         {
-            TicketsResponse result = new TicketsResponse();
-            string sql = string.Empty;
-            string sqlCount = string.Empty;
+            var result = new TicketsResponse();
+            var sql = string.Empty;
+            var sqlCount = string.Empty;
 
             try
             {
@@ -301,17 +355,16 @@ namespace Atendimento.Repository.Repositories
 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
         /// <summary>
         /// Método que atualiza o status do ticket
         /// </summary>
-        /// <param name="idTicket"></param>
-        /// <param name="idStatus"></param>
+        /// <param name="ticket"></param>
         /// <returns></returns>
         public bool UpdateStatusTicket(Ticket ticket)
         {
@@ -329,15 +382,15 @@ namespace Atendimento.Repository.Repositories
                     {
                         ticket.DataHoraFinal = DateTime.Now;
                     }
-                    
+
                     result = conn.Update<Ticket>(ticket);
                 }
 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -345,15 +398,15 @@ namespace Atendimento.Repository.Repositories
         /// Método que retorna a query de consulta aos tickets
         /// </summary>
         /// <param name="tipoConsulta"></param>
-        /// <param name="filter"></param>
+        /// <param name="advancedFilter"></param>
         /// <returns></returns>
-        private string RecuperarQuery(Tipos.TipoConsulta tipoConsulta, FilterRequest advancedFilter)
+        private static string RecuperarQuery(Tipos.TipoConsulta tipoConsulta, FilterRequest advancedFilter)
         {
-            StringBuilder sql = new StringBuilder();
-            string selectClause = string.Empty;
-            string whereClause = string.Empty;
-            string orderByClause = string.Empty;
-            string offSetNumRows = string.Empty;
+            var sql = new StringBuilder();
+            var selectClause = string.Empty;
+            var whereClause = string.Empty;
+            var orderByClause = string.Empty;
+            var offSetNumRows = string.Empty;
 
             if (tipoConsulta == Tipos.TipoConsulta.Paged)
             {
@@ -386,63 +439,68 @@ namespace Atendimento.Repository.Repositories
         /// </summary>
         /// <param name="advancedFilter"></param>
         /// <returns></returns>
-        private string BuildWhere(FilterRequest advancedFilter)
+        private static string BuildWhere(FilterRequest advancedFilter)
         {
-            StringBuilder whereClause = new StringBuilder();
+            var whereClause = new StringBuilder();
 
             //Monta os filtros
-            if (advancedFilter.IdTicket > 0)
+            if (advancedFilter.IdTicketFiltro > 0)
             {
-                whereClause.Append(" AND t.id = " + advancedFilter.IdTicket);
+                whereClause.Append(" AND t.id = " + advancedFilter.IdTicketFiltro);
             }
 
-            if (advancedFilter.Titulo.Length > 0 && advancedFilter.Titulo.ToLower() != "string")
+            if (advancedFilter.TituloFiltro.Length > 0 && advancedFilter.TituloFiltro.ToLower() != "string")
             {
-                whereClause.Append(" AND t.titulo LIKE '%" + advancedFilter.Titulo + "%'");
+                whereClause.Append(" AND t.titulo LIKE '%" + advancedFilter.TituloFiltro + "%'");
             }
 
-            if (advancedFilter.Descricao.Length > 0 && advancedFilter.Descricao.ToLower() != "string")
+            if (advancedFilter.DescricaoFiltro.Length > 0 && advancedFilter.DescricaoFiltro.ToLower() != "string")
             {
-                whereClause.Append(" AND t.descricao LIKE '%" + advancedFilter.Descricao + "%'");
+                whereClause.Append(" AND t.descricao LIKE '%" + advancedFilter.DescricaoFiltro + "%'");
             }
 
-            if (advancedFilter.DataInicial.HasValue && !advancedFilter.DataFinal.HasValue)
+            if (advancedFilter.DataInicialFiltro.HasValue && !advancedFilter.DataFinalFiltro.HasValue)
             {
-                whereClause.Append(" AND t.data_hora_inicial >= '" + advancedFilter.DataInicial + "'");
+                whereClause.Append(" AND t.data_hora_inicial >= '" + advancedFilter.DataInicialFiltro + "'");
             }
 
-            if (!advancedFilter.DataInicial.HasValue && advancedFilter.DataFinal.HasValue)
+            if (!advancedFilter.DataInicialFiltro.HasValue && advancedFilter.DataFinalFiltro.HasValue)
             {
-                whereClause.Append(" AND t.data_hora_inicial <= '" + advancedFilter.DataFinal + "'");
+                whereClause.Append(" AND t.data_hora_inicial <= '" + advancedFilter.DataFinalFiltro + "'");
             }
 
-            if (advancedFilter.DataInicial.HasValue && advancedFilter.DataFinal.HasValue)
+            if (advancedFilter.DataInicialFiltro.HasValue && advancedFilter.DataFinalFiltro.HasValue)
             {
-                whereClause.Append(" AND t.data_hora_inicial BETWEEN '" + advancedFilter.DataInicial + "' AND '" + advancedFilter.DataFinal + "'");
+                whereClause.Append(" AND t.data_hora_inicial BETWEEN '" + advancedFilter.DataInicialFiltro + "' AND '" + advancedFilter.DataFinalFiltro + "'");
             }
 
-            if (advancedFilter.IdCliente > 0)
+            if (advancedFilter.IdClienteFiltro > 0)
             {
-                whereClause.Append(" AND uc.id_cliente = " + advancedFilter.IdCliente);
+                whereClause.Append(" AND uc.id_cliente = " + advancedFilter.IdClienteFiltro);
             }
 
-            if (advancedFilter.IdCategoria > 0)
+            if (advancedFilter.IdCategoriaFiltro > 0)
             {
-                whereClause.Append(" AND ct.id = " + advancedFilter.IdCategoria);
+                whereClause.Append(" AND ct.id = " + advancedFilter.IdCategoriaFiltro);
             }
 
-            switch (advancedFilter.IdsStatus)
+            if (advancedFilter.IdClienteSession > 0)
+            {
+                whereClause.Append(" AND uc.id_cliente = " + advancedFilter.IdClienteSession);
+            }
+
+            switch (advancedFilter.IdsStatusFiltro)
             {
                 case "0":
                     break;
                 case "1": //Aguardando Atendimento
                 case "4": //Pendente com Cliente
                 case "5": //Em Análise
-                    whereClause.Append(" AND t.id_status_ticket = " + advancedFilter.IdsStatus);
+                    whereClause.Append(" AND t.id_status_ticket = " + advancedFilter.IdsStatusFiltro);
                     break;
                 case "2": //Concluído
                 case "3": //Cancelado
-                    whereClause.Append(" AND t.id_status_ticket = " + advancedFilter.IdsStatus);
+                    whereClause.Append(" AND t.id_status_ticket = " + advancedFilter.IdsStatusFiltro);
                     break;
                 default:
                     whereClause.Append(" AND t.id_status_ticket IN (1,4,5)");
@@ -457,27 +515,34 @@ namespace Atendimento.Repository.Repositories
         /// </summary>
         /// <param name="advancedFilter"></param>
         /// <returns></returns>
-        private string BuildOrderBy(FilterRequest advancedFilter)
+        private static string BuildOrderBy(FilterRequest advancedFilter)
         {
-            StringBuilder orderByClause = new StringBuilder();
+            var orderByClause = new StringBuilder();
 
-            switch (advancedFilter.IdsStatus)
+            if (string.IsNullOrEmpty(advancedFilter.OrderBy) && string.IsNullOrEmpty(advancedFilter.Direction))
             {
-                case "0": //Todos
-                    orderByClause.Append(" ORDER BY t.data_hora_inicial DESC, t.data_hora_ultima_mensagem DESC");
-                    break;
-                case "1": //Aguardando Atendimento
-                case "4": //Pendente com Cliente
-                case "5": //Em Análise
-                    orderByClause.Append(" ORDER BY t.data_hora_inicial DESC, t.data_hora_ultima_mensagem DESC");
-                    break;
-                case "2": //Concluído
-                case "3": //Cancelado
-                    orderByClause.Append(" ORDER BY t.data_hora_final DESC");
-                    break;
-                default:
-                    orderByClause.Append(" ORDER BY st.ordem_em_aberto ASC, t.data_hora_ultima_mensagem DESC");
-                    break;
+                switch (advancedFilter.IdsStatusFiltro)
+                {
+                    case "0": //Todos
+                        orderByClause.Append(" ORDER BY t.data_hora_inicial DESC, t.data_hora_ultima_mensagem DESC");
+                        break;
+                    case "1": //Aguardando Atendimento
+                    case "4": //Pendente com Cliente
+                    case "5": //Em Análise
+                        orderByClause.Append(" ORDER BY t.data_hora_inicial DESC, t.data_hora_ultima_mensagem DESC");
+                        break;
+                    case "2": //Concluído
+                    case "3": //Cancelado
+                        orderByClause.Append(" ORDER BY t.data_hora_final DESC");
+                        break;
+                    default:
+                        orderByClause.Append(" ORDER BY st.ordem_em_aberto ASC, t.data_hora_ultima_mensagem DESC");
+                        break;
+                }
+            }
+            else
+            {
+                orderByClause.Append(" ORDER BY t." + advancedFilter.OrderBy + " " + advancedFilter.Direction);
             }
 
             return orderByClause.ToString();
@@ -488,11 +553,11 @@ namespace Atendimento.Repository.Repositories
         /// </summary>
         /// <param name="advancedFilter"></param>
         /// <returns></returns>
-        private string BuildOffSetNumRows(FilterRequest advancedFilter)
+        private static string BuildOffSetNumRows(FilterRequest advancedFilter)
         {
             if (advancedFilter.NumRows == 0) return string.Empty;
 
-            StringBuilder offSetNumRowsClauses = new StringBuilder();
+            var offSetNumRowsClauses = new StringBuilder();
 
             offSetNumRowsClauses.Append(" OFFSET " + advancedFilter.OffSet + " ROWS");
             offSetNumRowsClauses.Append(" FETCH NEXT " + advancedFilter.NumRows + " ROWS ONLY");

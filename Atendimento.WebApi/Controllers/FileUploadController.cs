@@ -17,18 +17,21 @@ namespace Atendimento.WebApi.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class FileUploadController : ApiController
     {
-        /// POST: api/Ticket
+        /// <summary>
+        /// Faz o upload de arquivos anexos
+        /// </summary>
+        /// <param name="idUsuario"></param>
+        /// <returns></returns>
         [Route("Upload")]
         [HttpPost]
         public async Task<HttpResponseMessage> PostAsync(int idUsuario)
         {
-            //string pathAnexosZip = HttpContext.Current.Server.MapPath("~/Anexos");
-            string pathAnexosUsuario = HttpContext.Current.Server.MapPath("~/Anexos/" + idUsuario);
+            var pathAnexosUsuario = HttpContext.Current.Server.MapPath("~/Anexos/" + idUsuario);
 
             //Caso a pasta com id do usuário não exista, criar pasta para receber os anexos
             if (!Directory.Exists(pathAnexosUsuario))
             {
-                DirectoryInfo di = Directory.CreateDirectory(pathAnexosUsuario);
+                var di = Directory.CreateDirectory(pathAnexosUsuario);
             }
 
             var provider = new CustomMultipartFormDataStreamProvider(pathAnexosUsuario);

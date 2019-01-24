@@ -1,7 +1,8 @@
 app.controller('leftSideBarController', function($scope, $sessionStorage) {
     
-    $scope.usuario = $sessionStorage.usuario;
-
+    $scope.usuarioLogado = $sessionStorage.usuario;
+    $scope.idCliente = $sessionStorage.idCliente;
+    
     /** Função que prepara o cumprimento ao usuário */
     $scope.greeting = function() {
         $scope.hi = '';

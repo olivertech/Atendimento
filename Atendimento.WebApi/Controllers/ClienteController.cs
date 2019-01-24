@@ -32,8 +32,11 @@ namespace Atendimento.WebApi.Controllers
             _business = business;
         }
 
-        /// GET: api/Cliente
-        [Route("GetAll")]
+        /// <summary>
+        /// Recupera todos os clientes
+        /// </summary>
+        /// <returns></returns>
+        [Route(nameof(GetAll))]
         [HttpGet]
         public IHttpActionResult GetAll()
         {
@@ -56,8 +59,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// GET: api/Cliente/5
-        [Route("GetById")]
+        /// <summary>
+        /// Recupera um cliente
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route(nameof(GetById))]
         [HttpGet]
         public IHttpActionResult GetById(int id)
         {
@@ -80,8 +87,41 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// POST: api/Cliente
-        [Route("Insert")]
+        /// <summary>
+        /// Recupera lista paginada de clientes
+        /// </summary>
+        /// <param name="advancedFilter"></param>
+        /// <returns></returns>
+        [Route(nameof(GetAllPaged))]
+        [HttpPost]
+        public IHttpActionResult GetAllPaged(FilterClienteRequest advancedFilter)
+        {
+            try
+            {
+                var result = _business.GetAllPaged(advancedFilter);
+
+                var lista = result.Clientes.ToList().Select(Mapper.Map<Cliente, ClienteResponse>);
+                var totalGeral = result.TotalGeral;
+                var totalLinhas = lista.Count();
+
+                //Monta response
+                _result = Ok(Retorno<IEnumerable<ClienteResponse>>.Criar(true, "Consulta Realizada Com Sucesso", lista, totalGeral));
+
+                //Retorna o response
+                return _result;
+            }
+            catch (Exception)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Insere cliente
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route(nameof(Insert))]
         [HttpPost]
         public IHttpActionResult Insert([FromBody]ClienteRequest request)
         {
@@ -110,8 +150,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// POST: api/Cliente
-        [Route("InsertList")]
+        /// <summary>
+        /// Insere lista de clientes
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(InsertList))]
         [HttpPost]
         public IHttpActionResult InsertList(IEnumerable<ClienteRequest> list)
         {
@@ -149,8 +193,13 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// PUT: api/Cliente/5
-        [Route("Update")]
+        /// <summary>
+        /// Atualiza cliente
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route(nameof(Update))]
         [HttpPut]
         public IHttpActionResult Update(int id, [FromBody]ClienteRequest request)
         {
@@ -186,8 +235,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// PUT: api/Cliente/5
-        [Route("UpdateList")]
+        /// <summary>
+        /// Atualiza lista de clientes
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(UpdateList))]
         [HttpPut]
         public IHttpActionResult UpdateList(IEnumerable<ClienteUpdate> list)
         {
@@ -230,8 +283,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// DELETE: api/Cliente/5
-        [Route("Delete")]
+        /// <summary>
+        /// Deleta cliente
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route(nameof(Delete))]
         [HttpDelete]
         public IHttpActionResult Delete(int id)
         {
@@ -260,8 +317,12 @@ namespace Atendimento.WebApi.Controllers
             }
         }
 
-        /// DELETE: api/Cliente/5
-        [Route("DeleteList")]
+        /// <summary>
+        /// Deleta lista de clientes
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route(nameof(DeleteList))]
         [HttpDelete]
         public IHttpActionResult DeleteList([FromBody]int[] list)
         {

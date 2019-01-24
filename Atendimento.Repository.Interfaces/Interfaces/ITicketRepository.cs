@@ -8,9 +8,10 @@ namespace Atendimento.Repository.Interfaces.Interfaces
     public interface ITicketRepository : IRepositoryBase<Ticket>
     {
         int GetCount(int idStatusTicket);
-        CountsResponse GetCounts();
+        int GetTotalTicketsUsuario(int idUsuario);
+        CountsResponse GetCounts(int idCliente);
         TicketsResponse GetAllPaged(FilterRequest advancedFilter);
-        TicketResponse GetByIdWithAnexos(int id);
+        TicketResponse GetByIdFilled(int id, bool withAnexos);
         bool UpdateStatusTicket(Ticket ticket);
     }
 }

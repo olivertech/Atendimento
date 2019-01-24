@@ -8,6 +8,7 @@
     <Compile Remove="Classes\AnexoTicketBusiness.cs" />
     <Compile Remove="Classes\AnexoTicketMensagemBusiness.cs" />
     <Compile Remove="Classes\FileUploadBusiness.cs" />
+    <Compile Remove="Classes\GrupoBusiness.cs" />
   </ItemGroup>
 
   <ItemGroup>

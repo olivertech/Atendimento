@@ -7,8 +7,8 @@ namespace Atendimento.Repository.Mapping
     {
         public TicketMensagemMapping()
         {
-            ToTable("Ticket");
-            Map(m => m.Id).ToColumn("id_ticket_mensagem").IsKey().IsIdentity();
+            ToTable("Ticket_Mensagem");
+            Map(m => m.Id).ToColumn("id").IsKey().IsIdentity();
             Map(m => m.IdTicket).ToColumn("id_ticket");
             Map(m => m.IdUsuarioCliente).ToColumn("id_usuario_cliente");
             Map(m => m.IdAtendenteEmpresa).ToColumn("id_atendente_empresa");

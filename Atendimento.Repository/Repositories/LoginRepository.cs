@@ -3,6 +3,7 @@ using System.Linq;
 using Atendimento.Entities.Entities;
 using Atendimento.Repository.Interfaces.Interfaces;
 using Atendimento.Repository.Repositories.Base;
+using Dapper;
 using Dommel;
 
 namespace Atendimento.Repository.Repositories
@@ -13,7 +14,7 @@ namespace Atendimento.Repository.Repositories
         /// Valida os dados de login do atendente, buscando no banco
         /// um atendente que tenha login e senha válidos, e que esteja ativo
         /// </summary>
-        /// <param name="entity"></param>
+        /// <param name="login"></param>
         /// <returns></returns>
         public AtendenteEmpresa LoginAtendente(UserLogin login)
         {
@@ -23,16 +24,16 @@ namespace Atendimento.Repository.Repositories
             {
                 using (var conn = CreateConnection())
                 {
-                    result = conn.Select<AtendenteEmpresa>(q => q.Username == login.UserName && q.Password == login.Password && q.Ativo == true).FirstOrDefault();
+                    result = conn.Select<AtendenteEmpresa>(q => q.Username == login.UserName && q.Password == login.Password && q.Ativo).FirstOrDefault();
 
                     if (result != null) { result.Password = "***"; }
                 }
 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -40,7 +41,7 @@ namespace Atendimento.Repository.Repositories
         /// Valida os dados de login do cliente, buscando no banco
         /// um atendente que tenha login e senha válidos, e que esteja ativo
         /// </summary>
-        /// <param name="entity"></param>
+        /// <param name="login"></param>
         /// <returns></returns>
         public UsuarioCliente LoginCliente(UserLogin login)
         {
@@ -50,16 +51,34 @@ namespace Atendimento.Repository.Repositories
             {
                 using (var conn = CreateConnection())
                 {
-                    result = conn.Select<UsuarioCliente>(q => q.Username == login.UserName && q.Password == login.Password && q.Ativo == true).FirstOrDefault();
+                    var query = @"SELECT 
+                                    uc.id           AS id_usuario_cliente,
+                                    uc.nome,
+                                    uc.username,
+                                    uc.email,
+                                    uc.telefone,
+                                    uc.copia,
+                                    c.id            AS id_cliente,
+                                    c.nome
+                            FROM Usuario_Cliente uc
+                            INNER JOIN Cliente c ON uc.id_cliente = c.id
+                            WHERE uc.username = '" + login.UserName + "' and uc.password = '" + login.Password + "' AND uc.ativo = 1";
 
-                    if (result != null) { result.Password = "***"; }
+                    result = conn.Query<UsuarioCliente, Cliente, UsuarioCliente>(query,
+                                map: (usuario, cliente) =>
+                                {
+                                    usuario.Cliente = cliente;
+
+                                    return usuario;
+                                },
+                                splitOn: "id_cliente").SingleOrDefault();
                 }
 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -76,14 +95,14 @@ namespace Atendimento.Repository.Repositories
             {
                 using (var conn = CreateConnection())
                 {
-                    result = conn.Select<AtendenteEmpresa>(q => q.Email == usuario.Email && q.Ativo == true).FirstOrDefault();
+                    result = conn.Select<AtendenteEmpresa>(q => q.Email == usuario.Email && q.Ativo).FirstOrDefault();
                 }
 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -100,14 +119,14 @@ namespace Atendimento.Repository.Repositories
             {
                 using (var conn = CreateConnection())
                 {
-                    result = conn.Select<UsuarioCliente>(q => q.Email == usuario.Email && q.Ativo == true).FirstOrDefault();
+                    result = conn.Select<UsuarioCliente>(q => q.Email == usuario.Email && q.Ativo).FirstOrDefault();
                 }
 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
     }

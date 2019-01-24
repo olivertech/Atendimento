@@ -16,7 +16,6 @@ namespace Atendimento.Repository
                 config.AddMap(new CategoriaMapping());
                 config.AddMap(new ClassificacaoMapping());
                 config.AddMap(new StatusTicketMapping());
-                config.AddMap(new GrupoMapping());
                 config.AddMap(new EmpresaMapping());
                 config.AddMap(new AtendenteEmpresaMapping());
                 config.AddMap(new ClienteMapping());

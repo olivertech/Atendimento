@@ -15,7 +15,7 @@ namespace Atendimento.Infra.Base
         /// base na appsetting Local definida na web.config
         /// </summary>
         /// <returns>Url corrente</returns>
-        public string RecuperarUrl()
+        public static string RecuperarUrl()
         {
             string url = string.Empty;
 

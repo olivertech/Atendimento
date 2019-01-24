@@ -328,7 +328,6 @@
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\EmpresaController.cs" />
     <Compile Include="Controllers\FileUploadController.cs" />
-    <Compile Include="Controllers\GrupoController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\StatusTicketController.cs" />
     <Compile Include="Controllers\TemplateRespostaController.cs" />

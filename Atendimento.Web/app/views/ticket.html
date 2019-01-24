@@ -2,510 +2,531 @@
 <!-- Main wrapper - style you can find in pages.scss -->
 <!-- ============================================================== -->
 <div id="main-wrapper" ng-controller="ticketController">
-        <!-- header -->
-        <a name="inicio"></a>
-        <top-header></top-header>
-        <!-- left side bar -->
-        <left-side-bar></left-side-bar>
+    <!-- header -->
+    <top-header></top-header>
+    <!-- left side bar -->
+    <left-side-bar></left-side-bar>
+    <!-- ============================================================== -->
+    <!-- Page wrapper  -->
+    <!-- ============================================================== -->
+    <a name="inicio"></a>
+    <div class="page-wrapper">
         <!-- ============================================================== -->
-        <!-- Page wrapper  -->
+        <!-- Container fluid  -->
         <!-- ============================================================== -->
-        <div class="page-wrapper">
+        <div class="container-fluid">
             <!-- ============================================================== -->
-            <!-- Container fluid  -->
+            <!-- Bread crumb and right sidebar toggle -->
             <!-- ============================================================== -->
-            <div class="container-fluid">
-                <!-- ============================================================== -->
-                <!-- Bread crumb and right sidebar toggle -->
-                <!-- ============================================================== -->
-                <div class="row page-titles">
-                    <div class="col-md-5 align-self-center">
-                        <h4 class="text-themecolor">Detalhes do Atendimento</h4>
-                    </div>
-                    <div class="col-md-7 align-self-center text-right">
-                        <div class="d-flex justify-content-end align-items-center">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
-                                <li class="breadcrumb-item active">Detalhes do Atendimento</li>
-                            </ol>
-                        </div>
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center" ng-if="idCliente == 0">
+                    <h4 class="text-themecolor">Detalhes do Atendimento - Suporte</h4>
+                </div>
+                <div class="col-md-5 align-self-center" ng-if="idCliente != 0">
+                    <h4 class="text-themecolor">Detalhes do Atendimento - {{nomeCliente}}</h4>
+                </div>                
+                <div class="col-md-7 align-self-center text-right">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/dashboard"><u>Dashboard</u></a></li>
+                            <li class="breadcrumb-item active">Detalhes do Atendimento</li>
+                        </ol>
                     </div>
                 </div>
-                <!-- ============================================================== -->
-                <!-- End Bread crumb and right sidebar toggle -->
-                <!-- ============================================================== -->
-                <!-- ============================================================== -->
-                <!-- Start Page Content -->
-                <!-- ============================================================== -->
-                <!-- Detalhes do ticket original -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                        <h4 class="font-medium m-t-10">Atendimento Original</h4>
+            </div>
+            <!-- Alertas de sucesso e de erro -->
+            <div id="success-alert" class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <h3 class="text-success"><i class="fa fa-check-circle"></i> Sucesso.</h3>{{mensagem}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="error-alert" class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <h3 class="text-danger"><i class="fa fa-check-circle"></i> Erro.</h3>{{mensagem}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>                 
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Start Page Content -->
+            <!-- ============================================================== -->
+            <!-- Detalhes do ticket original -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                    <h4 class="font-medium m-t-10">Atendimento Original</h4>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                                    <strong>#Ticket</strong>
+                                    <br>
+                                    <p class="text-muted">{{::idTicket}}</p>
+                                </div>
+                                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                                    <strong>Categoria</strong>
+                                    <br>
+                                    <p class="text-muted">{{::categoria}}</p>
+                                </div>
+                                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                                    <strong>Classificação</strong>
+                                    <br>
+                                    <p class="text-muted">{{::classificacao.nome}}</p>
+                                </div>
+                                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                                    <strong>Status</strong>
+                                    <br>
+                                    <p ng-switch on="status.id" class="text-muted">
+                                        <span style="color: #008f6c; font-weight: 400" ng-switch-when="1">{{::status.nome}}</span>
+                                        <span style="color: #d19e01; font-weight: 400" ng-switch-when="2">{{::status.nome}}</span>
+                                        <span style="color: darkslategrey; font-weight: 400" ng-switch-when="3">{{::status.nome}}</span>
+                                        <span style="color: #fb9678; font-weight: 400" ng-switch-when="4">{{::status.nome}}</span>
+                                        <span style="color: #ab8ce4; font-weight: 400" ng-switch-when="5">{{::status.nome}}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                                    <strong>Autor</strong>
+                                    <br>
+                                    <p class="text-muted">{{::autor.nome}}</p>
+                                </div>
+                                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                                    <strong>Cliente</strong>
+                                    <br>
+                                    <p class="text-muted">{{::autor.cliente}}</p>
+                                </div>                                
+                                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                                    <strong>Data</strong>
+                                    <br>
+                                    <p class="text-muted">{{::data | date : 'dd/MM/yyyy HH:mm' }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                    <strong>Título</strong>
+                                    <br>
+                                    <p class="text-muted">{{::titulo}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                    <strong>Descrição</strong>
+                                    <br>
+                                    <p class="text-muted" style="white-space:pre-wrap;">{{::descricao}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                    <div ng-if="anexos.length > 0">
+                                        <strong>Anexo(s)</strong>
+                                        <br>
+                                        <ul>
+                                            <li ng-repeat="anexo in anexos track by anexo.id" class="anexos"><a href="{{logicalPathAnexos}}{{anexo.nome}}">{{::anexo.nome}}</a></li>
+                                        </ul>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-                                        <strong>#Ticket</strong>
-                                        <br>
-                                        <p class="text-muted">{{idTicket}}</p>
-                                    </div>
-                                    <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-                                        <strong>Categoria</strong>
-                                        <br>
-                                        <p class="text-muted">{{categoria}}</p>
-                                    </div>
-                                    <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-                                        <strong>Classificação</strong>
-                                        <br>
-                                        <p class="text-muted">{{classificacao}}</p>
-                                    </div>
-                                    <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-                                        <strong>Status</strong>
-                                        <br>
-                                        <p ng-switch on="status.id" class="text-muted">
-                                            <span style="color: #008f6c; font-weight: 400" ng-switch-when="1">{{status.nome}}</span>
-                                            <span style="color: #d19e01; font-weight: 400" ng-switch-when="2">{{status.nome}}</span>
-                                            <span style="color: darkslategrey; font-weight: 400" ng-switch-when="3">{{status.nome}}</span>
-                                            <span style="color: #fb9678; font-weight: 400" ng-switch-when="4">{{status.nome}}</span>
-                                            <span style="color: #ab8ce4; font-weight: 400" ng-switch-when="5">{{status.nome}}</span>
-                                        </p>
-                                    </div>
+                            </div>
+                            <div class="row m-t-20" ng-if="idCliente == 0">
+                                <div class="col-6">
+                                    &nbsp;
+                                </div>                                    
+                                <div class="col text-right" ng-if="isAdmin">
+                                    <span><strong>Mudar Classificação para: </strong></span>&nbsp;
+                                    <button type="button" class="btn btn-default waves-effect" ng-click="updateClassificacao(1)" ng-disabled="status.id == 2 || status.id == 3 || classificacao.id == 1"><i class="fas fa-chevron-circle-down fa-lg"></i> Baixa</button>
+                                    <button type="button" class="btn btn-default waves-effect" ng-click="updateClassificacao(2)" ng-disabled="status.id == 2 || status.id == 3 || classificacao.id == 2"><i class="fas fa-minus-circle fa-lg"></i> Média</button>
+                                    <button type="button" class="btn btn-default waves-effect" ng-click="updateClassificacao(3)" ng-disabled="status.id == 2 || status.id == 3 || classificacao.id == 3"><i class="fas fa-chevron-circle-up fa-lg"></i> Alta</button>
                                 </div>
-                                <div class="row">
-                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                                        <strong>Autor</strong>
-                                        <br>
-                                        <p class="text-muted">{{autor}}</p>
-                                    </div>
-                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                                        <strong>Data</strong>
-                                        <br>
-                                        <p class="text-muted">{{data}}</p>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                        <strong>Título</strong>
-                                        <br>
-                                        <p class="text-muted">{{titulo}}</p>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                        <strong>Descrição</strong>
-                                        <br>
-                                        <p class="text-muted" style="white-space:pre-wrap;">{{descricao}}</p>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                        <div ng-if="anexos.length > 0">
-                                            <strong>Anexo(s)</strong>
-                                            <br>
-                                            <ul>
-                                                <li ng-repeat="anexo in anexos track by anexo.id" class="anexos"><a href="{{logicalPathAnexos}}{{anexo.nome}}">{{anexo.nome}}</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row m-t-20">
-                                    <div class="col-2">
-                                        <button type="button" class="btn btn-info" ng-click="back()"><i class="fas fa-chevron-left"></i> Voltar</button>
-                                        <button type="button" class="btn btn-cyan" ng-click="updateStatusTicket(1)" ng-if="status.id == 2 || status.id == 3"><i class="fas fa-box-open"></i> Reabrir</button>
-                                    </div>  
-                                    <div class="col-1">
-                                        &nbsp;
-                                    </div>                                    
-                                    <div class="col text-right">
-                                        <span>Mudar Status para: </span>&nbsp;
-                                        <button type="button" class="btn btn-danger" ng-click="updateStatusTicket(3)" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-ban fa-lg"></i> Cancelado</button>
-                                        <button type="button" class="btn btn-default" ng-click="updateStatusTicket(2)" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-check fa-lg"></i> Concluído</button>
-                                        <button type="button" class="btn" style="color: white; background-color: #fb9678; font-weight: 400" ng-click="updateStatusTicket(4)" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-user fa-lg"></i> Pendente Com Cliente</button>
-                                        <button type="button" class="btn" style="color: white; background-color: #ab8ce4; font-weight: 400" ng-click="updateStatusTicket(5)" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-eye fa-lg"></i> Em Análise</button>
-                                        <button type="button" class="btn" style="color: white; background-color: #008f6c; font-weight: 400" ng-click="updateStatusTicket(1)" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-clock fa-lg"></i> Aguardando Atendimento</button>
-                                    </div>  
-                                </div>
+                            </div>
+                            <div class="row m-t-20">
+                                <div class="col-2">
+                                    <button type="button" class="btn btn-info waves-effect" ng-click="back()"><i class="fas fa-chevron-left"></i> Voltar</button>
+                                    <button type="button" class="btn btn-cyan waves-effect" ng-click="updateStatusTicket(1)" ng-if="status.id == 2 || status.id == 3"><i class="fas fa-box-open"></i> Reabrir</button>
+                                </div>  
+                                <div class="col-1">
+                                    &nbsp;
+                                </div>                                    
+                                <div class="col text-right" ng-if="isAdmin">
+                                    <span><strong>Mudar Status para: </strong></span>&nbsp;
+                                    <button type="button" class="btn btn-danger waves-effect" ng-click="updateStatusTicket(3)" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-ban fa-lg"></i> Cancelado</button>
+                                    <button type="button" class="btn btn-default waves-effect" ng-click="updateStatusTicket(2)" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-check fa-lg"></i> Concluído</button>
+                                    <button type="button" class="btn waves-effect" style="color: white; background-color: #fb9678; font-weight: 400" ng-click="updateStatusTicket(4)" ng-disabled="status.id == 2 || status.id == 3" ng-if="idCliente == 0"><i class="fas fa-user fa-lg"></i> Pendente Com Cliente</button>
+                                    <button type="button" class="btn waves-effect" style="color: white; background-color: #ab8ce4; font-weight: 400" ng-click="updateStatusTicket(5)" ng-disabled="status.id == 2 || status.id == 3" ng-if="idCliente == 0"><i class="fas fa-eye fa-lg"></i> Em Análise</button>
+                                    <button type="button" class="btn waves-effect" style="color: white; background-color: #008f6c; font-weight: 400" ng-click="updateStatusTicket(1)" ng-disabled="status.id == 2 || status.id == 3" ng-if="idCliente == 0"><i class="fas fa-clock fa-lg"></i> Aguardando Atendimento</button>
+                                </div>  
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- Alertas de sucesso e de erro -->
-                <div id="success-alert" class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <h3 class="text-success"><i class="fa fa-check-circle"></i> Sucesso.</h3>{{mensagemAlerta}}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div id="error-alert" class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <h3 class="text-success"><i class="fa fa-check-circle"></i> Erro.</h3>{{mensagemAlerta}}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    </div>
-                </div> 
-                <!-- Mensagens associadas ao ticket original -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                        <h4 class="font-medium m-t-10">Mensagens Associadas ao Atendimento</h4>
-                                    </div> -->
-                                    <div class="col">
-                                        <h4 class="font-medium m-t-10">Mensagens Associadas ao Atendimento</h4>
-                                    </div>  
-                                    <div class="col-4">
-                                        &nbsp;
-                                    </div>                                    
-                                    <div class="col text-right">
-                                        <button type="button" class="btn btn-cyan" ng-click="initModalNewMessage()" data-toggle="modal" data-target="#add-mensagem" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-plus"></i> Nova Mensagem</button>
-                                    </div>                                     
-                                </div>
-                                <div class="row" ng-if="messages.length == 0">   
-                                    <table style="margin-left:10px; margin-right:25px" class="table m-t-20 table-hover no-wrap contact-list table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th style="text-align: center">Não existem mensagens</th>
-                                            </tr>
-                                        </thead>
-                                    </table> 
-                                </div>    
-                                <div class="row" ng-if="messages.length > 0">   
-                                    <table style="margin-left:10px; margin-right:25px" class="table m-t-20 table-hover no-wrap contact-list table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 10%; text-align: center">Data</th>
-                                                <th style="width: 70%;">Mensagem</th>
-                                                <th style="width: 20%; text-align: center">Autor</th>
-                                            </tr>
-                                        </thead>
-                                    </table>                                    
-                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 messages">
-                                        <table class="table m-t-20 table-hover no-wrap contact-list table-striped">
-                                            <tbody>
-                                                <tr ng-repeat="message in messages track by message.id">
-                                                    <td style="width: 10%; text-align: center">
-                                                        {{message.data | date : 'dd/MM/yyyy HH:mm'}}<br>
-                                                        <span class="label label-rounded label-danger m-t-20" ng-if="message.interno">Mensagem Interna</span>
-                                                    </td>
-                                                    <td>
-                                                        <div class="row">
-                                                            <div class="col-sm-12">
-                                                                <div style="width: 70%; white-space:pre-wrap;">{{message.descricao}}</div>
-                                                            </div>
+            </div>
+            <!-- Mensagens associadas ao ticket original -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <h4 class="font-medium m-t-10">Mensagens Associadas ao Atendimento</h4>
+                                </div>  
+                                <div class="col-4">
+                                    &nbsp;
+                                </div>                                    
+                                <div class="col text-right">
+                                    <button type="button" class="btn btn-cyan" ng-click="initModalNewMessage()" data-toggle="modal" data-target="#add-mensagem" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-plus"></i> Nova Mensagem</button>
+                                </div>                                     
+                            </div>
+                            <div class="row" ng-if="messages.length == 0">   
+                                <table style="margin-left:10px; margin-right:25px" class="table m-t-20 table-hover no-wrap contact-list table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: center">Não existem mensagens</th>
+                                        </tr>
+                                    </thead>
+                                </table> 
+                            </div>    
+                            <div class="row" ng-if="messages.length > 0">   
+                                <table style="margin-left:10px; margin-right:25px" class="table m-t-20 table-hover no-wrap contact-list table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 10%; text-align: center">Data</th>
+                                            <th style="width: 70%;">Mensagem</th>
+                                            <th style="width: 20%; text-align: center">Autor</th>
+                                        </tr>
+                                    </thead>
+                                </table>                                    
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 messages">
+                                    <table class="table m-t-20 table-hover no-wrap contact-list table-striped">
+                                        <tbody>
+                                            <tr ng-repeat="message in messages track by message.id">
+                                                <td style="width: 10%; text-align: center">
+                                                    <strong>{{message.data | date : 'dd/MM/yyyy HH:mm'}}</strong><br>
+                                                    <span class="label label-rounded label-danger m-t-20" ng-if="message.interno">Mensagem Interna</span>
+                                                </td>
+                                                <td>
+                                                    <div class="row">
+                                                        <div class="col-sm-12">
+                                                            <div style="width: 70%; white-space:pre-wrap;">{{message.descricao}}</div>
                                                         </div>
-                                                        <div class="row m-t-20 m-b-20">
-                                                            <div class="col-sm-12">
-                                                                <ul ng-if="message.anexos.length > 0" class="m-t-0 m-b-0">
-                                                                    <li class="anexos" ng-repeat="anexo in splitAnexos(message.anexos)"><a href="{{logicalPathAnexos}}{{anexo}}">{{anexo}}</a></li>
-                                                                </ul>
-                                                            </div>
+                                                    </div>
+                                                    <div class="row m-t-20 m-b-20" ng-if="message.anexos.length > 0">
+                                                        <div class="col-sm-12">
+                                                            <strong>Anexo(s)</strong>
+                                                            <br>
+                                                            <ul class="m-t-0 m-b-0">
+                                                                <li class="anexos" ng-repeat="anexo in splitAnexos(message.anexos)"><a href="{{logicalPathAnexos}}{{anexo}}">{{anexo}}</a></li>
+                                                            </ul>
                                                         </div>
-                                                    </td>
-                                                    <td style="width: 20%; text-align: center">{{message.autor}}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>                           
-                                <div class="row m-t-20">
-                                    <div class="col">
-                                        <button type="button" class="btn btn-info" ng-click="back()"><i class="fas fa-chevron-left"></i> Voltar</button>
-                                    </div>  
-                                    <div class="col-4">
-                                        &nbsp;
-                                    </div>                                    
-                                    <div class="col text-right">
-                                        <button type="button" class="btn btn-cyan" ng-click="initModalNewMessage()" data-toggle="modal" data-target="#add-mensagem" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-plus"></i> Nova Mensagem</button>
-                                    </div>  
+                                                    </div>
+                                                </td>
+                                                <td style="width: 20%; text-align: center"><strong>{{message.autor}}</strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
+                            </div>                           
+                            <div class="row m-t-20">
+                                <div class="col">
+                                    <button type="button" class="btn btn-info waves-effect" ng-click="back()"><i class="fas fa-chevron-left"></i> Voltar</button>
+                                </div>  
+                                <div class="col-4">
+                                    &nbsp;
+                                </div>                                    
+                                <div class="col text-right">
+                                    <button type="button" class="btn btn-cyan waves-effect" ng-click="initModalNewMessage()" data-toggle="modal" data-target="#add-mensagem" ng-disabled="status.id == 2 || status.id == 3"><i class="fas fa-plus"></i> Nova Mensagem</button>
+                                </div>  
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- ============================================================== -->
-                <!-- End Page Content -->
-                <!-- ============================================================== -->
             </div>
             <!-- ============================================================== -->
-            <!-- Begin Modal Nova Mensagem -->
+            <!-- End Page Content -->
             <!-- ============================================================== -->
-            <div id="add-mensagem" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="myModalLabel">Nova Mensagem</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <form class="form-horizontal form-material" name="novaMensagemForm">
-                                <div class="form-group">
-                                    <div class="form-group row">
-                                        <label for="ticket" class="col-sm-3 col-form-label text-center">
-                                            <strong>Mensagem</strong>
-                                            <p><br><i class="far fa-copy fa-2x" title="Templates de Resposta" ng-click="initModalTemplates()" data-toggle="modal" data-target="#templates" style="cursor: pointer"></i></p>
-                                        </label>
-                                        <div class="col-sm-9">
-                                            <textarea class="form-control" cols="60" rows="12" placeholder="Descreva aqui a mensagem de resposta" 
-                                                ng-model="mensagem.descricao"
-                                                ng-required="true" 
-                                                style="white-space:pre-wrap;"></textarea>
-                                        </div>                                        
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-3"></div>
-                                        <div class="col-sm-9 form-check m-t-20 m-b-20">
-                                            <input class="form-check-input" type="checkbox" value="interno" id="mensagem.interno"
-                                                ng-true-value="true"
-                                                ng-false-value="false"
-                                                ng-model="mensagem.interno">
-                                            <label class="form-check-label" for="mensagemInterno" style="color: red">
-                                                Mensagem Interna
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="anexos"><strong>Anexar arquivos ao novo atendimento</strong></label>
-                                        <select class="form-control" 
-                                                ng-init="qtdeAnexos = qtdeAnexos || options[0].value"
-                                                ng-model="qtdeAnexos"
-                                                ng-click="validateFiles(qtdeAnexos)"
-                                                ng-options="qtde.id as qtde.nome for qtde in qtdes | orderBy: 'id'">
-                                        </select>
-                                    </div>                                    
-                                    <div class="form-group row" ng-if="qtdeAnexos == 1">
-                                        <div class="col-sm-12">
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
-                                                <input  id="file1"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file1"
-                                                        ngf-change="fileSelected($files, $event, b)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file1}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row" ng-if="qtdeAnexos == 2">
-                                        <div class="col-sm-12">
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
-                                                <input  id="file1"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file1"
-                                                        ngf-change="fileSelected($files, $event, b)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file1}}
-                                            </div><br>                                        
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 2</span>
-                                                <input  id="file2"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file2"
-                                                        ngf-change="fileSelected($files, $event)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file2}}
-                                            </div>
-                                        </div>
-                                    </div>  
-                                    <div class="form-group row" ng-if="qtdeAnexos == 3">
-                                        <div class="col-sm-12">
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
-                                                <input  id="file1"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file1"
-                                                        ngf-change="fileSelected($files, $event)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file1}}
-                                            </div><br>                                        
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 2</span>
-                                                <input  id="file2"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file2"
-                                                        ngf-change="fileSelected($files, $event)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file2}}
-                                            </div><br>
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 3</span>
-                                                <input  id="file3"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file3"
-                                                        ngf-change="fileSelected($files, $event)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file3}}
-                                            </div>                                            
-                                        </div>
-                                    </div>
-                                    <div class="form-group row" ng-if="qtdeAnexos == 4">
-                                        <div class="col-sm-12">
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
-                                                <input  id="file1"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file1"
-                                                        ngf-change="fileSelected($files, $event)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file1}}
-                                            </div><br>                                        
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 2</span>
-                                                <input  id="file2"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file2"
-                                                        ngf-change="fileSelected($files, $event)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file2}}
-                                            </div><br>
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 3</span>
-                                                <input  id="file3"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file3"
-                                                        ngf-change="fileSelected($files, $event)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file3}}
-                                            </div><br>
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 4</span>
-                                                <input  id="file4"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file4"
-                                                        ngf-change="fileSelected($files, $event)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file4}}
-                                            </div> 
-                                        </div>
-                                    </div>
-                                    <div class="form-group row" ng-if="qtdeAnexos == 5">
-                                        <div class="col-sm-12">
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
-                                                <input  id="file1"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file1"
-                                                        ngf-change="fileSelected($files, $event)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file1}}
-                                            </div><br>                                        
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 2</span>
-                                                <input  id="file2"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file2"
-                                                        ngf-change="fileSelected($files, $event)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file2}}
-                                            </div><br>
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 3</span>
-                                                <input  id="file3"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file3"
-                                                        ngf-change="fileSelected($files, $event)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file3}}
-                                            </div><br>
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 4</span>
-                                                <input  id="file4"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file4"
-                                                        ngf-change="fileSelected($files, $event)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file4}}
-                                            </div><br>
-                                            <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 5</span>
-                                                <input  id="file5"                                                       
-                                                        type="file" class="upload" 
-                                                        ngf-select
-                                                        ng-model="mensagem.file5"
-                                                        ngf-change="fileSelected($files, $event)"
-                                                        accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file5}}
-                                            </div>                                             
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" id="submit" ng-click="saveNewMessage();" class="btn btn-info waves-effect" data-dismiss="modal" ng-disabled="novaMensagemForm.$invalid">Salvar</button>
-                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cancelar</button>
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
-            <!-- ============================================================== -->
-            <!-- End Modal Nova Mensagem  -->
-            <!-- ============================================================== -->
-            <!-- ============================================================== -->
-            <!-- Begin Modal de Templates -->
-            <!-- ============================================================== -->
-            <div id="templates" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="myModalLabel">Templates de Resposta</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <form class="form-horizontal form-material" name="novaMensagemForm">
-                                <div class="form-group">
-                                    <div class="form-group row">
-                                        <label for="ticket" class="col-sm-3 col-form-label text-center">
-                                            <strong>Templates</strong>
-                                        </label>
-                                        <div class="col-sm-9">
-                                            <select class="form-control"
-                                                    ng-init="template.templateresposta = template.templateresposta || options[0].value"
-                                                    ng-model="template.templateresposta"
-                                                    ng-options="template.titulo for template in templates | orderBy: 'titulo'">
-                                                <option value="">Selecione o template</option>
-                                            </select>
-                                        </div>                                        
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="ticket" class="col-sm-3 col-form-label text-center"><strong>Conteúdo</strong></label>
-                                        <div class="col-sm-9" style="white-space:pre-wrap;" data-dismiss="modal" ng-copyable>{{template.conteudo}}</div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <span style="color: red" ng-if="template.conteudo">Clique sobre o texto, para copiar para a área de transferência !!!</span>
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
-            <!-- ============================================================== -->
-            <!-- End Modal de Templates -->
-            <!-- ============================================================== -->   
         </div>
         <!-- ============================================================== -->
-        <!-- End Page wrapper  -->
+        <!-- Begin Modal Nova Mensagem -->
+        <!-- ============================================================== -->
+        <div id="add-mensagem" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">Nova Mensagem</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal form-material" name="novaMensagemForm">
+                            <div class="form-group">
+                                <div class="form-group row">
+                                    <label for="ticket" class="col-sm-3 col-form-label text-center">
+                                        <strong>Descrição</strong>
+                                        <p ng-if="idCliente == 0"><br><i class="far fa-copy fa-2x" title="Templates de Resposta" ng-click="initModalTemplates()" data-toggle="modal" data-target="#templates" style="cursor: pointer"></i></p>
+                                    </label>
+                                    <div class="col-sm-9" ng-if="idCliente == 0">
+                                        <textarea class="form-control" cols="60" rows="12" placeholder="Descreva aqui a mensagem ou clique no icone ao lado, para selecionar um template de resposta" 
+                                            ng-model="mensagem.descricao"
+                                            ng-required="true"
+                                            style="white-space:pre-wrap;"></textarea>
+                                    </div>
+                                    <div class="col-sm-9" ng-if="idCliente != 0">
+                                        <textarea class="form-control" cols="60" rows="12" placeholder="Descreva aqui a sua mensagem" 
+                                            ng-model="mensagem.descricao"
+                                            ng-required="true"
+                                            style="white-space:pre-wrap;"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group row" ng-if="idCliente == 0">
+                                    <div class="col-sm-3"></div>
+                                    <div class="col-sm-9 form-check m-t-20 m-b-20">&nbsp;&nbsp;
+                                        <input class="form-check-input" type="checkbox" value="interno" id="interno"
+                                            ng-true-value="true"
+                                            ng-false-value="false"
+                                            ng-model="mensagem.interno">
+                                        <label class="form-check-label" for="interno" style="color: red">
+                                            Mensagem Interna
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="anexos"><strong>Anexar arquivos ao novo atendimento</strong></label>
+                                    <select class="form-control" 
+                                            ng-init="qtdeAnexos = qtdeAnexos || options[0].value"
+                                            ng-model="qtdeAnexos"
+                                            ng-click="validateFiles(qtdeAnexos)"
+                                            ng-options="qtde.id as qtde.nome for qtde in qtdes | orderBy: 'id'">
+                                    </select>
+                                </div>                                    
+                                <div class="form-group row" ng-if="qtdeAnexos == 1">
+                                    <div class="col-sm-12">
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
+                                            <input  id="file1"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file1"
+                                                    ngf-change="fileSelected($files, $event, b)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file1}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row" ng-if="qtdeAnexos == 2">
+                                    <div class="col-sm-12">
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
+                                            <input  id="file1"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file1"
+                                                    ngf-change="fileSelected($files, $event, b)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file1}}
+                                        </div><br>                                        
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 2</span>
+                                            <input  id="file2"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file2"
+                                                    ngf-change="fileSelected($files, $event)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file2}}
+                                        </div>
+                                    </div>
+                                </div>  
+                                <div class="form-group row" ng-if="qtdeAnexos == 3">
+                                    <div class="col-sm-12">
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
+                                            <input  id="file1"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file1"
+                                                    ngf-change="fileSelected($files, $event)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file1}}
+                                        </div><br>                                        
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 2</span>
+                                            <input  id="file2"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file2"
+                                                    ngf-change="fileSelected($files, $event)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file2}}
+                                        </div><br>
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 3</span>
+                                            <input  id="file3"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file3"
+                                                    ngf-change="fileSelected($files, $event)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file3}}
+                                        </div>                                            
+                                    </div>
+                                </div>
+                                <div class="form-group row" ng-if="qtdeAnexos == 4">
+                                    <div class="col-sm-12">
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
+                                            <input  id="file1"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file1"
+                                                    ngf-change="fileSelected($files, $event)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file1}}
+                                        </div><br>                                        
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 2</span>
+                                            <input  id="file2"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file2"
+                                                    ngf-change="fileSelected($files, $event)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file2}}
+                                        </div><br>
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 3</span>
+                                            <input  id="file3"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file3"
+                                                    ngf-change="fileSelected($files, $event)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file3}}
+                                        </div><br>
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 4</span>
+                                            <input  id="file4"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file4"
+                                                    ngf-change="fileSelected($files, $event)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file4}}
+                                        </div> 
+                                    </div>
+                                </div>
+                                <div class="form-group row" ng-if="qtdeAnexos == 5">
+                                    <div class="col-sm-12">
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><span><i class="fas fa-file-upload"></i>Selecionar Arquivo 1</span>
+                                            <input  id="file1"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file1"
+                                                    ngf-change="fileSelected($files, $event)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file1}}
+                                        </div><br>                                        
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 2</span>
+                                            <input  id="file2"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file2"
+                                                    ngf-change="fileSelected($files, $event)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file2}}
+                                        </div><br>
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 3</span>
+                                            <input  id="file3"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file3"
+                                                    ngf-change="fileSelected($files, $event)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file3}}
+                                        </div><br>
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 4</span>
+                                            <input  id="file4"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file4"
+                                                    ngf-change="fileSelected($files, $event)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file4}}
+                                        </div><br>
+                                        <div class="fileupload btn btn-cyan btn-block waves-effect waves-light upload-button"><i class="fas fa-file-upload"></i>Selecionar Arquivo 5</span>
+                                            <input  id="file5"                                                       
+                                                    type="file" class="upload" 
+                                                    ngf-select
+                                                    ng-model="mensagem.file5"
+                                                    ngf-change="fileSelected($files, $event)"
+                                                    accept="image/*,.doc,.docx,.xls,.xlsx,.pdf">&nbsp;{{mensagem.file5}}
+                                        </div>                                             
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row">
+                            <div class="col-3">
+                            </div>
+                            <div class="col-9 text-right">
+                                <button type="button" id="submit" ng-click="saveNewMessage();" class="btn btn-info waves-effect" data-dismiss="modal" ng-disabled="mensagem.descricao.length == 0 || mensagem.descricao == undefined"><i class="fas fa-check"></i> Salvar</button>
+                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal"><i class="fas fa-ban"></i> Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Modal Nova Mensagem  -->
         <!-- ============================================================== -->
         <!-- ============================================================== -->
-        <!-- footer -->
+        <!-- Begin Modal de Templates -->
         <!-- ============================================================== -->
-        <footer class="footer">
-            © 2018 Sistema de Atendimento by Algorix Sistemas de Informática
-        </footer>
+        <div id="templates" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">Templates de Resposta</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal form-material" name="novaMensagemForm">
+                            <div class="form-group">
+                                <div class="form-group row">
+                                    <label for="ticket" class="col-sm-3 col-form-label text-center">
+                                        <strong>Templates</strong>
+                                    </label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control"
+                                                ng-init="template.templateresposta = template.templateresposta || options[0].value"
+                                                ng-model="template.templateresposta"
+                                                ng-options="template.titulo for template in templates | orderBy: 'titulo'">
+                                            <option value="">Selecione o template</option>
+                                        </select>
+                                    </div>                                        
+                                </div>
+                                <div class="form-group row">
+                                    <label for="ticket" class="col-sm-3 col-form-label text-center"><strong>Conteúdo</strong></label>
+                                    <div class="col-sm-9" style="white-space:pre-wrap;" data-dismiss="modal" ng-copyable>{{template.conteudo}}</div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <span style="color: red">Atenção: Selecione o template, dê um clique simples (com o botão esquerdo do mouse) sobre o texto, para copiar para a área de transferência, e cole (Ctrl + V) o texto no campo 'Descrição' da resposta.</span>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
         <!-- ============================================================== -->
-        <!-- End footer -->
-        <!-- ============================================================== -->
+        <!-- End Modal de Templates -->
+        <!-- ============================================================== -->   
     </div>
     <!-- ============================================================== -->
-    <!-- End Wrapper -->
+    <!-- End Page wrapper  -->
     <!-- ============================================================== -->
-    
-    <!-- Esse arquivo tem que importar aqui, pois senão os elementos não são achados pelo jquery -->
-    <!-- <script src="./app/assets/scripts/custom.js"></script> -->
-    <script src="./app/assets/scripts/sidebarmenu.js"></script>
-    <script src="./app/assets/scripts/utilities.js"></script>
-    <script src="./app/assets/scripts/fullscreen.js"></script>
-    <script src="./app/assets/scripts/dashboard.js"></script>
+    <app-footer></app-footer>
+</div>
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->
+
+<!-- Esse arquivo tem que importar aqui, pois senão os elementos não são achados pelo jquery -->
+<script src="./app/assets/scripts/custom.js"></script>
+<script src="./app/assets/scripts/sidebarmenu.js"></script>
+<script src="./app/assets/scripts/utilities.js"></script>
+<script src="./app/assets/scripts/fullscreen.js"></script>
+<script src="./app/assets/scripts/dashboard.js"></script>

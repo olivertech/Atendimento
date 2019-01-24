@@ -20,8 +20,6 @@ namespace Atendimento.WebApi.Mappers
             CreateMap<ClassificacaoUpdate, Classificacao>();
             CreateMap<StatusTicketRequest, StatusTicket>();
             CreateMap<StatusTicketUpdate, StatusTicket>();
-            CreateMap<GrupoRequest, Grupo>();
-            CreateMap<GrupoUpdate, Grupo>();
             CreateMap<EmpresaRequest, Empresa>();
             CreateMap<EmpresaUpdate, Empresa>();
             CreateMap<AtendenteEmpresaRequest, AtendenteEmpresa>();

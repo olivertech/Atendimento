@@ -19,7 +19,8 @@
         public string Username { get; set; }
         public string Password { get; set; }
         public string Email { get; set; }
-        public string Telefone { get; set; }
+        public string TelefoneFixo { get; set; }
+        public string TelefoneCelular { get; set; }
         public bool Copia { get; set; }
         public bool Provisorio { get; set; }
         public bool Ativo { get; set; }

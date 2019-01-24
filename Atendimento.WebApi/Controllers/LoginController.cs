@@ -23,14 +23,20 @@ namespace Atendimento.WebApi.Controllers
     public class LoginController : ApiController
     {
         private readonly ILoginBusiness _business;
+        private readonly IAtendenteEmpresaBusiness _atendenteEmpresaBusiness;
+        private readonly IUsuarioClienteBusiness _usuarioClienteBusiness;
 
         /// <summary>
         /// Construtor
         /// </summary>
         /// <param name="business"></param>
-        public LoginController(ILoginBusiness business)
+        /// <param name="atendenteEmpresaBusiness"></param>
+        /// <param name="usuarioClienteBusiness"></param>
+        public LoginController(ILoginBusiness business, IAtendenteEmpresaBusiness atendenteEmpresaBusiness, IUsuarioClienteBusiness usuarioClienteBusiness)
         {
             _business = business;
+            _atendenteEmpresaBusiness = atendenteEmpresaBusiness;
+            _usuarioClienteBusiness = usuarioClienteBusiness;
         }
 
         /// <summary>
@@ -40,48 +46,48 @@ namespace Atendimento.WebApi.Controllers
         /// </summary>
         /// <param name="loginRequest">Dados do usuário para autenticar o login</param>
         /// <returns></returns>
-        [Route("Authenticate")]
+        [Route(nameof(Authenticate))]
         [HttpPost]
         [AllowAnonymous]
         public IHttpActionResult Authenticate([FromBody] LoginRequest loginRequest)
         {
-            HttpResponseMessage responseMsg = new HttpResponseMessage();
-            IHttpActionResult result;
-
-            try
+            using (var responseMsg = new HttpResponseMessage())
             {
-                //Se os dados do login estão null, retornar BadRequest
-                if (loginRequest == null)
-                    return BadRequest("Dados inválidos");
+                IHttpActionResult result;
 
-                UserLogin userLogin = new UserLogin { UserName = loginRequest.Username, Password = loginRequest.Password, UserType = loginRequest.UserType };
-
-                //Recupera o usuário de atendimento
-                var loginResponse = _business.DoLogin(userLogin);
-
-                //Se o usuário não foi encontrado com base nos dados do login, retornar Unauthorized
-                if (loginResponse == null)
+                try
                 {
-                    var msg = new HttpResponseMessage(HttpStatusCode.Unauthorized) { ReasonPhrase = "Login não autorizado." };
-                    throw new HttpResponseException(msg);
+                    //Se os dados do login estão null, retornar BadRequest
+                    if (loginRequest == null)
+                        return BadRequest("Dados inválidos.");
+
+                    var userLogin = new UserLogin { UserName = loginRequest.Username, Password = loginRequest.Password, UserType = loginRequest.UserType };
+
+                    //Recupera o usuário de atendimento
+                    var loginResponse = _business.DoLogin(userLogin);
+
+                    //Se o usuário não foi encontrado com base nos dados do login, retornar Unauthorized
+                    if (loginResponse == null)
+                    {
+                        return BadRequest("Login não autorizado.");
+                    }
+
+                    //Cria a token de autenticação e autorização
+                    if (loginRequest.UserType == Tipos.Login.Atendimento)
+                        loginResponse.Token = CreateToken(loginRequest.Username.ToLower(), ((AtendenteEmpresa)loginResponse.Usuario).Email);
+                    else
+                        loginResponse.Token = CreateToken(loginRequest.Username.ToLower(), ((UsuarioCliente)loginResponse.Usuario).Email);
+
+                    //Monta response
+                    result = Ok(Retorno<LoginResponse>.Criar(true, "Acesso Autorizado", loginResponse));
+
+                    //Retorna o response com o token
+                    return result;
                 }
-
-                //Cria a token de autenticação e autorização
-                if (loginRequest.UserType == Tipos.Login.Atendimento)
-                    loginResponse.Token = CreateToken(loginRequest.Username.ToLower(), ((AtendenteEmpresa)loginResponse.Usuario).Email);
-                else
-                    loginResponse.Token = CreateToken(loginRequest.Username.ToLower(), ((UsuarioCliente)loginResponse.Usuario).Email);
-
-                //Monta response
-                result = Ok(Retorno<LoginResponse>.Criar(true, "Acesso Autorizado", loginResponse));
-
-                //Retorna o response com o token
-                return result;
-
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
             }
         }
 
@@ -95,37 +101,110 @@ namespace Atendimento.WebApi.Controllers
         [AllowAnonymous]
         public IHttpActionResult DoRecover([FromBody] RecoverRequest recoverRequest)
         {
-            HttpResponseMessage responseMsg = new HttpResponseMessage();
-            IHttpActionResult result;
-
-            try
+            using (var responseMsg = new HttpResponseMessage())
             {
-                //Se o email enviado é null, retornar BadRequest
-                if (recoverRequest == null)
-                    return BadRequest("Email inválido");
+                IHttpActionResult result;
 
-                UserLogin userLogin = new UserLogin { Email = recoverRequest.Email, UserType = recoverRequest.UserType };
+                try
+                {
+                    //Se o email enviado é null, retornar BadRequest
+                    if (recoverRequest == null)
+                        return BadRequest("Dados inválidos.");
 
-                //Recupera o usuário de atendimento
-                RecoverResponse recoverResponse = _business.DoRecover(userLogin);
-                
-                //Monta response
-                result = Ok(Retorno<RecoverResponse>.Criar(true, "Recuperação de Senha Realizada Com Sucesso", recoverResponse));
+                    var userLogin = new UserLogin { Email = recoverRequest.Email, UserType = recoverRequest.UserType };
 
-                //Retorna o response com o token
-                return result;
+                    //Recupera o usuário de atendimento
+                    var recoverResponse = _business.DoRecover(userLogin);
 
+                    //Monta response
+                    result = Ok(Retorno<RecoverResponse>.Criar(true, "Recuperação de Senha Realizada Com Sucesso.", recoverResponse));
+
+                    //Retorna o response com o token
+                    return result;
+
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
             }
-            catch (Exception ex)
+        }
+
+        /// <summary>
+        /// Action de troca de senha provisória
+        /// </summary>
+        /// <param name="changePasswordRequest"></param>
+        /// <returns></returns>
+        [Route("ChangePassword")]
+        [HttpPost]
+        [AllowAnonymous]
+        public IHttpActionResult ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)
+        {
+            AtendenteEmpresa atendente = null;
+            UsuarioCliente usuario = null;
+
+            using (var responseMsg = new HttpResponseMessage())
             {
-                return InternalServerError(ex);
+                IHttpActionResult result = null;
+
+                try
+                {
+                    //Se o email enviado é null, retornar BadRequest
+                    if (changePasswordRequest == null)
+                        return BadRequest("Dados inválidos.");
+
+                    if (changePasswordRequest.UserType == Tipos.Login.Atendimento)
+                    {
+                        atendente = _atendenteEmpresaBusiness.GetByUsernameAndPassword(changePasswordRequest.Username, changePasswordRequest.OldPassword);
+
+                        if (atendente != null)
+                        {
+                            atendente.Password = changePasswordRequest.NewPassword;
+                            atendente.Provisorio = false;
+
+                            if (_atendenteEmpresaBusiness.UpdatePassword(atendente))
+                            {
+                                atendente.Password = "***";
+
+                                //Monta response
+                                result = Ok(Retorno<AtendenteEmpresa>.Criar(true, "Troca de Senha Realizada Com Sucesso.", atendente));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        usuario = _usuarioClienteBusiness.GetByUsernameAndPassword(changePasswordRequest.Username, changePasswordRequest.OldPassword);
+
+                        if (usuario != null)
+                        {
+                            usuario.Password = changePasswordRequest.NewPassword;
+                            usuario.Provisorio = false;
+
+                            if (_usuarioClienteBusiness.UpdatePassword(usuario))
+                            {
+                                usuario.Password = "***";
+
+                                //Monta response
+                                result = Ok(Retorno<UsuarioCliente>.Criar(true, "Troca de Senha Realizada Com Sucesso.", usuario));
+                            }
+                        }
+                    }
+                    
+                    //Retorna o response com o token
+                    return result;
+
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
             }
         }
 
         #region Métodos Privados
 
         /// <summary>
-        /// Metodo privado que cria o token de autenticação que deverá ser 
+        /// Metodo privado que cria o token de autenticação que deverá ser
         /// enviado em todas as requisições feitas aos serviços
         /// </summary>
         /// <param name="userName"></param>
@@ -137,12 +216,12 @@ namespace Atendimento.WebApi.Controllers
             // PREPARE TOKEN PARAMETERS
             //==========================
             //Set issued at date
-            DateTime issuedAt = DateTime.UtcNow;
-            DateTime expires = DateTime.UtcNow;
+            var issuedAt = DateTime.UtcNow;
+            var expires = DateTime.UtcNow;
 
             try
             {
-                double result = double.Parse(ConfigurationManager.AppSettings["TokenExpirationTimeInDays"].ToString());
+                var result = double.Parse(ConfigurationManager.AppSettings["TokenExpirationTimeInDays"].ToString());
 
                 //set the time when it expires
                 expires = DateTime.UtcNow.AddDays(result);
@@ -153,7 +232,7 @@ namespace Atendimento.WebApi.Controllers
             }
 
             //create a identity and add claims to the user which we want to log in
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity(new[]
+            var claimsIdentity = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.Name, userName),
                 new Claim(ClaimTypes.Email, email)
@@ -162,7 +241,7 @@ namespace Atendimento.WebApi.Controllers
             // * Código usado pra gerar a chave abaixo:
             // *  var hmac = new HMACSHA256();
             // *  var key1 = Convert.ToBase64String(hmac.Key);
-            string key = ConfigurationManager.AppSettings.Get("SecretKey");
+            var key = ConfigurationManager.AppSettings.Get("SecretKey");
 
             var securityKey = new SymmetricSecurityKey(Convert.FromBase64String(key));
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
@@ -171,7 +250,7 @@ namespace Atendimento.WebApi.Controllers
             //CREATE JSON WEB TOKEN - ATTENTION >>> CHANGE UrlScope to Production
             //======================================================================
             var tokenHandler = new JwtSecurityTokenHandler();
-            JwtSecurityToken token = tokenHandler.CreateJwtSecurityToken(issuer: ConfigurationManager.AppSettings.Get("UrlScope"),
+            var token = tokenHandler.CreateJwtSecurityToken(issuer: ConfigurationManager.AppSettings.Get("UrlScope"),
                                                                          audience: ConfigurationManager.AppSettings.Get("UrlScope"),
                                                                          subject: claimsIdentity,
                                                                          notBefore: issuedAt,

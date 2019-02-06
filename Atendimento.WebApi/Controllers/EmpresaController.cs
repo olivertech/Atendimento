@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
-using System.Web.Http.Cors;
 using Atendimento.Business.Interfaces.Interfaces;
 using Atendimento.Entities.Entities;
 using Atendimento.Entities.Requests;
@@ -17,19 +16,18 @@ namespace Atendimento.WebApi.Controllers
     /// </summary>
     [RoutePrefix("api/Empresa")]
     [Authorize]
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class EmpresaController : ApiController
     {
-        private readonly IEmpresaBusiness _business;
+        private readonly IEmpresaBusiness _empresaBusiness;
         private IHttpActionResult _result;
 
         /// <summary>
         /// Construtor
         /// </summary>
-        /// <param name="business"></param>
-        public EmpresaController(IEmpresaBusiness business)
+        /// <param name="empresaBusiness"></param>
+        public EmpresaController(IEmpresaBusiness empresaBusiness)
         {
-            _business = business;
+            _empresaBusiness = empresaBusiness;
         }
 
         /// <summary>
@@ -43,7 +41,7 @@ namespace Atendimento.WebApi.Controllers
             try
             {
                 //Mapeia os dados da fonte (source class) para o destino (destiny class)
-                var lista = _business.GetAll().ToList().Select(Mapper.Map<Empresa, EmpresaResponse>);
+                var lista = _empresaBusiness.GetAll().ToList().Select(Mapper.Map<Empresa, EmpresaResponse>);
 
                 var totalRegistros = lista.Count();
 
@@ -70,7 +68,7 @@ namespace Atendimento.WebApi.Controllers
         {
             try
             {
-                var entity = _business.GetById(id);
+                var entity = _empresaBusiness.GetById(id);
 
                 if (entity == null)
                     return NotFound();
@@ -98,7 +96,7 @@ namespace Atendimento.WebApi.Controllers
         {
             try
             {
-                var result = _business.GetAllPaged(advancedFilter);
+                var result = _empresaBusiness.GetAllPaged(advancedFilter);
 
                 var lista = result.Empresas.ToList().Select(Mapper.Map<Empresa, EmpresaResponse>);
                 var totalGeral = result.TotalGeral;
@@ -106,6 +104,33 @@ namespace Atendimento.WebApi.Controllers
 
                 //Monta response
                 _result = Ok(Retorno<IEnumerable<EmpresaResponse>>.Criar(true, "Consulta Realizada Com Sucesso", lista, totalGeral));
+
+                //Retorna o response
+                return _result;
+            }
+            catch (Exception)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Recupera total de atendentes associados a empresa
+        /// </summary>
+        /// <param name="idEmpresa"></param>
+        /// <returns></returns>
+        [Route(nameof(GetTotalAtendentesEmpresa))]
+        [HttpGet]
+        //[AllowAnonymous]
+        public IHttpActionResult GetTotalAtendentesEmpresa(int idEmpresa)
+        {
+            try
+            {
+                //Recupera o total de registros de tickets associados a um usuario
+                var total = _empresaBusiness.GetTotalAtendentesEmpresa(idEmpresa);
+
+                //Monta response
+                _result = Ok(Retorno<int>.Criar(true, "Consulta Realizada Com Sucesso", total));
 
                 //Retorna o response
                 return _result;
@@ -133,7 +158,7 @@ namespace Atendimento.WebApi.Controllers
 
                 var entity = Mapper.Map<EmpresaRequest, Empresa>(request);
 
-                _business.Insert(ref entity);
+                _empresaBusiness.Insert(ref entity);
 
                 if (entity.Id > 0)
                 {
@@ -174,7 +199,7 @@ namespace Atendimento.WebApi.Controllers
                     entityList.Add(entity);
                 }
 
-                var rows = _business.Insert(entityList);
+                var rows = _empresaBusiness.Insert(entityList);
 
                 if (rows > 0)
                 {
@@ -209,7 +234,7 @@ namespace Atendimento.WebApi.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest("Dados inválidos.");
 
-                var entityInDb = _business.GetById(id);
+                var entityInDb = _empresaBusiness.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -218,7 +243,7 @@ namespace Atendimento.WebApi.Controllers
                 //Mapeio os dados do dto para o objeto recuperado do banco, atualizando os dados do objeto do banco
                 Mapper.Map(request, entityInDb);
 
-                if (_business.Update(entityInDb))
+                if (_empresaBusiness.Update(entityInDb))
                 {
                     //Monta response
                     _result = Ok(Retorno<Empresa>.Criar(true, "Atualização Realizada Com Sucesso", entityInDb));
@@ -254,7 +279,7 @@ namespace Atendimento.WebApi.Controllers
 
                 foreach (var item in list)
                 {
-                    var entityInDb = _business.GetById(item.Id);
+                    var entityInDb = _empresaBusiness.GetById(item.Id);
 
                     //Verifica se objeto existe
                     if (entityInDb == null)
@@ -266,7 +291,7 @@ namespace Atendimento.WebApi.Controllers
                     }
                 }
 
-                if (_business.Update(entityList))
+                if (_empresaBusiness.Update(entityList))
                 {
                     //Monta response
                     _result = Ok(Retorno<bool>.Criar(true, "Atualização de Lista Realizada Com Sucesso", true));
@@ -294,13 +319,13 @@ namespace Atendimento.WebApi.Controllers
         {
             try
             {
-                var entityInDb = _business.GetById(id);
+                var entityInDb = _empresaBusiness.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
                     return NotFound();
 
-                if (_business.Delete(id))
+                if (_empresaBusiness.Delete(id))
                 {
                     //Monta response
                     _result = Ok(Retorno<bool>.Criar(true, "Deleção Realizada Com Sucesso", true));
@@ -334,7 +359,7 @@ namespace Atendimento.WebApi.Controllers
                 {
                     foreach (var id in list)
                     {
-                        var entityInDb = _business.GetById(id);
+                        var entityInDb = _empresaBusiness.GetById(id);
 
                         //Verifica se objeto existe
                         if (entityInDb == null)
@@ -343,7 +368,7 @@ namespace Atendimento.WebApi.Controllers
                             entityList.Add(entityInDb);
                     }
 
-                    if (_business.Delete(entityList))
+                    if (_empresaBusiness.Delete(entityList))
                     {
                         //Monta response
                         _result = Ok(Retorno<bool>.Criar(true, "Deleção de Lista Realizada Com Sucesso", true));

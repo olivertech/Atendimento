@@ -9,6 +9,7 @@ namespace Atendimento.Repository.Interfaces.Interfaces
     public interface IUsuarioClienteRepository : IRepositoryBase<UsuarioCliente>
     {
         int GetCount(int idCliente);
+        UsuarioCliente GetFullById(int idUsuario);
         UsuariosClienteResponse GetAllPaged(FilterUsuarioRequest advancedFilter);
         IEnumerable<UsuarioCliente> GetAllById(int idCliente);
         UsuarioCliente GetByUsernameAndPassword(string username, string password);

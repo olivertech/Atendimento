@@ -9,7 +9,13 @@
         public string Email { get; set; }
         public string TelefoneFixo { get; set; }
         public string TelefoneCelular { get; set; }
-        public EnderecoResponse Endereco { get; set; }
+        public string Logradouro { get; set; }
+        public string NumeroLogradouro { get; set; }
+        public string ComplementoLogradouro { get; set; }
+        public string Estado { get; set; }
+        public string Cidade { get; set; }
+        public string Bairro { get; set; }
+        public string Cep { get; set; }
         public string Descricao { get; set; }
         public bool Ativo { get; set; }
     }

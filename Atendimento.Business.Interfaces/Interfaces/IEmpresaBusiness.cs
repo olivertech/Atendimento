@@ -8,5 +8,6 @@ namespace Atendimento.Business.Interfaces.Interfaces
     public interface IEmpresaBusiness : IBusinessBase<Empresa>
     {
         EmpresasResponse GetAllPaged(FilterEmpresaRequest advancedFilter);
+        int GetTotalAtendentesEmpresa(int idEmpresa);
     }
 }

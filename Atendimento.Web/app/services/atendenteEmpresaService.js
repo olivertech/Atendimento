@@ -1,4 +1,5 @@
-app.factory("atendenteService", function($http, config) {
+app.factory("atendenteService", ['$http', 'config',
+    function($http, config) {
     
     /** Retorna todos os atendente */
     var _getAtendentes = function(offSet, numRows) {
@@ -14,11 +15,11 @@ app.factory("atendenteService", function($http, config) {
             async: true,
             cache: false
         });  
-    }
+    };
 
     /** Salva o Atendente */
     var _saveAtendente = function(id, idEmpresa, nome, username, password, email, telefoneFixo, telefoneCelular, copia, provisorio, ativo, isAdmin, isDefault) {
-        let request = {
+        var request = {
             "idEmpresa": idEmpresa,
             "nome": nome,
             "username": username,
@@ -33,8 +34,8 @@ app.factory("atendenteService", function($http, config) {
             "isDefault": isDefault
         };
 
-        let method = '';
-        let url = config.baseUrl + "/AtendenteEmpresa/";
+        var method = '';
+        var url = config.baseUrl + "/AtendenteEmpresa/";
         
         if (id > 0) {
             method = "PUT";
@@ -52,8 +53,7 @@ app.factory("atendenteService", function($http, config) {
             async: true,
             cache: false
         });  
-    }
-
+    };
 
     /** Recupera o atendente */
     var _showAtendente = function(idAtendente) {
@@ -63,7 +63,7 @@ app.factory("atendenteService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
     /** Remove atendente */
     var _deleteAtendente = function(idAtendente) {
@@ -73,7 +73,7 @@ app.factory("atendenteService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
     /** Retorna todas as empresas */
     var _getEmpresas = function() {
@@ -83,7 +83,7 @@ app.factory("atendenteService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
     
     return {
         getAtendentes: _getAtendentes,
@@ -92,4 +92,4 @@ app.factory("atendenteService", function($http, config) {
         deleteAtendente: _deleteAtendente,
         getEmpresas: _getEmpresas
     };
-});
+}]);

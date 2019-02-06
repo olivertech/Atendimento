@@ -11,7 +11,7 @@ namespace Atendimento.Business.Interfaces.Interfaces
         IEnumerable<TicketMensagemResponse> GetAllByTicketId(TicketMensagensRequest request);
         void EnviarEmailConfirmacao(TicketMensagemRequest request, 
                                     TicketMensagem ticketMensagem, 
-                                    Ticket ticket, 
+                                    TicketResponse ticket, 
                                     AtendenteEmpresa atendenteEmpresa, 
                                     UsuarioCliente usuarioCliente,
                                     List<AtendenteEmpresa> listaAtendentes);

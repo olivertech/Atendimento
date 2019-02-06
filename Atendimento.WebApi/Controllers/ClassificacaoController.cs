@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
-using System.Web.Http.Cors;
 using Atendimento.Business.Interfaces.Interfaces;
 using Atendimento.Entities.Entities;
 using Atendimento.Entities.Requests;
@@ -17,19 +16,18 @@ namespace Atendimento.WebApi.Controllers
     /// </summary>
     [RoutePrefix("api/Classificacao")]
     [Authorize]
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ClassificacaoController : ApiController
     {
-        private readonly IClassificacaoBusiness _business;
+        private readonly IClassificacaoBusiness _classificacaoBusiness;
         private IHttpActionResult _result;
 
         /// <summary>
         /// Construtor
         /// </summary>
-        /// <param name="business"></param>
-        public ClassificacaoController(IClassificacaoBusiness business)
+        /// <param name="classificacaoBusiness"></param>
+        public ClassificacaoController(IClassificacaoBusiness classificacaoBusiness)
         {
-            _business = business;
+            _classificacaoBusiness = classificacaoBusiness;
         }
 
         /// <summary>
@@ -43,7 +41,7 @@ namespace Atendimento.WebApi.Controllers
             try
             {
                 //Mapeia os dados da fonte (source class) para o destino (destiny class)
-                var lista = _business.GetAll().ToList().Select(Mapper.Map<Classificacao, ClassificacaoResponse>);
+                var lista = _classificacaoBusiness.GetAll().ToList().Select(Mapper.Map<Classificacao, ClassificacaoResponse>);
 
                 var totalRegistros = lista.Count();
 
@@ -70,7 +68,7 @@ namespace Atendimento.WebApi.Controllers
         {
             try
             {
-                var entity = _business.GetById(id);
+                var entity = _classificacaoBusiness.GetById(id);
 
                 if (entity == null)
                     return NotFound();
@@ -104,7 +102,7 @@ namespace Atendimento.WebApi.Controllers
 
                 var entity = Mapper.Map<ClassificacaoRequest, Classificacao>(request);
 
-                _business.Insert(ref entity);
+                _classificacaoBusiness.Insert(ref entity);
 
                 if (entity.Id > 0)
                 {
@@ -145,7 +143,7 @@ namespace Atendimento.WebApi.Controllers
                     entityList.Add(entity);
                 }
 
-                var rows = _business.Insert(entityList);
+                var rows = _classificacaoBusiness.Insert(entityList);
 
                 if (rows > 0)
                 {
@@ -180,7 +178,7 @@ namespace Atendimento.WebApi.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest("Dados inválidos.");
 
-                var entityInDb = _business.GetById(id);
+                var entityInDb = _classificacaoBusiness.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -189,7 +187,7 @@ namespace Atendimento.WebApi.Controllers
                 //Mapeio os dados do dto para o objeto recuperado do banco, atualizando os dados do objeto do banco
                 Mapper.Map(request, entityInDb);
 
-                if (_business.Update(entityInDb))
+                if (_classificacaoBusiness.Update(entityInDb))
                 {
                     //Monta response
                     _result = Ok(Retorno<Classificacao>.Criar(true, "Atualização Realizada Com Sucesso", entityInDb));
@@ -225,7 +223,7 @@ namespace Atendimento.WebApi.Controllers
 
                 foreach (var item in list)
                 {
-                    var entityInDb = _business.GetById(item.Id);
+                    var entityInDb = _classificacaoBusiness.GetById(item.Id);
 
                     //Verifica se objeto existe
                     if (entityInDb == null)
@@ -237,7 +235,7 @@ namespace Atendimento.WebApi.Controllers
                     }
                 }
 
-                if (_business.Update(entityList))
+                if (_classificacaoBusiness.Update(entityList))
                 {
                     //Monta response
                     _result = Ok(Retorno<bool>.Criar(true, "Atualização de Lista Realizada Com Sucesso", true));
@@ -265,13 +263,13 @@ namespace Atendimento.WebApi.Controllers
         {
             try
             {
-                var entityInDb = _business.GetById(id);
+                var entityInDb = _classificacaoBusiness.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
                     return NotFound();
 
-                if (_business.Delete(id))
+                if (_classificacaoBusiness.Delete(id))
                 {
                     //Monta response
                     _result = Ok(Retorno<bool>.Criar(true, "Deleção Realizada Com Sucesso", true));
@@ -305,7 +303,7 @@ namespace Atendimento.WebApi.Controllers
                 {
                     foreach (var id in list)
                     {
-                        var entityInDb = _business.GetById(id);
+                        var entityInDb = _classificacaoBusiness.GetById(id);
 
                         //Verifica se objeto existe
                         if (entityInDb == null)
@@ -314,7 +312,7 @@ namespace Atendimento.WebApi.Controllers
                             entityList.Add(entityInDb);
                     }
 
-                    if (_business.Delete(entityList))
+                    if (_classificacaoBusiness.Delete(entityList))
                     {
                         //Monta response
                         _result = Ok(Retorno<bool>.Criar(true, "Deleção de Lista Realizada Com Sucesso", true));

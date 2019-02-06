@@ -1,4 +1,5 @@
-app.controller('leftSideBarController', function($scope, $sessionStorage) {
+app.controller('leftSideBarController', ['$scope', '$sessionStorage',
+    function($scope, $sessionStorage) {
     
     $scope.usuarioLogado = $sessionStorage.usuario;
     $scope.idCliente = $sessionStorage.idCliente;
@@ -20,8 +21,8 @@ app.controller('leftSideBarController', function($scope, $sessionStorage) {
                 $scope.hi = "Boa Noite";
             }
         }
-    }
+    };
 
     //Prepara o cumprimento ao usuário logado
     $scope.greeting();    
-});
+}]);

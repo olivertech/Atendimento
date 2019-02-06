@@ -6,6 +6,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
 using Atendimento.Entities.Entities;
+using Atendimento.Entities.Responses;
 using Atendimento.Infra.Base;
 
 namespace Atendimento.Infra
@@ -49,7 +50,7 @@ namespace Atendimento.Infra
                     }
                 }
 
-                mensagem.ReplyToList.Add(new MailAddress("no-replay@" + ConfigurationManager.AppSettings["DominioEmailEmpresa"].ToString().ToLower()));
+                mensagem.ReplyToList.Add(new MailAddress("no-reply@" + ConfigurationManager.AppSettings["DominioEmailEmpresa"].ToString().ToLower()));
 
                 //======================================================
 
@@ -60,8 +61,8 @@ namespace Atendimento.Infra
                 mensagem.BodyEncoding = Encoding.UTF8;
                 mensagem.Priority = prioridade;
 
-                if (ConfigurationManager.AppSettings["local"] == "Des")
-                {
+                //if (ConfigurationManager.AppSettings["local"] == "Des")
+                //{
                     using (var cliente = new SmtpClient(ConfigurationManager.AppSettings["SMTP"].ToString()))
                     {
                         var credenciais = new NetworkCredential(ConfigurationManager.AppSettings["EmailSuporte"].ToString(), ConfigurationManager.AppSettings["Password"].ToString());
@@ -82,17 +83,17 @@ namespace Atendimento.Infra
 
                         cliente.Send(mensagem);
                     }
-                }
-                else
-                {
-                    using (var smtp = new SmtpClient())
-                    {
-                        smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                        smtp.Port = 25;
-                        smtp.Host = ConfigurationManager.AppSettings["SMTP"].ToString();
-                        smtp.Send(mensagem);
-                    }
-                }
+                //}
+                //else
+                //{
+                //    using (var smtp = new SmtpClient())
+                //    {
+                //        smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                //        smtp.Port = 25;
+                //        smtp.Host = ConfigurationManager.AppSettings["SMTP"].ToString();
+                //        smtp.Send(mensagem);
+                //    }
+                //}
             }
             catch (Exception)
             {
@@ -296,7 +297,7 @@ namespace Atendimento.Infra
             corpo.Append("Prezado(a) " + usuarioCliente.Nome + ",<br /><br />");
 
             corpo.Append("Confirmada a alteração do status do atendimento - Ticket " + ticket.Titulo + " - (#" + ticket.Id + "), passando para o status " + statusTicket.Nome + ".<br /><br />");
-            corpo.Append("Acesse o <a href='" + ConfigurationManager.AppSettings["SistemaAtendimentoAssinatura"] + "'>sistema de atendimento</a> para obter maiores informações.<br /><br />");
+            corpo.Append("Acesse o <a href='" + ConfigurationManager.AppSettings["SistemaAtendimentoAssinatura"] + "'>sistema de atendimento</a> para obter mais informações.<br /><br />");
 
             corpo.Append("Atenciosamente,<br />");
             corpo.Append(ConfigurationManager.AppSettings["TextoAssinatura"] + "<br />");
@@ -350,7 +351,7 @@ namespace Atendimento.Infra
             corpo.Append("Prezado(a) " + usuarioCliente.Nome + ",<br /><br />");
 
             corpo.Append("Confirmada a alteração da classificação do atendimento - Ticket " + ticket.Titulo + " - (#" + ticket.Id + "), passando para " + classificacao.Nome + ".<br /><br />");
-            corpo.Append("Acesse o <a href='" + ConfigurationManager.AppSettings["SistemaAtendimentoAssinatura"] + "'>sistema de atendimento</a> para obter maiores informações.<br /><br />");
+            corpo.Append("Acesse o <a href='" + ConfigurationManager.AppSettings["SistemaAtendimentoAssinatura"] + "'>sistema de atendimento</a> para obter mais informações.<br /><br />");
 
             corpo.Append("Atenciosamente,<br />");
             corpo.Append(ConfigurationManager.AppSettings["TextoAssinatura"] + "<br />");
@@ -376,7 +377,7 @@ namespace Atendimento.Infra
         /// <param name="ticketMensagem"></param>
         /// <param name="atendenteEmpresa"></param>
         /// <returns></returns>
-        public static string FormatarCorpoNovaMensagemInterna(Ticket ticket, TicketMensagem ticketMensagem, AtendenteEmpresa atendenteEmpresa)
+        public static string FormatarCorpoNovaMensagemInterna(TicketResponse ticket, TicketMensagem ticketMensagem, AtendenteEmpresa atendenteEmpresa)
         {
             var corpo = new StringBuilder();
 
@@ -458,7 +459,7 @@ namespace Atendimento.Infra
         /// <param name="ticket"></param>
         /// <param name="ticketMensagem"></param>
         /// <returns></returns>
-        public static string FormatarCorpoNovaMensagemCliente(Ticket ticket, TicketMensagem ticketMensagem)
+        public static string FormatarCorpoNovaMensagemCliente(TicketResponse ticket, TicketMensagem ticketMensagem)
         {
             var corpo = new StringBuilder();
 
@@ -507,9 +508,9 @@ namespace Atendimento.Infra
             corpo.Append("<tr><td><br />");
 
             corpo.Append("<h3>Nova Mensagem</h3><hr><br />");
-            corpo.Append("<p>" + ticketMensagem.Descricao.Replace("\n", "<br />").Replace("\r", "") + "</p><br /><br />");
+            corpo.Append("<p>" + ticketMensagem.Descricao.Replace("\n", "<br />").Replace("\r", "") + "</p><br />");
 
-            corpo.Append("Acesse o <a href='" + ConfigurationManager.AppSettings["SistemaAtendimentoAssinatura"] + "'>sistema de atendimento</a> para dar prosseguimento ao suporte.<br /><br />");
+            corpo.Append("Acesse o <a href='" + ConfigurationManager.AppSettings["SistemaAtendimentoAssinatura"] + "'>sistema de atendimento</a> para mais informações.<br /><br />");
 
             corpo.Append("</td></tr>");
             corpo.Append("<tr><td><br />");
@@ -539,7 +540,7 @@ namespace Atendimento.Infra
         /// <param name="usuarioCliente"></param>
         /// <param name="ticketMensagem"></param>
         /// <returns></returns>
-        public static string FormatarCorpoNovaMensagemSuporte(Ticket ticket, UsuarioCliente usuarioCliente, TicketMensagem ticketMensagem)
+        public static string FormatarCorpoNovaMensagemSuporte(TicketResponse ticket, UsuarioCliente usuarioCliente, TicketMensagem ticketMensagem)
         {
             var corpo = new StringBuilder();
 
@@ -566,7 +567,7 @@ namespace Atendimento.Infra
             corpo.Append("<tr><td><br />");
             corpo.Append("Prezado(a) Suporte,<br /><br />");
 
-            corpo.Append("Confirmado o recebimento de nova mensagem de atendimento - Ticket " + ticket.Titulo + " - (#" + ticket.Id + "), criado pelo cliente " + usuarioCliente.Nome + ".<br /><br />");
+            corpo.Append("Confirmado o recebimento de nova mensagem de atendimento - Ticket " + ticket.Titulo + " - (#" + ticket.Id + "), criado pelo usuário " + usuarioCliente.Nome + ".<br /><br />");
 
             corpo.Append("</td></tr>");
             corpo.Append("<tr><td><br />");
@@ -590,7 +591,7 @@ namespace Atendimento.Infra
             corpo.Append("<tr><td><br />");
 
             corpo.Append("<h3>Nova Mensagem</h3><hr><br />");
-            corpo.Append("<p>" + ticketMensagem.Descricao.Replace("\n", "<br />").Replace("\r", "") + "</p><br /><br />");
+            corpo.Append("<p>" + ticketMensagem.Descricao.Replace("\n", "<br />").Replace("\r", "") + "</p><br />");
 
             corpo.Append("Acesse o <a href='" + ConfigurationManager.AppSettings["SistemaAtendimentoAssinatura"] + "'>sistema de atendimento</a> para dar prosseguimento ao suporte.<br /><br />");
 

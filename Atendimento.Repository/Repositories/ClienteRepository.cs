@@ -7,14 +7,15 @@ using Atendimento.Entities.Responses;
 using Atendimento.Repository.Interfaces.Interfaces;
 using Atendimento.Repository.Repositories.Base;
 using Dapper;
+using Dapper.Contrib.Extensions;
 
 namespace Atendimento.Repository.Repositories
 {
     public class ClienteRepository : RepositoryBase<Cliente>, IClienteRepository
     {
         const string selectQuery = @"SELECT 
-                                        c.id, 
-                                        c.id_empresa,
+                                        c.id,
+                                        c.empresaid,
                                         c.nome,
                                         c.cnpj,
                                         c.email,
@@ -29,7 +30,7 @@ namespace Atendimento.Repository.Repositories
                                         c.cep,
                                         c.descricao,
                                         c.ativo,
-                                        e.id                AS id_empresa,
+                                        e.id                AS id_empresa_entity,
                                         e.nome,
                                         e.email,
                                         e.telefone_fixo,
@@ -37,7 +38,8 @@ namespace Atendimento.Repository.Repositories
                                         e.descricao,
                                         e.is_default
                                     FROM Cliente c
-                                    INNER JOIN Empresa e ON e.id = c.id_empresa ";
+                                    INNER JOIN Empresa e ON c.empresaid = e.id ";
+
 
         public ClientesResponse GetAllPaged(FilterClienteRequest advancedFilter)
         {
@@ -60,7 +62,7 @@ namespace Atendimento.Repository.Repositories
 
                                                 return cliente;
                                             },
-                                            splitOn: "id_empresa").Distinct().ToList();
+                                            splitOn: "id_empresa_entity").Distinct().ToList();
                 }
 
                 return result;

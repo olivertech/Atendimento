@@ -12,7 +12,7 @@
             }
             set
             {
-                _nome = value.ToString().ToUpper();
+                _nome = !string.IsNullOrEmpty(value) ? value.ToString().ToUpper() : null;
             }
         }
 

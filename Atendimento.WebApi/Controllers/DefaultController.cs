@@ -1,5 +1,6 @@
 ﻿using System.Web.Http.Description;
 using System.Web.Mvc;
+using Atendimento.Infra.Base;
 
 namespace Atendimento.WebApi.Controllers
 {
@@ -17,7 +18,9 @@ namespace Atendimento.WebApi.Controllers
         [AllowAnonymous]
         public RedirectResult RedirectToSwaggerUi()
         {
-            return Redirect("/swagger/");
+            var url = BaseUtil.RecuperarUrl();
+
+            return Redirect(url + "/swagger/");
         }
     }
 }

@@ -1,4 +1,5 @@
-app.controller('ticketController', function($scope, $location, $q, $anchorScroll, $sessionStorage, dashboardService, ticketService, generalUtility, ngClipboard) {
+app.controller('ticketController', ['$scope', '$location', '$q', '$anchorScroll', '$sessionStorage', 'dashboardService', 'ticketService', 'generalUtility', 'ngClipboard',
+    function($scope, $location, $q, $anchorScroll, $sessionStorage, dashboardService, ticketService, generalUtility, ngClipboard) {
     
     var file1Upload, file2Upload, file3Upload, file4Upload, file5Upload;
 
@@ -9,14 +10,15 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
     $scope.isAdmin = $sessionStorage.isAdmin;
     $scope.nomeCliente = $sessionStorage.nomeCliente;
     $scope.logicalPathAnexos = $sessionStorage.logicalPathAnexos;
-    $scope.messages = [];
+    $scope.mensagensTicket = [];
 
     $scope.qtdeanexos = 0;
 
-    $scope.mensagem = {};
+    $scope.mensagemTicket = {};
     $scope.status = {};
     $scope.autor = {};
     $scope.classificacao = {};
+    $scope.template = {};
 
     $scope.uploadSuccess = false;
     $scope.uploadError = false;
@@ -26,34 +28,35 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
     $scope.back = function() {
         $location.hash("");
         $location.path("/dashboard");
-    }
+    };
 
     $scope.splitAnexos = function(anexos) {
         if(anexos != null) {
-            let array = anexos.split('|');
+            var array = anexos.split('|');
             return array;
         }
-    }
+    };
 
     /** Função que inicializa a modal de nova mensagem */
     $scope.initModalNewMessage = function() {
-        $scope.mensagem.descricao = "";
-        $scope.mensagem.file1 = "";
-        $scope.mensagem.file2 = "";
-        $scope.mensagem.file3 = "";
-        $scope.mensagem.file4 = "";
-        $scope.mensagem.file5 = "";
-        $scope.mensagem.interno = false;
+        $scope.mensagemTicket.descricao = "";
+        $scope.mensagemTicket.file1 = "";
+        $scope.mensagemTicket.file2 = "";
+        $scope.mensagemTicket.file3 = "";
+        $scope.mensagemTicket.file4 = "";
+        $scope.mensagemTicket.file5 = "";
+        $scope.mensagemTicket.interno = false;
+        $scope.mensagemTicket.idStatusTicket = 1;
         $scope.getQtdes();
         $scope.qtdeAnexos = 0;
-    }
+    };
 
     /** Função que inicializa a modal de templates */
     $scope.initModalTemplates = function() {
-        $scope.mensagem.descricao = "";
+        $scope.mensagemTicket.descricao = "";
         $scope.template.conteudo = "";
-        getTemplates();
-    }
+        $scope.getTemplates();
+    };
 
     /** Função que altera o status do ticket */
     $scope.updateStatusTicket = function(idStatus) {
@@ -66,8 +69,9 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
                 $scope.mensagem = "Ocorreu um erro ao atualizar o status do atendimento.";
                 generalUtility.showErrorAlert();
             });
-    }   
+    };
 
+    /** Função que atualiza a classificação do ticket */
     $scope.updateClassificacao = function(idClassificacao) {
         ticketService.updateClassificacao($scope.idTicket, idClassificacao, $scope.autor.id, $sessionStorage.tipoUsuario)
         .then(function(response) {
@@ -78,11 +82,11 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
             $scope.mensagem = "Ocorreu um erro ao atualizar a classificação do atendimento.";
             generalUtility.showErrorAlert();
         });
-    }
+    };
 
     /** Função que monta a dropdown de quantidade de anexos */
     $scope.getQtdes = function() {
-        let qtdes = [
+        var qtdes = [
             {id: 0, nome: 'Nenhum anexo'},
             {id: 1, nome: 'Anexar 1 arquivo'},
             {id: 2, nome: 'Anexar 2 arquivos'},
@@ -92,55 +96,55 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
         ];
 
         $scope.qtdes = qtdes;
-    }
+    };
 
     /** Função que recupera os arquivos selecionados nos campos input=file da modal de nova mensagem */
     $scope.fileSelected = function(files, event) {
         if (files.length) {
             switch (event.currentTarget.id) {
                 case "file1":
-                    $scope.mensagem.file1 = " - " + files[0].name;
+                    $scope.mensagemTicket.file1 = " - " + files[0].name;
                     file1Upload = files[0];    
                     break;
                 case "file2":
-                    $scope.mensagem.file2 = " - " + files[0].name;
+                    $scope.mensagemTicket.file2 = " - " + files[0].name;
                     file2Upload = files[0];
                     break;
                 case "file3":
-                    $scope.mensagem.file3 = " - " + files[0].name;        
+                    $scope.mensagemTicket.file3 = " - " + files[0].name;        
                     file3Upload = files[0];
                     break;
                 case "file4":
-                    $scope.mensagem.file4 = " - " + files[0].name;
+                    $scope.mensagemTicket.file4 = " - " + files[0].name;
                     file4Upload = files[0];
                     break;
                 case "file5":
-                    $scope.mensagem.file5 = " - " + files[0].name;
+                    $scope.mensagemTicket.file5 = " - " + files[0].name;
                     file5Upload = files[0];
                     break;
             }
         }       
-    }
+    };
 
     /** Função que inicializa os nomes dos arquivos, para o caso do usuário selecionar novamente a opção "nenhum anexo" */
     $scope.validateFiles = function(qtdeanexos) {
-        $scope.mensagem.file1 = "";
-        $scope.mensagem.file2 = "";
-        $scope.mensagem.file3 = "";
-        $scope.mensagem.file4 = "";
-        $scope.mensagem.file5 = "";
-    }
+        $scope.mensagemTicket.file1 = "";
+        $scope.mensagemTicket.file2 = "";
+        $scope.mensagemTicket.file3 = "";
+        $scope.mensagemTicket.file4 = "";
+        $scope.mensagemTicket.file5 = "";
+    };
 
     /** Função que salva uma nova mensagem, associando a um ticket */
     $scope.saveNewMessage = function() {
-    
-        var promiseList = [];
 
+        var promiseList = [];
+        
         //Sobe primeiro os arquivos anexos, e se for com sucesso, grava a mensagem
         if ($scope.qtdeAnexos == 0) { 
             $scope.uploadSuccess = true; }
         else {
-            for (let index = 0; index <= $scope.qtdeAnexos - 1; index++) {
+            for (var index = 0; index <= $scope.qtdeAnexos - 1; index++) {
                 switch (index) {
                     case 0:
                         if(file1Upload != undefined && file1Upload != null) {
@@ -176,15 +180,15 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
                 if ($scope.uploadSuccess) {
                     //Se todos os anexos foram incluidos com sucesso, 
                     //então faz o insert dos dados da nova mensagem
-                    let idTicket = $scope.idTicket;
-                    let idUsuario = $scope.idUsuario;
-                    let tipoUsuarioAgente = $sessionStorage.tipoUsuario;
-                    let descricao = $scope.mensagem.descricao;
-                    let interno = $scope.mensagem.interno;
-                    //let idStatusTicket = $scope.mensagem.status;
-                    let pathAnexos = $scope.pathAnexos;
+                    var idTicket = $scope.idTicket;
+                    var idUsuario = $scope.idUsuario;
+                    var tipoUsuarioAgente = $sessionStorage.tipoUsuario;
+                    var descricao = $scope.mensagemTicket.descricao;
+                    var interno = $scope.mensagemTicket.interno;
+                    var idStatusTicket = $scope.mensagemTicket.idStatusTicket;
+                    var pathAnexos = $scope.pathAnexos;
 
-                    ticketService.saveNewMessage(idTicket, idUsuario, tipoUsuarioAgente, descricao, interno, pathAnexos)
+                    ticketService.saveNewMessage(idTicket, idUsuario, tipoUsuarioAgente, descricao, idStatusTicket, interno, pathAnexos)
                         .then(function(response) {
                             $scope.mensagem = response.data.message;
                             $scope.newMessageSuccess = true;
@@ -196,6 +200,7 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
                             $scope.mensagem = "Ocorreu um erro ao salvar mensagem";
                             $scope.newMessageError = true;
                             generalUtility.showErrorAlert();
+                            console.log(error);
                         });
                 }
                 else {
@@ -204,14 +209,25 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
                     $scope.uploadError = true;    
                     generalUtility.showErrorAlert();
                 }
+
+                file1Upload = undefined;
+                file2Upload = undefined;
+                file3Upload = undefined;
+                file4Upload = undefined;
+                file5Upload = undefined;
             })
             .catch(function (error) {
                 $scope.mensagem = "Erro no envio de um ou mais arquivos. Observar tamanho máximo de 5MB por arquivo.";
                 $scope.uploadSuccess = false;
                 $scope.uploadError = true; 
                 generalUtility.showErrorAlert(); 
+                file1Upload = undefined;
+                file2Upload = undefined;
+                file3Upload = undefined;
+                file4Upload = undefined;
+                file5Upload = undefined;
         });
-    }
+    };
     
     /** Função que faz o upload dos arquivos de anexo, um a um */
     $scope.uploadTicketFile = function(file, index) {
@@ -220,21 +236,50 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
                 $scope.pathAnexos = response.data;
                 $scope.uploadSuccess = true;
                 $scope.uploadError = false;
+                file1Upload = undefined;
+                file2Upload = undefined;
+                file3Upload = undefined;
+                file4Upload = undefined;
+                file5Upload = undefined;
             })
             .catch(function(error) {
                 $scope.mensagem = "Erro no envio de um ou mais arquivos. Observar tamanho máximo de 5MB por arquivo.";
                 $scope.uploadSuccess = false;
                 $scope.uploadError = true;
+                file1Upload = undefined;
+                file2Upload = undefined;
+                file3Upload = undefined;
+                file4Upload = undefined;
+                file5Upload = undefined;
             }));
-    }
+    };
 
     /** Watch que observa a escolha do template para alimentar o campo de conteudo com a opção escolhida */
-    $scope.$watch("template.templateresposta", function() {
-        if ($scope.template.templateresposta != undefined) {
-            $scope.template.conteudo = $scope.template.templateresposta.conteudo;
+    $scope.$watch("template.idTemplateresposta", function() {
+        if ($scope.template.idTemplateresposta) {
+            var template = $scope.templates.filter(function(item) {
+                return item.id === $scope.template.idTemplateresposta;
+              })[0];
+            $scope.template.conteudo = template.conteudo;
         }
     });
 
+    /** Função que alimenta a dropdown de clientes, da modal de abertura de novo atendimento */
+    $scope.getTemplates = function() {
+        ticketService.getTemplates()
+            .then(function(response) {
+                var defaultOption = {id: "", titulo: 'Selecione o template'}
+                var lista = response.data.content;
+                $scope.templates = lista.sort();
+                $scope.templates.unshift(defaultOption);
+                $scope.template.idTemplateresposta = "";
+            })
+            .catch(function(error) {
+                $scope.mensagem = "Erro foi possível recuperar os templates.";
+                generalUtility.showErrorAlert(); 
+            });
+    };
+    
     /**
      *  INTERNAL FUNCTIONS
      */
@@ -256,38 +301,29 @@ app.controller('ticketController', function($scope, $location, $q, $anchorScroll
                 $scope.titulo = response.data.content.titulo;
                 $scope.descricao = response.data.content.descricao;
                 $scope.anexos = response.data.content.anexos;
+
+                /** Chama a função que carrega todas as mensagens associadas ao ticket */
+                getMessages();
             })
             .catch(function(error) {
-                $location.path("/error");
+                $scope.mensagem = "Erro foi possível recuperar os dados do ticket.";
+                generalUtility.showErrorAlert(); 
             });
-    }
+    };
     
     /** Função que recupera todas as mensagens associadas ao ticket */
     var getMessages = function() {
 
         ticketService.getMessages($scope.idTicket, $scope.idCliente)
             .then(function(response) {
-                $scope.messages = response.data.content;
+                $scope.mensagensTicket = response.data.content;
             })
             .catch(function(error) {
-                $location.path("/error");
-            })
-    }
-
-    var getTemplates = function() {
-
-        ticketService.getTemplates()
-            .then(function(response) {
-                $scope.templates = response.data.content;
-            })
-            .catch(function(error) {
-                $location.path("/error");
-            })
-    }
-
+                $scope.mensagem = "Erro foi possível recuperar as mensagens associadas ao ticket.";
+                generalUtility.showErrorAlert(); 
+            });
+    };
+    
     /** Chama a função que carrega os dados do atendimento original (ticket) */
     getTicket();
-
-    /** Chama a função que carrega todas as mensagens associadas ao ticket */
-    getMessages();
-});
+}]);

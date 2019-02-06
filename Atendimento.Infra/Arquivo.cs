@@ -13,9 +13,9 @@ namespace Atendimento.Infra
         /// </summary>
         /// <param name="pathZip"></param>
         /// <param name="pathAnexosUsuario"></param>
-        /// <param name="idUsuario"></param>
+        /// <param name="idTicket"></param>
         /// <returns></returns>
-        public static string Compress(string pathZip, string pathAnexosUsuario, int idUsuario)
+        public static string Compress(string pathZip, string pathAnexosUsuario, int idTicket)
         {
             using (var zip = new ZipFile())
             {
@@ -28,7 +28,7 @@ namespace Atendimento.Infra
                     zip.AddFile(pathAnexosUsuario + "/" + files[i].Name, "");
                 }
 
-                var zipName = FormatarNomeArquivoZip(idUsuario);
+                var zipName = FormatarNomeArquivoZip(idTicket);
 
                 zip.Save(pathZip + "/" + zipName);
 
@@ -42,12 +42,12 @@ namespace Atendimento.Infra
         /// Método que muda o nome do arquivo zipado pra que todos sigam um mesmo
         /// padrão de nomenclatura no sistema
         /// </summary>
-        /// <param name="idUsuario"></param>
+        /// <param name="idTicket"></param>
         /// <returns></returns>
-        public static string FormatarNomeArquivoZip(int idUsuario)
+        public static string FormatarNomeArquivoZip(int idTicket)
         {
             var miliseconds = (DateTime.Now - DateTime.MinValue).Ticks.ToString();
-            return idUsuario + "_anexos_" + miliseconds + ".zip";
+            return idTicket + "_anexos_" + miliseconds + ".zip";
         }
 
         /// <summary>

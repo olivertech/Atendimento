@@ -187,34 +187,4 @@ $(function () {
             window.alert('Please use a modern browser to properly view this template!')
         }
     }
-    
-    // /**
-    //  * Replaces the old skin with the new skin
-    //  * @param String cls the new skin class
-    //  * @returns Boolean false to prevent link's default action
-    //  */
-    // function changeSkin(cls) {
-    //     $.each(mySkins, function (i) {
-    //         $('body').removeClass(mySkins[i])
-    //     })
-    //     $('body').addClass(cls)
-    //     store('skin', cls)
-    //     return false
-    // }
-
-    // function setup() {
-    //     var tmp = get('skin')
-    //     if (tmp && $.inArray(tmp, mySkins)) changeSkin(tmp)
-    //         // Add the change skin listener
-    //     $('[data-skin]').on('click', function (e) {
-    //         if ($(this).hasClass('knob')) return
-    //         e.preventDefault()
-    //         changeSkin($(this).data('skin'))
-    //     })
-    // }
-    // setup()
-    // $("#themecolors").on("click", "a", function () {
-    //     $("#themecolors li a").removeClass("working"), 
-    //     $(this).addClass("working")
-    // })
 });

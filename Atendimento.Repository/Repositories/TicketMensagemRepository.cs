@@ -28,11 +28,11 @@ namespace Atendimento.Repository.Repositories
                                             WHEN uc.nome IS NOT NULL THEN uc.nome
                                             WHEN ae.nome IS NOT NULL THEN ae.nome
                                         END AS Autor,
-                                        STUFF((SELECT '|' + nome FROM anexo WHERE id_ticket_mensagem = tm.id for XML PATH('')), 1, 1, '') AS Anexos
+                                        STUFF((SELECT '|' + nome FROM anexo WHERE ticketmensagemid = tm.id for XML PATH('')), 1, 1, '') AS Anexos
                             FROM        Ticket_Mensagem tm
-                            LEFT JOIN   Usuario_Cliente uc on tm.id_usuario_cliente = uc.id
-                            LEFT JOIN	Atendente_Empresa ae on tm.id_atendente_empresa = ae.id
-                            WHERE tm.id_ticket = " + request.IdTicket + " ORDER BY tm.data_hora_mensagem DESC";
+                            LEFT JOIN   Usuario_Cliente uc on tm.usuarioclienteid = uc.id
+                            LEFT JOIN	Atendente_Empresa ae on tm.atendenteempresaid = ae.id
+                            WHERE tm.ticketid = " + request.IdTicket + " ORDER BY tm.data_hora_mensagem DESC";
             }
             else
             {
@@ -45,11 +45,11 @@ namespace Atendimento.Repository.Repositories
                                             WHEN uc.nome IS NOT NULL THEN uc.nome
                                             WHEN ae.nome IS NOT NULL THEN ae.nome
                                         END AS Autor,
-                                        STUFF((SELECT '|' + nome FROM anexo WHERE id_ticket_mensagem = tm.id for XML PATH('')), 1, 1, '') AS Anexos
+                                        STUFF((SELECT '|' + nome FROM anexo WHERE ticketmensagemid = tm.id for XML PATH('')), 1, 1, '') AS Anexos
                             FROM        Ticket_Mensagem tm
-                            LEFT JOIN   Usuario_Cliente uc on tm.id_usuario_cliente = uc.id
-                            LEFT JOIN	Atendente_Empresa ae on tm.id_atendente_empresa = ae.id
-                            WHERE tm.id_ticket = " + request.IdTicket + " AND tm.interno = 0 ORDER BY tm.data_hora_mensagem DESC";
+                            LEFT JOIN   Usuario_Cliente uc on tm.usuarioclienteid = uc.id
+                            LEFT JOIN	Atendente_Empresa ae on tm.atendenteempresaid = ae.id
+                            WHERE tm.ticketid = " + request.IdTicket + " AND tm.interno = 0 ORDER BY tm.data_hora_mensagem DESC";
             }
 
             try

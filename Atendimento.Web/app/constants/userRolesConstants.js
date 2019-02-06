@@ -3,4 +3,4 @@ app.constant('USER_ROLES', {
     admin: 'admin',
     editor: 'editor',
     guest: 'guest'
-  })
+  });

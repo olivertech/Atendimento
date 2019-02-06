@@ -1,4 +1,5 @@
-app.factory("usuarioService", function($http, config) {
+app.factory("usuarioService", ['$http', 'config', 
+    function($http, config) {
     
     /** Retorna todos os usuarios */
     var _getUsuarios = function(offSet, numRows, orderBy, direction) {
@@ -16,11 +17,11 @@ app.factory("usuarioService", function($http, config) {
             async: true,
             cache: false
         });  
-    }
+    };
 
     /** Salva o usuario */
     var _saveUsuario = function(id, idCliente, nome, username, password, email, telefoneFixo, telefoneCelular, copia, provisorio, ativo) {
-        let request = {
+        var  request = {
             "idCliente": idCliente,
             "nome": nome,
             "username": username,
@@ -33,8 +34,8 @@ app.factory("usuarioService", function($http, config) {
             "provisorio": provisorio
         };
 
-        let method = '';
-        let url = config.baseUrl + "/UsuarioCliente/";
+        var  method = '';
+        var  url = config.baseUrl + "/UsuarioCliente/";
         
         if (id > 0) {
             method = "PUT";
@@ -52,7 +53,7 @@ app.factory("usuarioService", function($http, config) {
             async: true,
             cache: false
         });  
-    }
+    };
 
     /** Recupera o usuario */
     var _showUsuario = function(idUsuario) {
@@ -62,7 +63,7 @@ app.factory("usuarioService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
     /** Remove usuario */
     var _deleteUsuario = function(idUsuario) {
@@ -72,7 +73,7 @@ app.factory("usuarioService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
     /** Retorna todos os clientes */
     var _getClientes = function() {
@@ -82,7 +83,7 @@ app.factory("usuarioService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
     
     /** Retorna total de tickets associado ao usuario */
     var _getTickets = function(idUsuario) {
@@ -92,7 +93,7 @@ app.factory("usuarioService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
     
     return {
         getUsuarios: _getUsuarios,
@@ -102,4 +103,4 @@ app.factory("usuarioService", function($http, config) {
         getClientes: _getClientes,
         getTickets: _getTickets
     };
-});
+}]);

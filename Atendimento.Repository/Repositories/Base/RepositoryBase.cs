@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Atendimento.Entities.Entities;
 using Atendimento.Repository.Interfaces.Interfaces.Base;
@@ -19,7 +20,7 @@ namespace Atendimento.Repository.Repositories.Base
             {
                 using (var conn = CreateConnection())
                 {
-                    return conn.Get<T>(id);
+                    return conn.Select<T>(x => x.Id == id).FirstOrDefault();
                 }
             }
             catch (Exception ex)

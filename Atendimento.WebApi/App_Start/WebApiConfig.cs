@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using System.Web.Http.Cors;
 using Atendimento.WebApi.Handlers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -16,6 +17,12 @@ namespace Atendimento.WebApi
         /// <param name="config"></param>
         public static void Register(HttpConfiguration config)
         {
+            //==================================================================================
+            //Configuração que habilita o acesso de outros domínios aos serviços, evitando
+            //o erro de CORS
+            config.MessageHandlers.Add(new CorsHandler());
+            //==================================================================================
+
             //===================================================================================
             //Configurações necessárias para retornar o resultado dos requests dos serviços na 
             //notação CamelCase, de acordo com o padrão dos serviços webapi.
@@ -39,12 +46,6 @@ namespace Atendimento.WebApi
             //==================================================================================
             //Confiração do Swagger
             SwaggerConfig.Register();
-            //==================================================================================
-
-            //==================================================================================
-            //Configuração que habilita o acesso de outros domínios aos serviços, evitando
-            //o erro de CORS
-            config.EnableCors();
             //==================================================================================
 
             config.Routes.MapHttpRoute(

@@ -1,4 +1,5 @@
-app.factory("empresaService", function($http, config) {
+app.factory("empresaService", ['$http', 'config',
+    function($http, config) {
     
     /** Retorna todas as empresas */
     var _getEmpresas = function(offSet, numRows) {
@@ -14,11 +15,11 @@ app.factory("empresaService", function($http, config) {
             async: true,
             cache: false
         });  
-    }
+    };
 
     /** Salva a empresa */
     var _saveEmpresa = function(id, nome, email, telefoneFixo, telefoneCelular, descricao, isDefault) {
-        let request = {
+        var  request = {
             "nome": nome,
             "email": email,
             "telefoneFixo": telefoneFixo,
@@ -27,8 +28,8 @@ app.factory("empresaService", function($http, config) {
             "isDefault": isDefault
         };
 
-        let method = '';
-        let url = config.baseUrl + "/Empresa/";
+        var  method = '';
+        var  url = config.baseUrl + "/Empresa/";
         
         if (id > 0) {
             method = "PUT";
@@ -46,7 +47,7 @@ app.factory("empresaService", function($http, config) {
             async: true,
             cache: false
         });  
-    }
+    };
 
     /** Recupera a empresa */
     var _showEmpresa = function(idEmpresa) {
@@ -56,7 +57,7 @@ app.factory("empresaService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
     /** Remove empresa */
     var _deleteEmpresa = function(idEmpresa) {
@@ -66,12 +67,23 @@ app.factory("empresaService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
+    /** Retorna total de atendentes associados a empresa */
+    var _getAtendentes = function(idEmpresa) {
+        return $http({
+            method: "GET",
+            url: config.baseUrl + "/Empresa/GetTotalAtendentesEmpresa?idEmpresa=" + idEmpresa,
+            async: true,
+            cache: false
+        });
+    };
+    
     return {
         getEmpresas: _getEmpresas,
         saveEmpresa: _saveEmpresa,
         showEmpresa: _showEmpresa,
-        deleteEmpresa: _deleteEmpresa
+        deleteEmpresa: _deleteEmpresa,
+        getAtendentes: _getAtendentes
     };
-});
+}]);

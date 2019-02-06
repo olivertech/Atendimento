@@ -1,4 +1,5 @@
-app.controller('dashboardController', function($scope, $sessionStorage, $location, $q, $interval, dashboardService, paginationService, generalUtility) {
+app.controller('dashboardController', ['$scope', '$sessionStorage', '$location', '$q', 'dashboardService', 'paginationService', 'generalUtility', 'config', 
+    function($scope, $sessionStorage, $location, $q, dashboardService, paginationService, generalUtility, config) {
 
     var file1Upload, file2Upload, file3Upload, file4Upload, file5Upload;
 
@@ -27,22 +28,26 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
     $scope.newTicketSuccess = false;
     $scope.newTicketError = false;
     $scope.pagination = {};
+    $scope.filtro = {};
+    $scope.atendimento = {};
+    $scope.cliente = {};
+    $scope.clientes = [];
     $scope.qtdeanexos = 0;
 
     $scope.orderBy = "";
     $scope.direction = "";
-    
+
     /** Função que controla a paginação da grid de tickets */
     $scope.getPage = function(page, orderBy, direction) {
 
-        let offset = (page - 1) * $scope.numRows;
-        let idTicketFiltro = "";
-        let tituloFiltro = "";
-        let descricaoFiltro = "";
-        let dataInicialFiltro = "";
-        let dataFinalFiltro = "";
-        let idClienteFiltro = 0;
-        let idCategoriaFiltro = 0;
+        var offset = (page - 1) * $scope.numRows;
+        var idTicketFiltro = "";
+        var tituloFiltro = "";
+        var descricaoFiltro = "";
+        var dataInicialFiltro = "";
+        var dataFinalFiltro = "";
+        var idClienteFiltro = 0;
+        var idCategoriaFiltro = 0;
 
         if ($scope.filtro != undefined) {
             idTicketFiltro = $scope.filtro.idTicket;
@@ -67,13 +72,14 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
             .catch(function(error) {
                 $location.path("/error");
             });
-    }
+    };
 
+    /** Função que executa o filtro dos atendimentos/tickets */
     $scope.filterTickets = function() {
         $scope.orderBy = "";
         $scope.direction = "";
         $scope.getPage(1, $scope.orderBy, $scope.direction);
-    }
+    };
 
     /** Função associada ao botão de atualizar lista */
     $scope.updateTicketList = function() {
@@ -81,7 +87,7 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
         $scope.orderBy = "";
         $scope.direction = "";
         $scope.getPage(1, $scope.orderBy, $scope.direction);
-    }
+    };
     
     /** Função que atualização a lista de tickets */
     $scope.updateListByStatus = function(idsStatusTicket) {
@@ -89,15 +95,16 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
         $scope.orderBy = "";
         $scope.direction = "";
         $scope.getPage(1, $scope.orderBy, $scope.direction);
-    }
+    };
 
     /** Função que alimenta a dropdown de clientes da modal de abertura de novo atendimento */
     $scope.initModalNewSupport = function() {
         $scope.clientes = [];
-        $scope.usuarios = [];
+        $scope.usuarios = [{id: "", nome: "Selecione o usuário"}];
         $scope.qtdes = [];
         $scope.categorias = [];
         $scope.classificacoes = [];
+        $scope.atendimento.idUsuario = "";
         $scope.atendimento.assunto = "";
         $scope.atendimento.descricao = "";
         $scope.atendimento.file1 = "";
@@ -110,35 +117,39 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
         $scope.getClassificacoes();
         $scope.getQtdes();
         $scope.qtdeAnexos = 0;
-    }
+    };
 
+    /** Função que inicializa e prepara a modal de filtro antes de ser carregada */
     $scope.initModalFilter = function() {
         if ($scope.clientes == undefined || $scope.clientes.length == 0) { $scope.getClientes(); }
         if ($scope.categorias == undefined || $scope.categorias.length == 0) { $scope.getCategorias(); }
-    }
+    };
 
+    /** Função que inicializa os controles da modal filter */
     $scope.clearModalFilter = function() {
-        $scope.filtro.idTicket = "";
-        $scope.filtro.titulo = "";
-        $scope.filtro.descricao = "";
-        $scope.filtro.dataInicial = "";
-        $scope.filtro.dataFinal = "";
-        $scope.clientes = undefined;
-        $scope.categorias = undefined;
+        $scope.filtro = {};
+        $scope.clientes = [];
+        $scope.categorias = [];
         $scope.getClientes();
         $scope.getCategorias();
-    }
+    };
 
     /** Função que alimenta a dropdown de clientes, da modal de abertura de novo atendimento */
     $scope.getClientes = function() {
         dashboardService.getClientes()
             .then(function(response) {
-                $scope.clientes = response.data.content;
+                var defaultOption = {id: "", nome: 'Selecione o cliente'}
+                var lista = response.data.content;
+                $scope.clientes = lista.sort();
+                $scope.clientes.unshift(defaultOption);
+                $scope.filtro.idCliente = "";
+                $scope.atendimento.idCliente = "";
             })
             .catch(function(error) {
+                $scope.mensagem = "Ocorreu um erro ao recuperar os clientes.";
                 generalUtility.showErrorAlert(); 
             });
-    }
+    };
 
     /** Função que alimenta a dropdown de usuários associados a um cliente, da modal de abertura de novo atendimento */
     $scope.getUsuarios = function(idCliente) {
@@ -146,7 +157,11 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
             //Carregar dropdown de usuarios associados a um cliente
             dashboardService.getUsuarios(idCliente)
                 .then(function(response) {
-                    $scope.usuarios = response.data.content;
+                    var defaultOption = {id: "", nome: 'Selecione o usuário'}
+                    var lista = response.data.content;
+                    $scope.usuarios = lista.sort();
+                    $scope.usuarios.unshift(defaultOption);
+                    $scope.atendimento.idUsuario = "";
                 })
                 .catch(function(error) {
                     $scope.mensagem = "Ocorreu um erro ao recuperar usuários.";
@@ -154,37 +169,48 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
                 });
         }
         else {
-            $scope.usuarios = [];
+            $scope.usuarios = [{id: "", nome: "Selecione o usuário"}];
+            $scope.atendimento.idUsuario = "";
         }
-    }
+    };
 
     /** Função que alimenta a dropdown de categorias, da modal de abertura de novo atendimento */
     $scope.getCategorias = function() {
         dashboardService.getCategorias()
             .then(function(response) {
-                $scope.categorias = response.data.content;
+                var defaultOption = {id: "", nome: 'Selecione a categoria'}
+                var lista = response.data.content;
+                $scope.categorias = lista.sort();
+                $scope.categorias.unshift(defaultOption);
+                $scope.filtro.idCategoria = "";
+                $scope.atendimento.idCategoria = "";
             })
             .catch(function(error) {
                 $scope.mensagem = "Ocorreu um erro ao recuperar categorias.";
                 generalUtility.showErrorAlert(); 
             });
-    }
+    };
 
     /** Função que alimenta a dropdown de classificações, da modal de abertura de novo atendimento */
     $scope.getClassificacoes = function() {
         dashboardService.getClassificacoes()
             .then(function(response) {
-                $scope.classificacoes = response.data.content;
+                var defaultOption = {id: "", nome: 'Selecione a Classificação'}
+                var lista = response.data.content;
+                $scope.classificacoes = lista.sort();
+                $scope.classificacoes.unshift(defaultOption);
+                $scope.filtro.idClassificacao = "";
+                $scope.atendimento.idClassificacao = "";
             })
             .catch(function(error) {
                 $scope.mensagem = "Ocorreu um erro ao recuperar classificações.";
                 generalUtility.showErrorAlert(); 
             });
-    }
+    };
     
     /** Função que monta a dropdown de quantidade de anexos */
     $scope.getQtdes = function() {
-        let qtdes = [
+        var qtdes = [
             {id: 0, nome: 'Nenhum anexo'},
             {id: 1, nome: 'Anexar 1 arquivo'},
             {id: 2, nome: 'Anexar 2 arquivos'},
@@ -194,7 +220,7 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
         ];
 
         $scope.qtdes = qtdes;
-    }
+    };
 
     /** Função que recupera os arquivos selecionados nos campos input=file da modal de novo atendimento */
     $scope.fileSelected = function(files, event) {
@@ -222,7 +248,7 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
                     break;
             }
         }       
-    }
+    };
     
     /** Função que inicializa os nomes dos arquivos, para o caso do usuário selecionar novamente a opção "nenhum anexo" */
     $scope.validateFiles = function(qtdeanexos) {
@@ -231,7 +257,7 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
         $scope.atendimento.file3 = "";
         $scope.atendimento.file4 = "";
         $scope.atendimento.file5 = "";
-    }
+    };
 
     /** Função que salva o novo atendimento (ticket), criado pelo suporte */
     $scope.saveNewTicket = function() {
@@ -244,7 +270,7 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
         if ($scope.qtdeAnexos == 0) { 
             $scope.uploadSuccess = true; }
         else {
-            for (let index = 0; index <= $scope.qtdeAnexos - 1; index++) {
+            for (var index = 0; index <= $scope.qtdeAnexos - 1; index++) {
                 switch (index) {
                     case 0:
                         if(file1Upload != undefined && file1Upload != null) {
@@ -280,17 +306,16 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
                 if ($scope.uploadSuccess) {
                     //Se todos os anexos foram incluidos com sucesso, 
                     //então faz o insert dos dados do novo atendimento
-
                     //Se a session for de um cliente, o idCliente != 0    ===> Pega o idUsuario da session
                     //Se a session for de um atendente, o idCliente == 0  ===> Pega o idUsuario da dropdown de usuario
-                    let idUsuarioFiltro = $scope.idCliente == 0 || $scope.idCliente == undefined ? $scope.atendimento.usuario : $scope.idUsuario;
-                    let idCategoriaFiltro = $scope.atendimento.categoria;
-                    let idClassificacaoFiltro = $scope.atendimento.classificacao;
-                    let assuntoFiltro = $scope.atendimento.assunto;
-                    let descricaoFiltro = $scope.atendimento.descricao;
-                    let pathAnexos = $scope.pathAnexos;
-                    let tipoUsuario = $sessionStorage.tipoUsuario;
-                    let idAtendente = $sessionStorage.tipoUsuario == "Atendimento" ? $sessionStorage.idUsuario : 0;
+                    var idUsuarioFiltro = $scope.idCliente == 0 || $scope.idCliente == undefined ? $scope.atendimento.idUsuario : $scope.idUsuario;
+                    var idCategoriaFiltro = $scope.atendimento.idCategoria;
+                    var idClassificacaoFiltro = $scope.atendimento.idClassificacao;
+                    var assuntoFiltro = $scope.atendimento.assunto;
+                    var descricaoFiltro = $scope.atendimento.descricao;
+                    var pathAnexos = $scope.pathAnexos;
+                    var tipoUsuario = $sessionStorage.tipoUsuario;
+                    var idAtendente = $sessionStorage.tipoUsuario == "Atendimento" ? $sessionStorage.idUsuario : 0;
 
                     dashboardService.saveNewSupport(idUsuarioFiltro, idCategoriaFiltro, idClassificacaoFiltro, assuntoFiltro, descricaoFiltro, pathAnexos, tipoUsuario, idAtendente)
                         .then(function(response) {
@@ -312,58 +337,85 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
                     $scope.uploadError = true;
                     generalUtility.showErrorAlert();
                 }
+
+                file1Upload = undefined;
+                file2Upload = undefined;
+                file3Upload = undefined;
+                file4Upload = undefined;
+                file5Upload = undefined;
             })
             .catch(function (error) {
                 $scope.mensagem = "Erro no envio de um ou mais arquivos. Observar tamanho máximo de 5MB por arquivo.";
                 $scope.uploadSuccess = false;
                 $scope.uploadError = true;
                 generalUtility.showErrorAlert();
+                file1Upload = undefined;
+                file2Upload = undefined;
+                file3Upload = undefined;
+                file4Upload = undefined;
+                file5Upload = undefined;
         });
-    }
+    };
     
     /** Função que faz o upload dos arquivos de anexo, um a um */
     $scope.uploadTicketFile = function(file, index) {
-        let idUsuario = $scope.idCliente == undefined ? $scope.atendimento.usuario : $scope.idUsuario;
+        var idUsuario = $scope.idCliente == undefined ? $scope.atendimento.idUsuario : $scope.idUsuario;
         return $q.when(dashboardService.uploadFile(file, idUsuario)
             .then(function(response) {
                 $scope.pathAnexos = response.data;
                 $scope.uploadSuccess = true;
                 $scope.uploadError = false;
+                file1Upload = undefined;
+                file2Upload = undefined;
+                file3Upload = undefined;
+                file4Upload = undefined;
+                file5Upload = undefined;
             })
             .catch(function(error) {
                 $scope.mensagem = "Erro no envio de anexo. Observar tamanho máximo de 5MB por arquivo.";
                 $scope.uploadSuccess = false;
                 $scope.uploadError = true;
+                file1Upload = undefined;
+                file2Upload = undefined;
+                file3Upload = undefined;
+                file4Upload = undefined;
+                file5Upload = undefined;
             }));
-    }
+    };
 
     /** Função que chama a página com o detalhamento do atendimento (ticket) */
     $scope.showTicket = function(idTicket)
     {
-        $location.hash("inicio");
+        $location.hash("details");
         $location.path("/tickets/" + idTicket);
-    }
+    };
 
     /** Função que recupera a lista de clientes com determinada ordenação */
     $scope.ordenarPor = function(campo) {
         $scope.orderBy = campo;
         $scope.direction = $scope.direction === "ASC" ? "DESC" : "ASC";
         $scope.getPage(1, $scope.orderBy, $scope.direction);
-    }
+    };
     
+    /** Função que habilita o botão de filtro da modal de filtro, apenas quando um campo pelo menos está preenchido */
+    $scope.isFiltroInvalido = function() {
+        if ($scope.filtro != undefined) {
+            if (Boolean($scope.filtro.idTicket) ||
+                Boolean($scope.filtro.titulo) || 
+                Boolean($scope.filtro.descricao) ||
+                Boolean($scope.filtro.dataInicial) ||
+                Boolean($scope.filtro.dataFinal) ||
+                Boolean($scope.filtro.idCliente) ||
+                Boolean($scope.filtro.idCategoria))
+                    return false;
+            else
+                    return true;
+        }
+    }
+
     /**
      *  INTERNAL FUNCTIONS
      */
-
-    /** Função que recarrega o dashboard a cada 2 minutos */
-    var auto = $interval(function() {
-        $scope.offSet = 0;
-        $scope.numRows = 20;
-        $scope.orderBy = "";
-        $scope.direction = "";
-        $scope.idsStatusTicket = "1,4,5";
-        $scope.getPage(1, $scope.orderBy, $scope.direction);
-      }, 120000);
 
     /** Função que realiza a remoção de imagens que foram enviadas para o serviço,
      * mas que por algum motivo, deu erro no processo de cadastro do novo 
@@ -377,8 +429,8 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
             })
             .catch(function(error) {
                 console.log("Não foi possível remover os anexos inválidos.");
-            })  
-    }
+            });
+    };
 
     /** Função interna que recupera os totais de atendimento por status */
     var loadTotalStatusTicket = function() {
@@ -390,8 +442,8 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
             .then(function(response) {
     
                 //Percorre todos os totais retornados
-                for (let index = 0; index < response.data.content.totais.length; index++) {
-                    const element = response.data.content.totais[index];
+                for (var index = 0; index < response.data.content.totais.length; index++) {
+                    var element = response.data.content.totais[index];
                     
                     switch (element.idStatusTicket) {
                         case 0:
@@ -421,7 +473,7 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
                 $scope.mensagem = "Ocorreu um erro ao recuperar os totais de atendimentos por status.";
                 generalUtility.showErrorAlert();
             });
-    }
+    };
 
     /** Função interna que prepara a paginação da grid de tickets */
     var getPagination = function(page, pageSize) {
@@ -431,11 +483,29 @@ app.controller('dashboardController', function($scope, $sessionStorage, $locatio
 
         // get pager object from service
         $scope.pagination = paginationService.getPagination($scope.totalRecords, page, pageSize);
-    }
+    };
+
+    /** Função que é executada a cada 2 minutos para carregamento da tela de dashboard */
+    var reloadDashboard = function() {
+        if(this.location.href == config.baseWeb) {
+            $scope.offSet = 0;
+            $scope.numRows = 20;
+            $scope.orderBy = "";
+            $scope.direction = "";
+            $scope.idsStatusTicket = "1,4,5";
+            $scope.getPage(1, $scope.orderBy, $scope.direction);
+        }
+    };
 
     /** Carrega todos os totalizadores (cards) de atendimento */
     loadTotalStatusTicket();
 
     /** Carrega a primeira página de tickets */
     $scope.getPage(1,"","");
-});
+
+    $(document).ready(function() {
+        setInterval(function() {
+          reloadDashboard();
+        }, 120000);
+    });
+}]);

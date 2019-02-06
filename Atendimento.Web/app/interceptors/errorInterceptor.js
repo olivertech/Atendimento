@@ -1,4 +1,5 @@
-app.factory('errorInterceptor', function($q, $location) {
+app.factory('errorInterceptor', ['$q', '$location',
+    function($q, $location) {
     return {
         responseError: function(rejection) {
             
@@ -16,10 +17,10 @@ app.factory('errorInterceptor', function($q, $location) {
             // }
 
             if(rejection.status !== 200) {
-                $location.path("/error");
+                //$location.path("/error");
             }
 
             return $q.reject(rejection);
         }
     };
-});
+}]);

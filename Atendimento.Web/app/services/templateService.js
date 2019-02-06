@@ -1,4 +1,5 @@
-app.factory("templateService", function($http, config) {
+app.factory("templateService", ['$http', 'config',
+    function($http, config) {
     
     /** Retorna todos os templates paginando */
     var _getPagedTemplates = function(offSet, numRows, orderBy, direction) {
@@ -16,17 +17,17 @@ app.factory("templateService", function($http, config) {
             async: true,
             cache: false
         });  
-    }
+    };
 
     var _saveTemplate = function(id, titulo, descricao, conteudo) {
-        let request = {
+        var  request = {
             "titulo": titulo,
             "descricao": descricao,
             "conteudo": conteudo
         };
 
-        let method = '';
-        let url = config.baseUrl + "/TemplateResposta/";
+        var  method = '';
+        var  url = config.baseUrl + "/TemplateResposta/";
         
         if (id > 0) {
             method = "PUT";
@@ -44,7 +45,7 @@ app.factory("templateService", function($http, config) {
             async: true,
             cache: false
         });  
-    }
+    };
 
     var _deleteTemplate = function(idTemplate) {
         return $http({
@@ -53,7 +54,7 @@ app.factory("templateService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
     var _showTemplate = function(idTemplate) {
         return $http({
@@ -62,7 +63,7 @@ app.factory("templateService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
     return {
         getPagedTemplates: _getPagedTemplates,
@@ -70,4 +71,4 @@ app.factory("templateService", function($http, config) {
         deleteTemplate: _deleteTemplate,
         showTemplate: _showTemplate
     };
-});
+}]);

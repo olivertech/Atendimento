@@ -1,13 +1,14 @@
-app.factory("ticketService", function($http, config) {
+app.factory("ticketService", ['$http', 'config',
+    function($http, config) {
     
     /** Recupera os detalhes do ticket */
     var _getTicket = function(idTicket) {
-        //return $http.get(config.baseUrl + "/Ticket/GetById?id=" + idTicket);
+
         var ticket = 
         {
             "id": idTicket,
             "withAnexos": true
-        }
+        };
         
         return $http({
             method: "POST",
@@ -16,15 +17,16 @@ app.factory("ticketService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
+    /** Recupera as mensagens associadas ao ticket */
     var _getMessages = function(idTicket, idCliente) {
-        //return $http.get(config.baseUrl + "/TicketMensagem/GetAllByTicketId?idTicket=" + idTicket);
+
         var filter = 
         {
             "idTicket": idTicket,
             "idCliente": idCliente
-        }
+        };
 
         return $http({
             method: "POST",
@@ -33,18 +35,20 @@ app.factory("ticketService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
+    /** Recuper a lista de templates de resposta */
     var _getTemplates = function() {
-        //return $http.get(config.baseUrl + "/TemplateResposta/GetAll");
+
         return $http({
             method: "GET",
             url: config.baseUrl + "/TemplateResposta/GetAll",
             async: true,
             cache: false
         });        
-    }
+    };
 
+    /** Atualiza o status do ticket */
     var _updateStatusTicket = function(idTicket, idStatusTicket, idUsuarioCliente, tipoUsuarioAgente, idAtendente) {
         
         var request = 
@@ -54,11 +58,12 @@ app.factory("ticketService", function($http, config) {
             "idUsuarioCliente": idUsuarioCliente,
             "userTypeAgent": (tipoUsuarioAgente == "Atendimento" ? "S" : "C"),
             "idAtendente": (tipoUsuarioAgente == "Atendimento" ? idAtendente : 0)
-        }
+        };
 
         return $http.put(config.baseUrl + "/Ticket/UpdateStatusTicket", request);
-    }
+    };
 
+    /** Atualiza a classificação do ticket */
     var _updateClassificacao = function(idTicket, idClassificacao, idUsuarioCliente, tipoUsuarioAgente, idAtendente) {
         
         var request = 
@@ -68,12 +73,13 @@ app.factory("ticketService", function($http, config) {
             "idUsuarioCliente": idUsuarioCliente,
             "userTypeAgent": (tipoUsuarioAgente == "Atendimento" ? "S" : "C"),
             "idAtendente": (tipoUsuarioAgente == "Atendimento" ? idAtendente : 0)
-        }
+        };
 
         return $http.put(config.baseUrl + "/Ticket/UpdateClassificacao", request);
-    }
+    };
 
-    var _saveNewMessage = function(idTicket, idUsuario, tipoUsuarioAgente, descricao, interno, pathAnexos) {
+    /** Salva nova mensagem */
+    var _saveNewMessage = function(idTicket, idUsuario, tipoUsuarioAgente, descricao, idStatusTicket, interno, pathAnexos) {
 
         var newMessage = 
         {
@@ -82,13 +88,13 @@ app.factory("ticketService", function($http, config) {
             "userType": (tipoUsuarioAgente == "Atendimento" ? "S" : "C"),
             "descricao": descricao,
             "interno": interno,
-            "descricao": descricao,
+            "idStatusTicket": idStatusTicket,
             "pathAnexos": pathAnexos
-        }
+        };
 
         return $http.post(config.baseUrl + "/TicketMensagem/Insert", newMessage);
 
-    }
+    };
 
     return {
         getTicket: _getTicket,
@@ -98,4 +104,4 @@ app.factory("ticketService", function($http, config) {
         getTemplates: _getTemplates,
         saveNewMessage: _saveNewMessage
     };    
-});
+}]);

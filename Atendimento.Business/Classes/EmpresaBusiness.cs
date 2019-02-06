@@ -67,5 +67,10 @@ namespace Atendimento.Business.Classes
         {
             return _repository.GetAllPaged(advancedFilter);
         }
+
+        public int GetTotalAtendentesEmpresa(int idEmpresa)
+        {
+            return _repository.GetTotalAtendentesEmpresa(idEmpresa);
+        }
     }
 }

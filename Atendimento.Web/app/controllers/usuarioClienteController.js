@@ -1,4 +1,5 @@
-app.controller('usuarioController', function($scope, $sessionStorage, usuarioService, paginationService, generalUtility) {
+app.controller('usuarioController', ['$scope', '$sessionStorage', 'usuarioService', 'paginationService', 'generalUtility',
+    function($scope, $sessionStorage, usuarioService, paginationService, generalUtility) {
 
     $scope.isAdmin = $sessionStorage.isAdmin;
 
@@ -15,7 +16,7 @@ app.controller('usuarioController', function($scope, $sessionStorage, usuarioSer
     /** Função que recupera os usuarios */
     $scope.getPage = function(page, orderBy, direction) {
 
-        let offset = (page - 1) * $scope.numRows;
+        var offset = (page - 1) * $scope.numRows;
 
         usuarioService.getUsuarios(offset, $scope.numRows, orderBy, direction)
             .then(function(response) {
@@ -31,10 +32,11 @@ app.controller('usuarioController', function($scope, $sessionStorage, usuarioSer
                 $scope.mensagem = "Ocorreu um erro ao recuperar os usuários.";
                 generalUtility.showErrorAlert();
             });
-    }
+    };
 
-    /** Inicializa os campos da modal de cadastro de usuario */
+    /** Função que inicializa os campos da modal de cadastro de usuario */
     $scope.newUsuario = function() {
+        $scope.getClientes();
         $scope.usuario.id = 0;
         $scope.usuario.nome = "";
         $scope.usuario.username = "";
@@ -45,23 +47,22 @@ app.controller('usuarioController', function($scope, $sessionStorage, usuarioSer
         $scope.usuario.copia = false;
         $scope.usuario.provisorio = false;
         $scope.usuario.ativo = false;
-        $scope.getClientes();
-        $scope.usuario.idCliente = undefined;
-    }
+        $scope.usuario.idCliente = "";
+    };
 
     /** Função que salva usuario  */
     $scope.saveUsuario = function() {
-        let id = $scope.usuario.id;
-        let idCliente = $scope.usuario.idCliente;
-        let nome = $scope.usuario.nome;
-        let username = $scope.usuario.username;
-        let password = $scope.usuario.password;
-        let email = $scope.usuario.email;
-        let telefoneFixo = $scope.usuario.telefoneFixo;
-        let telefoneCelular = $scope.usuario.telefoneCelular;
-        let copia = $scope.usuario.copia;
-        let provisorio = $scope.usuario.provisorio;
-        let ativo = $scope.usuario.ativo;
+        var id = $scope.usuario.id;
+        var idCliente = $scope.usuario.idCliente;
+        var nome = $scope.usuario.nome;
+        var username = $scope.usuario.username;
+        var password = $scope.usuario.password;
+        var email = $scope.usuario.email;
+        var telefoneFixo = $scope.usuario.telefoneFixo != "" ? $scope.usuario.telefoneFixo : null;
+        var telefoneCelular = $scope.usuario.telefoneCelular != "" ? $scope.usuario.telefoneCelular : null;
+        var copia = $scope.usuario.copia;
+        var provisorio = $scope.usuario.provisorio;
+        var ativo = $scope.usuario.ativo;
 
         usuarioService.saveUsuario(id, idCliente, nome, username, password, email, telefoneFixo, telefoneCelular, copia, provisorio, ativo)
             .then(function(response) {
@@ -73,12 +74,14 @@ app.controller('usuarioController', function($scope, $sessionStorage, usuarioSer
                 $scope.mensagem = "Ocorreu um erro ao salvar o usuário.";
                 generalUtility.showErrorAlert();
             });        
-    }
+    };
     
     /** Função que carrega a modal com os dados do usuario */
     $scope.showUsuario = function(idUsuario) {
         usuarioService.showUsuario(idUsuario)
             .then(function(response) {
+                $scope.getClientes(response.data.content.idCliente);
+                $scope.getTickets(response.data.content.id);
                 $scope.usuario.id = response.data.content.id;
                 $scope.usuario.idCliente = response.data.content.idCliente;
                 $scope.usuario.nome = response.data.content.nome;
@@ -90,14 +93,12 @@ app.controller('usuarioController', function($scope, $sessionStorage, usuarioSer
                 $scope.usuario.copia = response.data.content.copia;
                 $scope.usuario.provisorio = response.data.content.provisorio;
                 $scope.usuario.ativo = response.data.content.ativo;
-                $scope.getClientes();
-                $scope.getTickets(response.data.content.id);
             })
             .catch(function(error) {
                 $scope.mensagem = "Ocorreu um erro ao recuperar o usuário.";
                 generalUtility.showErrorAlert();
             });   
-    }
+    };
     
     /** Função que remove usuario */
     $scope.deleteUsuario = function(idUsuario) {
@@ -114,19 +115,23 @@ app.controller('usuarioController', function($scope, $sessionStorage, usuarioSer
                 generalUtility.showErrorAlert();
             }); 
         }  
-    }
+    };
 
     /** Função que recupera todos os clientes */
-    $scope.getClientes = function() {
+    $scope.getClientes = function(idCliente) {
         usuarioService.getClientes()
             .then(function(response) {
-                $scope.clientes = response.data.content;
+                var defaultOption = {id: "", nome: 'Selecione o cliente'};
+                var lista = response.data.content;
+                $scope.clientes = lista.sort();
+                $scope.clientes.unshift(defaultOption);
+                $scope.usuario.idCliente = idCliente != undefined ? idCliente : "";
             })
             .catch(function(error) {
                 $scope.mensagem = "Ocorreu um erro ao recuperar a lista de clientes.";
                 generalUtility.showErrorAlert(); 
             });
-    }
+    };
     
     /** Função que retorna o total de tickets associados ao usuario */
     $scope.getTickets = function(idUsuario) {
@@ -138,26 +143,26 @@ app.controller('usuarioController', function($scope, $sessionStorage, usuarioSer
                 $scope.mensagem = "Ocorreu um erro ao recuperar a lista de tickets.";
                 generalUtility.showErrorAlert(); 
             });
-    }
+    };
 
     /** Função que recupera a lista de clientes com determinada ordenação */
     $scope.ordenarPor = function(campo) {
         $scope.orderBy = campo;
         $scope.direction = $scope.direction === "ASC" ? "DESC" : "ASC";
         $scope.getPage(1, campo, $scope.direction);
-    }
+    };
     
     /** Função que gera senha randomicamente */
     $scope.gerarPwd = function()
     {
-        let pwd = generalUtility.randomPwd();
+        var pwd = generalUtility.randomPwd();
         $scope.usuario.password = pwd;
-    }
+    };
 
     /** Função que alterna o type do campo de senha */
     $scope.showHidePwd = function(field) {
         generalUtility.showHidePwd(field);
-    }
+    };
     
     /**
      *  INTERNAL FUNCTIONS
@@ -171,8 +176,8 @@ app.controller('usuarioController', function($scope, $sessionStorage, usuarioSer
 
         // get pager object from service
         $scope.pagination = paginationService.getPagination($scope.totalRecords, page, pageSize);
-    }
+    };
     
     /** Carrega os clientes */
     $scope.getPage(1, "id", $scope.direction);
-});
+}]);

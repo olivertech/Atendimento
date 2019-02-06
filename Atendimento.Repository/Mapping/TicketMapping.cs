@@ -9,10 +9,10 @@ namespace Atendimento.Repository.Mapping
         {
             ToTable("Ticket");
             Map(m => m.Id).ToColumn("id").IsKey().IsIdentity();
-            Map(m => m.IdStatusTicket).ToColumn("id_status_ticket");
-            Map(m => m.IdUsuarioCliente).ToColumn("id_usuario_cliente");
-            Map(m => m.IdCategoria).ToColumn("id_categoria");
-            Map(m => m.IdClassificacao).ToColumn("id_classificacao");
+            Map(m => m.IdStatusTicket).ToColumn("statusticketid");
+            Map(m => m.IdUsuarioCliente).ToColumn("usuarioclienteid");
+            Map(m => m.IdCategoria).ToColumn("categoriaid");
+            Map(m => m.IdClassificacao).ToColumn("classificacaoid");
             Map(m => m.Titulo).ToColumn("titulo");
             Map(m => m.Descricao).ToColumn("descricao");
             Map(m => m.DataHoraInicial).ToColumn("data_hora_inicial");

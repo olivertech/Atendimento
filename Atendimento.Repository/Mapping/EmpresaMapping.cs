@@ -8,7 +8,7 @@ namespace Atendimento.Repository.Mapping
         public EmpresaMapping()
         {
             ToTable("Empresa");
-            Map(m => m.Id).ToColumn("id").IsKey().IsIdentity();
+            Map(m => m.Id).ToColumn("id_empresa_entity").IsKey().IsIdentity();
             Map(m => m.Nome).ToColumn("nome");
             Map(m => m.Email).ToColumn("email");
             Map(m => m.TelefoneFixo).ToColumn("telefone_fixo");

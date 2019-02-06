@@ -1,4 +1,5 @@
-app.controller('templateController', function($scope, $sessionStorage, templateService, paginationService, generalUtility) {
+app.controller('templateController', ['$scope', '$sessionStorage', 'templateService', 'paginationService', 'generalUtility',
+    function($scope, $sessionStorage, templateService, paginationService, generalUtility) {
 
     $scope.isAdmin = $sessionStorage.isAdmin;
 
@@ -13,7 +14,7 @@ app.controller('templateController', function($scope, $sessionStorage, templateS
     /** Função que controla a paginação da grid de tickets */
     $scope.getPage = function(page, orderBy, direction) {
 
-        let offset = (page - 1) * $scope.numRows;
+        var offset = (page - 1) * $scope.numRows;
 
         templateService.getPagedTemplates(offset, $scope.numRows, orderBy, direction)
             .then(function(response) {
@@ -29,7 +30,7 @@ app.controller('templateController', function($scope, $sessionStorage, templateS
                 $scope.mensagem = "Ocorreu um erro ao recuperar os templates.";
                 generalUtility.showErrorAlert();
             });
-    }
+    };
 
     /** Função que inicializa os campos da modal de cadastro de novo template */
     $scope.newTemplate = function() {
@@ -37,14 +38,14 @@ app.controller('templateController', function($scope, $sessionStorage, templateS
         $scope.template.titulo = '';
         $scope.template.descricao = '';
         $scope.template.conteudo = '';
-    }
+    };
 
     /** Função que salva novo template */
     $scope.saveTemplate = function() {
-        let id = $scope.template.id;
-        let titulo = $scope.template.titulo;
-        let descricao = $scope.template.descricao;
-        let conteudo = $scope.template.conteudo;
+        var id = $scope.template.id;
+        var titulo = $scope.template.titulo;
+        var descricao = $scope.template.descricao;
+        var conteudo = $scope.template.conteudo;
 
         templateService.saveTemplate(id, titulo, descricao, conteudo)
             .then(function(response) {
@@ -58,7 +59,7 @@ app.controller('templateController', function($scope, $sessionStorage, templateS
                 $scope.mensagem = "Ocorreu um erro ao salvar o template.";
                 generalUtility.showErrorAlert();
             });        
-    }
+    };
 
     /** Função que remove um template */
     $scope.deleteTemplate = function(idTemplate) {
@@ -75,7 +76,7 @@ app.controller('templateController', function($scope, $sessionStorage, templateS
                 generalUtility.showErrorAlert();
             }); 
         }  
-    }
+    };
 
     /** Função que carrega a modal com os dados do template selecionado */
     $scope.showTemplate = function(idTemplate) {
@@ -90,14 +91,14 @@ app.controller('templateController', function($scope, $sessionStorage, templateS
             $scope.mensagem = "Ocorreu um erro ao recuperar o template.";
             generalUtility.showErrorAlert();
         });   
-    }
+    };
 
     /** Função que recupera a lista de templates com determinada ordenação */
     $scope.ordenarPor = function(campo) {
         $scope.orderBy = campo;
         $scope.direction = $scope.direction === "ASC" ? "DESC" : "ASC";
         $scope.getPage(1, campo, $scope.direction);
-    }
+    };
 
     /**
      *  INTERNAL FUNCTIONS
@@ -111,8 +112,8 @@ app.controller('templateController', function($scope, $sessionStorage, templateS
 
         // get pager object from service
         $scope.pagination = paginationService.getPagination($scope.totalRecords, page, pageSize);
-    }
+    };
     
     /** Carrega a primeira página de tickets */
     $scope.getPage(1, "id", $scope.direction);
-});
+}]);

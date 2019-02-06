@@ -8,29 +8,26 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <base href="/">
         
-        <!-- Estilos -->
-        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.10/angular-material.min.css" rel="stylesheet">
+        <!-- Libs -->
+        <link href="./app/assets/libs/bootstrap.min.css" rel="stylesheet">
+        <link href="./app/assets/libs/angular-material.min.css" rel="stylesheet">
         <link href="./app/assets/libs/jquery-ui.min.css" rel="stylesheet">
         <link href="./app/assets/libs/jquery-ui.structure.min.css" rel="stylesheet">
         <link href="./app/assets/libs/jquery-ui.theme.min.css" rel="stylesheet">
-        <link href="./app/assets/libs/loading-bar.css" rel="stylesheet">
-        
-        <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css" rel="stylesheet"> -->
-        <!-- Login Css -->
-        <link href="./app/assets/css/login-register-lock.css" rel="stylesheet">
-        <!-- Custom Css -->
-        <link href="./app/assets/css/style.css" rel="stylesheet">
-        <!-- Dashboard Css -->
-        <link href="./app/assets/css/dashboard.css" rel="stylesheet">
-        <!-- Ticket Css -->
-        <link href="./app/assets/css/ticket.css" rel="stylesheet">
-        <!-- App Css -->
-        <link href="./app/assets/css/app.css" rel="stylesheet">
+        <script src="./app/assets/libs/jquery-3.3.1.min.js"></script>
+        <script src="./app/assets/libs/jquery-ui.min.js"></script>
 
-        <!-- App Css - Parametrização de Cores -->
-        <link href="./app/assets/css/cores.css" rel="stylesheet">
-        
+        <!-- Arquivos de estilo de libs -->
+        <link href="./app/assets/css/login-register-lock.css" rel="stylesheet">
+        <link href="./app/assets/css/style.css" rel="stylesheet">
+        <link href="./app/assets/css/dashboard.css" rel="stylesheet">
+        <link href="./app/assets/css/ticket.css" rel="stylesheet">
+        <link href="./app/assets/css/app.css" rel="stylesheet">
+        <link href="./app/assets/css/loading-bar.css" rel="stylesheet">
+
+        <!-- Estilos de parametrização do app -->
+        <link href="./app/assets/parametrizacao/cores.css" rel="stylesheet">
+
         <!-- Favicon icon -->
         <link rel="icon" type="image/png" sizes="16x16" href="./app/assets/images/favicon.ico">
 
@@ -57,32 +54,30 @@
             <div ui-view class="page-view-animation" id="appview"></div>
         </div>
     </body>
+   
+    <!-- Angular Libs -->
+    <script src="./app/assets/libs/angular.min.js"></script>
+    <script src="./app/assets/libs/angular-ui-router.min.js"></script>
+    <script src="./app/assets/libs/angular-messages.js"></script>
+    <script src="./app/assets/libs/angular-locale_pt-br.min.js"></script>
+    <script src="./app/assets/libs/ngStorage.min.js"></script>
+    <script src="./app/assets/libs/angular-cookies.min.js"></script>
+    <script src="./app/assets/libs/angular-animate.min.js"></script>
+    <script src="./app/assets/libs/angular-material.min.js"></script>
 
-    <!-- Jquery lib -->
-    <script src="./app/assets/libs/jquery-3.3.1.min.js"></script>
-    <script src="./app/assets/libs/jquery-ui.min.js"></script>
-    
-    <!-- Angular libs -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.20/angular-ui-router.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-messages/1.7.5/angular-messages.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.7.5/angular-locale_pt-br.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.11/ngStorage.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular-cookies.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular-animate.min.js"></script>
-    <script src="./app/assets/libs/ng-file-upload.min.js"></script>
-    <script src="./app/assets/libs/ngClipboard.js"></script>
-    <script src="./app/assets/libs/ngMask.js"></script>
-    
     <!-- Angular root -->
     <script src="./app/app.js"></script>
 
+    <!-- values -->
+    <script src="./app/values/configValues.js"></script>
+    
     <!-- configs -->
     <script src="./app/config/interceptorsConfig.js"></script>
     <script src="./app/config/routeConfig.js"></script>
 
     <!-- controllers -->
     <script src="./app/controllers/atendenteEmpresaController.js"></script>
+    <script src="./app/controllers/categoriaController.js"></script>
     <script src="./app/controllers/clienteController.js"></script>
     <script src="./app/controllers/dashboardController.js"></script>
     <script src="./app/controllers/errorController.js"></script>
@@ -117,6 +112,7 @@
 
     <!-- services -->
     <script src="./app/services/atendenteEmpresaService.js"></script>
+    <script src="./app/services/categoriaService.js"></script>
     <script src="./app/services/clienteService.js"></script>
     <script src="./app/services/dashboardService.js"></script>
     <script src="./app/services/empresaService.js"></script>
@@ -126,14 +122,13 @@
     <script src="./app/services/templateService.js"></script>
     <script src="./app/services/ticketService.js"></script>
     <script src="./app/services/usuarioClienteService.js"></script>
-        
-    <!-- values -->
-    <script src="./app/values/configValues.js"></script>
 
     <!-- Custom libs -->
+    <script src="./app/assets/libs/loading-bar.js"></script>
+    <script src="./app/assets/libs/ngClipboard.js"></script>
+    <script src="./app/assets/libs/ngMask.js"></script>
+    <script src="./app/assets/libs/waves.js"></script> 
     <script src="./app/assets/libs/popper.min.js"></script>
     <script src="./app/assets/libs/bootstrap.min.js"></script>
-    <script src="./app/assets/libs/loading-bar.js"></script>
-    <script src="./app/assets/scripts/waves.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.10/angular-material.min.js"></script>
+    <script src="./app/assets/libs/ng-file-upload.min.js"></script>
 </html>

@@ -42,7 +42,7 @@ app.directive("uiAccordion", function () {
                     ctrl.current = 0;
                     scope.isOpened = false;
                 }
-            }
+            };
         }
     };
 });

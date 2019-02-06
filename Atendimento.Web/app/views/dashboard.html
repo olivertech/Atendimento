@@ -19,10 +19,10 @@
             <!-- ============================================================== -->
             <div class="row page-titles">
                 <div class="col-md-5 align-self-center" ng-if="idCliente == 0">
-                    <h4 class="text-themecolor">Dashboard De Atendimentos - Suporte</h4>
+                    <h4 class="text-themecolor"><strong>Dashboard De Atendimentos - Suporte</strong></h4>
                 </div>
                 <div class="col-md-5 align-self-center" ng-if="idCliente != 0">
-                    <h4 class="text-themecolor">Dashboard De Atendimentos - {{nomeCliente}}</h4>
+                    <h4 class="text-themecolor"><strong>Dashboard De Atendimentos - {{nomeCliente}}</strong></h4>
                 </div>                
                 <div class="col-md-7 align-self-center text-right">
                     <div class="d-flex justify-content-end align-items-center">
@@ -33,7 +33,7 @@
                     </div>
                 </div>
             </div>
-            <div id="success-alert" class="row">
+            <div id="success-alert1" class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <h3 class="text-success"><i class="fa fa-check-circle"></i> Sucesso.</h3>{{mensagem}}
@@ -43,7 +43,7 @@
                     </div>
                 </div>
             </div>
-            <div id="error-alert" class="row">
+            <div id="error-alert1" class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <h3 class="text-danger"><i class="fa fa-check-circle"></i> Erro.</h3>{{mensagem}}
@@ -67,9 +67,9 @@
                             <div class="row">
                                 <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 m-t-10 text-center">
                                     <!-- Botões -->
-                                    <button type="button" class="btn btn-warning waves-effect" ng-click="updateTicketList()"><i class="fas fa-sync-alt"></i> Atualiza Lista</button>
-                                    <button type="button" class="btn btn-cyan waves-effect" ng-click="initModalFilter()" data-toggle="modal" data-target="#add-filtro"><i class="fas fa-filter"></i> Filtros Avançados</button>
-                                    <button type="button" class="btn btn-info waves-effect" ng-click="initModalNewSupport()" data-toggle="modal" data-target="#add-atendimento" ng-if="isAdmin"><i class="fas fa-plus"></i> Novo Atendimento</button>
+                                    <button type="button" class="btn btn-warning waves-effect" ng-click="updateTicketList()" title="Atualizar a listagem de atendimentos"><i class="fas fa-sync-alt"></i> Atualiza Lista</button>
+                                    <button type="button" class="btn btn-cyan waves-effect" ng-click="initModalFilter()" data-toggle="modal" data-target="#add-filtro" title="Filtrar listagem de atendimentos"><i class="fas fa-filter"></i> Filtros Avançados</button>
+                                    <button type="button" class="btn btn-info waves-effect" ng-click="initModalNewSupport()" data-toggle="modal" data-target="#add-atendimento" title="Abrir novo pedido de atendimento"><i class="fas fa-plus"></i> Novo Atendimento</button>
                                 </div>
                                 <!-- filtros -->
                                 <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 text-center m-t-20">
@@ -141,19 +141,17 @@
                                 <table id="tickets" class="table m-t-20 no-wrap" ng-if="tickets.length == 0">
                                     <thead>
                                         <tr>
-                                            <th>
-                                                Não foram encontrados resultados para o filtro informado.
-                                            </th>
+                                            <th style="text-align: center">Não existem atendimentos para o filtro informado.</th>
                                         </td>
                                     </tr>
                                 </table>                              
                                 <table id="tickets" class="table m-t-20 table-hover no-wrap contact-list table-striped" ng-if="tickets.length > 0">
                                     <thead>
                                         <tr>
-                                            <th><i class="fas fa-exclamation-triangle" title="Classificação do Atendimento"></i></th>
-                                            <th>#</th>
-                                            <th><a href="" ng-click="ordenarPor('id')">Ticket #</a></th>
-                                            <th><a href="" ng-click="ordenarPor('titulo')">Assunto</a></th>
+                                            <th style="text-align: center"><i class="fas fa-exclamation-triangle" title="Classificação do Atendimento"></i></th>
+                                            <th style="text-align: center">#</th>
+                                            <th style="text-align: center"><a href="#" ng-click="ordenarPor('id')">Ticket #</a></th>
+                                            <th><a href="#" ng-click="ordenarPor('titulo')">Assunto</a></th>
                                             <th>Usuário</th>
                                             <th>Status</th>
                                             <th>Categoria</th>
@@ -162,13 +160,13 @@
                                     </thead>
                                     <tbody>
                                         <tr ng-repeat="ticket in tickets track by ticket.id" ng-click="showTicket(ticket.id)" style="cursor: pointer;">
-                                            <td>
+                                            <td style="text-align: center">
                                                 <i class="fas fa-chevron-circle-down fa-lg" style="color: #03a9f3" ng-if="ticket.classificacao.id == 1" title="Prioridade Baixa"></i>
                                                 <i class="fas fa-minus-circle fa-lg" style="color: #008f6c" ng-if="ticket.classificacao.id == 2" title="Prioridade Média"></i>
                                                 <i class="fas fa-chevron-circle-up fa-lg" style="color: #fb9678" ng-if="ticket.classificacao.id == 3" title="Prioridade Alta"></i>
                                             </td>
-                                            <td>{{pagination.startIndex + $index + 1}}</td>
-                                            <td>{{ticket.id}}</td>
+                                            <td style="text-align: center">{{pagination.startIndex + $index + 1}}</td>
+                                            <td style="text-align: center">{{ticket.id}}</td>
                                             <td>{{ticket.titulo}}</td>
                                             <td>{{ticket.usuarioCliente.nome}}</td>
                                             <td ng-switch on="ticket.statusTicket.id">
@@ -243,11 +241,9 @@
                                         <div class="col-sm-9">
                                             <select class="form-control"
                                                     ng-required="true"
-                                                    ng-init="atendimento.cliente = atendimento.cliente || options[0].value"
-                                                    ng-change="getUsuarios(atendimento.cliente)"
-                                                    ng-model="atendimento.cliente"
-                                                    ng-options="cliente.id as cliente.nome for cliente in clientes | orderBy: 'nome'">
-                                                <option value="">Selecione o cliente</option>
+                                                    ng-change="getUsuarios(atendimento.idCliente)"
+                                                    ng-model="atendimento.idCliente"
+                                                    ng-options="cliente.id as cliente.nome for cliente in clientes">
                                             </select>
                                         </div>
                                     </div>
@@ -256,11 +252,9 @@
                                         <div class="col-sm-9">
                                             <select class="form-control"
                                                     ng-required="true"
-                                                    ng-disabled="atendimento.cliente == undefined"
-                                                    ng-init="atendimento.usuario = atendimento.usuario || options[0].value"
-                                                    ng-model="atendimento.usuario"
-                                                    ng-options="usuario.id as usuario.nome for usuario in usuarios | orderBy: 'nome'">
-                                                <option value="">Selecione o usuário</option>
+                                                    ng-disabled="usuarios.length == 1"
+                                                    ng-model="atendimento.idUsuario"
+                                                    ng-options="usuario.id as usuario.nome for usuario in usuarios">
                                             </select>
                                         </div>
                                     </div>
@@ -269,10 +263,8 @@
                                         <div class="col-sm-9">
                                             <select class="form-control"
                                                     ng-required="true"
-                                                    ng-init="atendimento.categoria = atendimento.categoria || options[0].value"
-                                                    ng-model="atendimento.categoria"
-                                                    ng-options="categoria.id as categoria.nome for categoria in categorias | orderBy: 'nome'">
-                                                <option value="">Selecione a categoria</option>
+                                                    ng-model="atendimento.idCategoria"
+                                                    ng-options="categoria.id as categoria.nome for categoria in categorias">
                                             </select>
                                         </div>
                                     </div>
@@ -281,10 +273,8 @@
                                         <div class="col-sm-9">
                                             <select class="form-control"
                                                     ng-required="true"
-                                                    ng-init="atendimento.classificacao = atendimento.classificacao || options[0].value"
-                                                    ng-model="atendimento.classificacao"
-                                                    ng-options="classificacao.id as classificacao.nome for classificacao in classificacoes | orderBy: 'idClassificacao'">
-                                                <option value="">Selecione a classificação</option>
+                                                    ng-model="atendimento.idClassificacao"
+                                                    ng-options="classificacao.id as classificacao.nome for classificacao in classificacoes">
                                             </select>
                                         </div>
                                     </div>                                    
@@ -305,7 +295,7 @@
                                         </div>                                        
                                     </div>
                                     <div class="form-group">
-                                        <label for="anexos"><strong>Anexar arquivos ao novo atendimento</strong></label>
+                                        <label for="anexos"><strong>Anexar arquivos ao novo atendimento (Tamanho Máx.: 5MB)</strong></label>
                                         <select class="form-control" 
                                                 ng-init="qtdeAnexos = qtdeAnexos || options[0].value"
                                                 ng-model="qtdeAnexos"
@@ -489,7 +479,7 @@
                                 <div class="form-group row">
                                     <label for="ticket" class="col-sm-3 col-form-label"><strong>Ticket#</strong></label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="ticket" placeholder="Número do Ticket" ng-model="filtro.idTicket">
+                                        <input type="number" class="form-control" id="ticket" placeholder="Número do Ticket" ng-model="filtro.idTicket">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -521,10 +511,8 @@
                                     <div class="col-sm-9">
                                         <select class="form-control"
                                                 ng-required="true"
-                                                ng-init="filtro.idCliente = filtro.idCliente || options[0].value"
                                                 ng-model="filtro.idCliente"
-                                                ng-options="cliente.id as cliente.nome for cliente in clientes | orderBy: 'nome'">
-                                            <option value="">Selecione o cliente</option>
+                                                ng-options="cliente.id as cliente.nome for cliente in clientes">
                                         </select>
                                     </div>
                                 </div>
@@ -533,19 +521,23 @@
                                     <div class="col-sm-9">
                                         <select class="form-control"
                                                 ng-required="true"
-                                                ng-init="filtro.idCategoria = filtro.idCategoria || options[0].value"
                                                 ng-model="filtro.idCategoria"
-                                                ng-options="categoria.id as categoria.nome for categoria in categorias | orderBy: 'nome'">
-                                            <option value="">Selecione a categoria</option>
+                                                ng-options="categoria.id as categoria.nome for categoria in categorias">
                                         </select>
                                     </div>
                                 </div>
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-info waves-effect" data-dismiss="modal" ng-click="filterTickets()">Filtrar</button>
-                            <button type="button" class="btn btn-cyan waves-effect" ng-click="clearModalFilter()">Limpar Filtro</button>                            
-                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cancelar</button>
+                            <div class="row">
+                                <div class="col-3">
+                                    <button type="button" class="btn btn-cyan waves-effect" ng-click="clearModalFilter()"><i class="fas fa-eraser"></i> Apagar Filtro</button>
+                                </div>
+                                <div class="col-9 text-right">
+                                    <button type="button" class="btn btn-info waves-effect" data-dismiss="modal" ng-click="filterTickets()"><i class="fas fa-check"></i> Filtrar</button>
+                                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal"><i class="fas fa-ban"></i> Cancelar</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -565,10 +557,5 @@
 <!-- ============================================================== -->
 <!-- End Wrapper -->
 <!-- ============================================================== -->
-
-<!-- Esse arquivo tem que importar aqui, pois senão os elementos não são achados pelo jquery -->
-<script src="./app/assets/scripts/custom.js"></script>
-<script src="./app/assets/scripts/sidebarmenu.js"></script>
-<script src="./app/assets/scripts/utilities.js"></script>
-<script src="./app/assets/scripts/fullscreen.js"></script>
-<script src="./app/assets/scripts/dashboard.js"></script>
+<!-- scripts importados aqui, para permitir que o Jquery encontre os elementos das tags html -->
+<script src="./app/assets/dist/app-scripts-pagina.min.js"></script>

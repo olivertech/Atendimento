@@ -16,7 +16,7 @@ namespace Atendimento.Repository.Repositories
     {
         const string selectQuery = @"SELECT 
                                         uc.id,
-                                        uc.id_cliente,
+                                        uc.clienteid,
                                         uc.nome,
                                         uc.username,
                                         uc.password,
@@ -26,49 +26,11 @@ namespace Atendimento.Repository.Repositories
                                         uc.copia,
                                         uc.provisorio,
                                         uc.ativo,
-                                        c.id                AS id_cliente,
+                                        c.id                AS id_cliente_entity,
                                         c.nome,
                                         c.email
                                     FROM Usuario_Cliente uc 
-                                    INNER JOIN Cliente c ON c.id = uc.id_cliente ";
-
-
-        /// <summary>
-        /// Método que sobrescreve o base, por conta no alias dado a coluna Id da tabela,
-        /// em função dos joins do Dapper, que exigem campos chaves com nomes diferentes
-        /// </summary>
-        /// <param name="idUsuario"></param>
-        /// <returns></returns>
-        public override UsuarioCliente GetById(Int32 idUsuario)
-        {
-            UsuarioCliente result = null;
-
-            try
-            {
-                using (var conn = CreateConnection())
-                {
-                    result = conn.Query<UsuarioCliente>(@"SELECT
-                                                                id AS id_usuario_cliente,
-                                                                id_cliente,
-                                                                nome,
-                                                                username,
-                                                                password,
-                                                                email,
-                                                                telefone_fixo,
-                                                                telefone_celular,
-                                                                copia,
-                                                                provisorio,
-                                                                ativo
-                                                          FROM Usuario_Cliente WHERE id = " + idUsuario).SingleOrDefault();
-                }
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
+                                    INNER JOIN Cliente c ON uc.clienteid = c.id ";
 
         /// <summary>
         /// Método que sobreescreve o base, por conta da necessidade de mudar o nome do id da tabela no
@@ -126,6 +88,43 @@ namespace Atendimento.Repository.Repositories
         }
 
         /// <summary>
+        /// Recupera os usuarios de forma paginada
+        /// </summary>
+        /// <param name="advancedFilter"></param>
+        /// <returns></returns>
+        public UsuariosClienteResponse GetAllPaged(FilterUsuarioRequest advancedFilter)
+        {
+            var result = new UsuariosClienteResponse();
+            var sql = string.Empty;
+            var sqlCount = string.Empty;
+
+            try
+            {
+                using (var conn = CreateConnection())
+                {
+                    result.TotalGeral = (int)conn.ExecuteScalar("SELECT COUNT(*) FROM Usuario_Cliente");
+
+                    sql = RecuperarQuery(advancedFilter);
+
+                    result.Usuarios = conn.Query<UsuarioCliente, Cliente, UsuarioCliente>(sql,
+                                            map: (usuario, cliente) =>
+                                            {
+                                                usuario.Cliente = cliente;
+
+                                                return usuario;
+                                            },
+                                            splitOn: "id_cliente_entity").Distinct().ToList();
+                }
+
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Método que recupera o usuario através do seu username e senha.
         /// </summary>
         /// <param name="username"></param>
@@ -147,26 +146,6 @@ namespace Atendimento.Repository.Repositories
             catch (Exception)
             {
                 throw;
-            }
-        }
-
-        /// <summary>
-        /// Método que atualiza apenas a senha do usuario
-        /// </summary>
-        /// <param name="usuarioCliente"></param>
-        /// <returns></returns>
-        public bool UpdatePassword(UsuarioCliente usuarioCliente)
-        {
-            try
-            {
-                using (var conn = CreateConnection())
-                {
-                    return conn.Update(usuarioCliente);
-                }
-            }
-            catch (Exception)
-            {
-                return false;
             }
         }
 
@@ -196,40 +175,102 @@ namespace Atendimento.Repository.Repositories
         }
 
         /// <summary>
-        /// Recupera os usuarios de forma paginada
+        /// Método que recupera o usuário e parte das propriedades do cliente
         /// </summary>
-        /// <param name="advancedFilter"></param>
+        /// <param name="idUsuario"></param>
         /// <returns></returns>
-        public UsuariosClienteResponse GetAllPaged(FilterUsuarioRequest advancedFilter)
+        public UsuarioCliente GetFullById(int idUsuario)
         {
-            var result = new UsuariosClienteResponse();
-            var sql = string.Empty;
-            var sqlCount = string.Empty;
+            var result = new UsuarioCliente();
 
+            var sql = @"SELECT
+                            uc.id,
+                            uc.clienteid,
+                            uc.nome,
+                            uc.username,
+                            uc.password,
+                            uc.email,
+                            uc.telefone_fixo,
+                            uc.telefone_celular,
+                            uc.copia,
+                            uc.provisorio,
+                            uc.ativo,
+                            c.id                    AS id_cliente_entity,
+                            c.empresaid
+                        FROM Usuario_Cliente uc 
+                        INNER JOIN Cliente c ON uc.clienteid = c.id
+                        WHERE uc.id = " + idUsuario;
             try
             {
                 using (var conn = CreateConnection())
                 {
-                    result.TotalGeral = (int)conn.ExecuteScalar("SELECT COUNT(*) FROM Usuario_Cliente");
-
-                    sql = RecuperarQuery(advancedFilter);
-
-                    result.Usuarios = conn.Query<UsuarioCliente, Cliente, UsuarioCliente>(sql,
+                    result = conn.Query<UsuarioCliente, Cliente, UsuarioCliente>(sql,
                                             map: (usuario, cliente) =>
                                             {
                                                 usuario.Cliente = cliente;
 
                                                 return usuario;
                                             },
-                                            splitOn: "id_cliente").Distinct().ToList();
+                                            splitOn: "id_cliente_entity").SingleOrDefault();
                 }
 
                 return result;
             }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Método que atualiza apenas a senha do usuario
+        /// </summary>
+        /// <param name="usuarioCliente"></param>
+        /// <returns></returns>
+        public bool UpdatePassword(UsuarioCliente usuarioCliente)
+        {
+            try
+            {
+                using (var conn = CreateConnection())
+                {
+                    return conn.Update(usuarioCliente);
+                }
+            }
             catch (Exception)
             {
-                throw;
+                return false;
             }
+        }
+
+        /// <summary>
+        /// Monta as clausulas Offset e Fetch Next
+        /// </summary>
+        /// <param name="advancedFilter"></param>
+        /// <returns></returns>
+        private static string BuildOffSetNumRows(FilterUsuarioRequest advancedFilter)
+        {
+            if (advancedFilter.NumRows == 0) return string.Empty;
+
+            var offSetNumRowsClauses = new StringBuilder();
+
+            offSetNumRowsClauses.Append(" OFFSET " + advancedFilter.OffSet + " ROWS");
+            offSetNumRowsClauses.Append(" FETCH NEXT " + advancedFilter.NumRows + " ROWS ONLY");
+
+            return offSetNumRowsClauses.ToString();
+        }
+
+        /// <summary>
+        /// Monta a clausula Order By
+        /// </summary>
+        /// <param name="advancedFilter"></param>
+        /// <returns></returns>
+        private static string BuildOrderBy(FilterUsuarioRequest advancedFilter)
+        {
+            var orderByClause = new StringBuilder();
+
+            orderByClause.Append("ORDER BY uc." + advancedFilter.OrderBy + " " + advancedFilter.Direction);
+
+            return orderByClause.ToString();
         }
 
         /// <summary>
@@ -253,37 +294,6 @@ namespace Atendimento.Repository.Repositories
             sql.Append(offSetNumRows);
 
             return sql.ToString();
-        }
-
-        /// <summary>
-        /// Monta a clausula Order By
-        /// </summary>
-        /// <param name="advancedFilter"></param>
-        /// <returns></returns>
-        private static string BuildOrderBy(FilterUsuarioRequest advancedFilter)
-        {
-            var orderByClause = new StringBuilder();
-
-            orderByClause.Append("ORDER BY uc." + advancedFilter.OrderBy + " " + advancedFilter.Direction);
-
-            return orderByClause.ToString();
-        }
-
-        /// <summary>
-        /// Monta as clausulas Offset e Fetch Next
-        /// </summary>
-        /// <param name="advancedFilter"></param>
-        /// <returns></returns>
-        private static string BuildOffSetNumRows(FilterUsuarioRequest advancedFilter)
-        {
-            if (advancedFilter.NumRows == 0) return string.Empty;
-
-            var offSetNumRowsClauses = new StringBuilder();
-
-            offSetNumRowsClauses.Append(" OFFSET " + advancedFilter.OffSet + " ROWS");
-            offSetNumRowsClauses.Append(" FETCH NEXT " + advancedFilter.NumRows + " ROWS ONLY");
-
-            return offSetNumRowsClauses.ToString();
         }
     }
 }

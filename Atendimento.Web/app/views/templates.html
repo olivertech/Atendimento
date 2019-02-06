@@ -19,7 +19,7 @@
             <!-- ============================================================== -->
             <div class="row page-titles">
                 <div class="col-md-5 align-self-center">
-                    <h4 class="text-themecolor">Cadastro de Templates - Suporte</h4>
+                    <h4 class="text-themecolor">Cadastro de Templates</h4>
                 </div>
                 <div class="col-md-7 align-self-center text-right">
                     <div class="d-flex justify-content-end align-items-center">
@@ -30,7 +30,7 @@
                     </div>
                 </div>
             </div>
-            <div id="success-alert" class="row">
+            <div id="success-alert1" class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <h3 class="text-success"><i class="fa fa-check-circle"></i> Sucesso.</h3>{{mensagem}}
@@ -40,7 +40,7 @@
                     </div>
                 </div>
             </div>
-            <div id="error-alert" class="row">
+            <div id="error-alert1" class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <h3 class="text-danger"><i class="fa fa-check-circle"></i> Erro.</h3>{{mensagem}}
@@ -112,10 +112,9 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th><a href="" ng-click="ordenarPor('id')">Template #</a></th>
-                                            <th><a href="" ng-click="ordenarPor('titulo')">Título</a></th>
+                                            <th><a href="#" ng-click="ordenarPor('id')">Template #</a></th>
+                                            <th><a href="#" ng-click="ordenarPor('titulo')">Título</a></th>
                                             <th>Conteúdo</th>
-                                            <!-- <th>&nbsp;</th> -->
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -124,7 +123,6 @@
                                             <td>{{template.id}}</td>
                                             <td>{{template.titulo}}</td>
                                             <td>{{template.conteudo | ellipsis:150}}</td>
-                                            <!-- <td><button type="button" class="btn btn-danger" title="Remover template" ng-click="showTemplate(template.id)"><i class="fas fa-trash-alt"></i></button></td> -->
                                         </tr>
                                     </tbody>
                                 </table>
@@ -215,9 +213,15 @@
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" id="submit" ng-click="deleteTemplate(template.id);" class="btn btn-danger waves-effect" data-dismiss="modal" ng-if="template.id != 0"><i class="fas fa-trash-alt"></i> Remover</button>
-                            <button type="button" id="submit" ng-click="saveTemplate();" class="btn btn-info waves-effect" data-dismiss="modal" ng-disabled="novoTemplateForm.$invalid"><i class="fas fa-check"></i> Salvar</button>
-                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal"><i class="fas fa-ban"></i> Cancelar</button>
+                            <div class="row">
+                                <div class="col-3">
+                                    <button type="button" id="submit" ng-click="deleteTemplate(template.id);" class="btn btn-danger waves-effect" data-dismiss="modal" ng-if="template.id != 0"><i class="fas fa-trash-alt"></i> Remover</button>
+                                </div>
+                                <div class="col-9 text-right">
+                                    <button type="button" id="submit" ng-click="saveTemplate();" class="btn btn-info waves-effect" data-dismiss="modal" ng-disabled="novoTemplateForm.$invalid"><i class="fas fa-check"></i> Salvar</button>
+                                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal"><i class="fas fa-ban"></i> Cancelar</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -237,10 +241,5 @@
 <!-- ============================================================== -->
 <!-- End Wrapper -->
 <!-- ============================================================== -->
-
-<!-- Esse arquivo tem que importar aqui, pois senão os elementos não são achados pelo jquery -->
-<script src="./app/assets/scripts/custom.js"></script>
-<script src="./app/assets/scripts/sidebarmenu.js"></script>
-<script src="./app/assets/scripts/utilities.js"></script>
-<script src="./app/assets/scripts/fullscreen.js"></script>
-<script src="./app/assets/scripts/dashboard.js"></script>
+<!-- scripts importados aqui, para permitir que o Jquery encontre os elementos das tags html -->
+<script src="./app/assets/dist/app-scripts-pagina.min.js"></script>

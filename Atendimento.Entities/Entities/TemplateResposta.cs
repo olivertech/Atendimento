@@ -12,7 +12,7 @@
             }
             set
             {
-                _titulo = value.ToString().ToUpper();
+                _titulo = !string.IsNullOrEmpty(value) ? value.ToString().ToUpper() : null;
             }
         }
 

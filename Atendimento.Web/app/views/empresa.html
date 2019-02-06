@@ -29,7 +29,7 @@
                     </div>
                 </div>
             </div>
-            <div id="success-alert" class="row">
+            <div id="success-alert1" class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <h3 class="text-success"><i class="fa fa-check-circle"></i> Sucesso.</h3>{{mensagem}}
@@ -39,7 +39,7 @@
                     </div>
                 </div>
             </div>
-            <div id="error-alert" class="row">
+            <div id="error-alert1" class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <h3 class="text-danger"><i class="fa fa-check-circle"></i> Erro.</h3>{{mensagem}}
@@ -232,7 +232,7 @@
                         <div class="modal-footer">
                             <div class="row">
                                 <div class="col-3">
-                                    <button type="button" id="submit" ng-click="deleteEmpresa(empresa.id);" class="btn btn-danger waves-effect" data-dismiss="modal" ng-if="empresa.id != 0 && empresa.id != 1"><i class="fas fa-trash-alt"></i> Remover</button>
+                                    <button type="button" id="submit" ng-click="deleteEmpresa(empresa.id);" class="btn btn-danger waves-effect" data-dismiss="modal" ng-if="empresa.id != 0 && empresa.id != 1 && atendentes == 0"><i class="fas fa-trash-alt"></i> Remover</button>
                                 </div>
                                 <div class="col-9 text-right">
                                     <button type="button" id="submit" ng-click="saveEmpresa();" class="btn btn-info waves-effect" data-dismiss="modal" ng-disabled="novaEmpresaForm.$invalid"><i class="fas fa-check"></i> Salvar</button>
@@ -258,10 +258,5 @@
 <!-- ============================================================== -->
 <!-- End Wrapper -->
 <!-- ============================================================== -->
-
-<!-- Esse arquivo tem que importar aqui, pois senão os elementos não são achados pelo jquery -->
-<script src="./app/assets/scripts/custom.js"></script>
-<script src="./app/assets/scripts/sidebarmenu.js"></script>
-<script src="./app/assets/scripts/utilities.js"></script>
-<script src="./app/assets/scripts/fullscreen.js"></script>
-<script src="./app/assets/scripts/dashboard.js"></script>
+<!-- scripts importados aqui, para permitir que o Jquery encontre os elementos das tags html -->
+<script src="./app/assets/dist/app-scripts-pagina.min.js"></script>

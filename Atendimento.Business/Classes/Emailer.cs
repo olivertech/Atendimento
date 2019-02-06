@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using Atendimento.Entities.Entities;
+using Atendimento.Entities.Responses;
 using Atendimento.Infra;
 
 namespace Atendimento.Business.Classes
@@ -28,7 +29,7 @@ namespace Atendimento.Business.Classes
                 emailFrom = ConfigurationManager.AppSettings["EmailSuporte"].ToString();
                 emailTo = userLogin.Email;
 
-                EmailOLD.SendNetEmail(emailFrom, emailTo, emailReply, EmailOLD.FormatarCorpoEmailEsqueciSenha(userLogin), subject, false, System.Net.Mail.MailPriority.High);
+                Email.SendNetEmail(emailFrom, emailTo, null, Email.FormatarCorpoEmailEsqueciSenha(userLogin), subject, false, System.Net.Mail.MailPriority.High);
             }
             catch (Exception)
             {
@@ -117,7 +118,7 @@ namespace Atendimento.Business.Classes
         /// </summary>
         /// <param name="ticket"></param>
         /// <param name="ticketMensagem"></param>
-        public static void EnviarEmailNovaMensagemCliente(Ticket ticket, TicketMensagem ticketMensagem)
+        public static void EnviarEmailNovaMensagemCliente(TicketResponse ticket, TicketMensagem ticketMensagem)
         {
             var subject = string.Empty;
             var emailFrom = string.Empty;
@@ -202,7 +203,7 @@ namespace Atendimento.Business.Classes
         /// <param name="ticketMensagem"></param>
         /// <param name="usuarioCliente"></param>
         /// <param name="listaAtendentes"></param>
-        public static void EnviarEmailNovaMensagemSuporte(Ticket ticket, TicketMensagem ticketMensagem, UsuarioCliente usuarioCliente, List<AtendenteEmpresa> listaAtendentes)
+        public static void EnviarEmailNovaMensagemSuporte(TicketResponse ticket, TicketMensagem ticketMensagem, UsuarioCliente usuarioCliente, List<AtendenteEmpresa> listaAtendentes)
         {
             var subject = string.Empty;
             var emailFrom = string.Empty;
@@ -232,7 +233,7 @@ namespace Atendimento.Business.Classes
         /// <param name="ticketMensagem"></param>
         /// <param name="atendenteEmpresa"></param>
         /// <param name="listaAtendentes"></param>
-        public static void EnviarEmailInterno(Ticket ticket, TicketMensagem ticketMensagem, AtendenteEmpresa atendenteEmpresa, List<AtendenteEmpresa> listaAtendentes)
+        public static void EnviarEmailInterno(TicketResponse ticket, TicketMensagem ticketMensagem, AtendenteEmpresa atendenteEmpresa, List<AtendenteEmpresa> listaAtendentes)
         {
             var subject = string.Empty;
             var emailFrom = string.Empty;

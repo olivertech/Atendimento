@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
-using System.Web.Http.Cors;
 using Atendimento.Business.Interfaces.Interfaces;
 using Atendimento.Entities.Entities;
 using Atendimento.Entities.Requests;
@@ -18,19 +16,18 @@ namespace Atendimento.WebApi.Controllers
     /// </summary>
     [RoutePrefix("api/TemplateResposta")]
     [Authorize]
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class TemplateRespostaController : ApiController
     {
-        private readonly ITemplateRespostaBusiness _business;
+        private readonly ITemplateRespostaBusiness _templateRespostaBusiness;
         private IHttpActionResult _result;
 
         /// <summary>
         /// Construtor
         /// </summary>
-        /// <param name="business"></param>
-        public TemplateRespostaController(ITemplateRespostaBusiness business)
+        /// <param name="templateRespostaBusiness"></param>
+        public TemplateRespostaController(ITemplateRespostaBusiness templateRespostaBusiness)
         {
-            _business = business;
+            _templateRespostaBusiness = templateRespostaBusiness;
         }
 
         /// <summary>
@@ -44,7 +41,7 @@ namespace Atendimento.WebApi.Controllers
             try
             {
                 //Mapeia os dados da fonte (source class) para o destino (destiny class)
-                var lista = _business.GetAll().ToList().Select(Mapper.Map<TemplateResposta, TemplateRespostaResponse>);
+                var lista = _templateRespostaBusiness.GetAll().ToList().Select(Mapper.Map<TemplateResposta, TemplateRespostaResponse>);
 
                 var totalRegistros = lista.Count();
 
@@ -71,7 +68,7 @@ namespace Atendimento.WebApi.Controllers
         {
             try
             {
-                var entity = _business.GetById(id);
+                var entity = _templateRespostaBusiness.GetById(id);
 
                 if (entity == null)
                     return NotFound();
@@ -100,7 +97,7 @@ namespace Atendimento.WebApi.Controllers
         {
             try
             {
-                var result = _business.GetAllPaged(advancedFilter);
+                var result = _templateRespostaBusiness.GetAllPaged(advancedFilter);
 
                 var lista = result.Templates.ToList().Select(Mapper.Map<TemplateResposta, TemplateRespostaResponse>);
                 var totalGeral = result.TotalGeral;
@@ -135,7 +132,7 @@ namespace Atendimento.WebApi.Controllers
 
                 var entity = Mapper.Map<TemplateRespostaRequest, TemplateResposta>(request);
 
-                _business.Insert(ref entity);
+                _templateRespostaBusiness.Insert(ref entity);
 
                 if (entity.Id > 0)
                 {
@@ -176,7 +173,7 @@ namespace Atendimento.WebApi.Controllers
                     entityList.Add(entity);
                 }
 
-                var rows = _business.Insert(entityList);
+                var rows = _templateRespostaBusiness.Insert(entityList);
 
                 if (rows > 0)
                 {
@@ -211,7 +208,7 @@ namespace Atendimento.WebApi.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest("Dados inválidos.");
 
-                var entityInDb = _business.GetById(id);
+                var entityInDb = _templateRespostaBusiness.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -220,7 +217,7 @@ namespace Atendimento.WebApi.Controllers
                 //Mapeio os dados do dto para o objeto recuperado do banco, atualizando os dados do objeto do banco
                 Mapper.Map(request, entityInDb);
 
-                if (_business.Update(entityInDb))
+                if (_templateRespostaBusiness.Update(entityInDb))
                 {
                     //Monta response
                     _result = Ok(Retorno<TemplateResposta>.Criar(true, "Atualização Realizada Com Sucesso", entityInDb));
@@ -256,7 +253,7 @@ namespace Atendimento.WebApi.Controllers
 
                 foreach (var item in list)
                 {
-                    var entityInDb = _business.GetById(item.Id);
+                    var entityInDb = _templateRespostaBusiness.GetById(item.Id);
 
                     //Verifica se objeto existe
                     if (entityInDb == null)
@@ -268,7 +265,7 @@ namespace Atendimento.WebApi.Controllers
                     }
                 }
 
-                if (_business.Update(entityList))
+                if (_templateRespostaBusiness.Update(entityList))
                 {
                     //Monta response
                     _result = Ok(Retorno<bool>.Criar(true, "Atualização de Lista Realizada Com Sucesso", true));
@@ -296,13 +293,13 @@ namespace Atendimento.WebApi.Controllers
         {
             try
             {
-                var entityInDb = _business.GetById(id);
+                var entityInDb = _templateRespostaBusiness.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
                     return NotFound();
 
-                if (_business.Delete(id))
+                if (_templateRespostaBusiness.Delete(id))
                 {
                     //Monta response
                     _result = Ok(Retorno<bool>.Criar(true, "Deleção Realizada Com Sucesso", true));
@@ -336,7 +333,7 @@ namespace Atendimento.WebApi.Controllers
                 {
                     foreach (var id in list)
                     {
-                        var entityInDb = _business.GetById(id);
+                        var entityInDb = _templateRespostaBusiness.GetById(id);
 
                         //Verifica se objeto existe
                         if (entityInDb == null)
@@ -345,7 +342,7 @@ namespace Atendimento.WebApi.Controllers
                             entityList.Add(entityInDb);
                     }
 
-                    if (_business.Delete(entityList))
+                    if (_templateRespostaBusiness.Delete(entityList))
                     {
                         //Monta response
                         _result = Ok(Retorno<bool>.Criar(true, "Deleção de Lista Realizada Com Sucesso", true));

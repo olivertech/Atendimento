@@ -52,16 +52,18 @@ namespace Atendimento.Repository.Repositories
                 using (var conn = CreateConnection())
                 {
                     var query = @"SELECT 
-                                    uc.id           AS id_usuario_cliente,
+                                    uc.id,
+                                    uc.clienteid,
                                     uc.nome,
                                     uc.username,
                                     uc.email,
-                                    uc.telefone,
+                                    uc.telefone_fixo,
+                                    uc.telefone_celular,
                                     uc.copia,
-                                    c.id            AS id_cliente,
+                                    c.id            AS id_cliente_entity,
                                     c.nome
                             FROM Usuario_Cliente uc
-                            INNER JOIN Cliente c ON uc.id_cliente = c.id
+                            INNER JOIN Cliente c ON uc.clienteid = c.id
                             WHERE uc.username = '" + login.UserName + "' and uc.password = '" + login.Password + "' AND uc.ativo = 1";
 
                     result = conn.Query<UsuarioCliente, Cliente, UsuarioCliente>(query,
@@ -71,7 +73,7 @@ namespace Atendimento.Repository.Repositories
 
                                     return usuario;
                                 },
-                                splitOn: "id_cliente").SingleOrDefault();
+                                splitOn: "id_cliente_entity").SingleOrDefault();
                 }
 
                 return result;

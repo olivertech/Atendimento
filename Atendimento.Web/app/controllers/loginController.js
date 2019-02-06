@@ -1,6 +1,8 @@
-app.controller('loginController', function($scope, $location, $sessionStorage, loginService, rememberMeService, generalUtility) {
+app.controller('loginController', ['$scope', '$location', '$sessionStorage', 'config', 'loginService', 'rememberMeService', 'generalUtility',
+    function($scope, $location, $sessionStorage, config, loginService, rememberMeService, generalUtility) {
 
     $scope.login = '';
+    $scope.login.typeloginform = "";
     $scope.login.isPasswordRecovered = false;
     $scope.login.isRecoverFormSelected = false;
     $scope.login.changePassword = false;
@@ -12,10 +14,10 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
     //Verifica se foi passado algum status code 401 - erro de autenticação 
     if($scope.statusCode == '401' || $scope.statusCode == '405') {
         $scope.isAuthenticationError = true;
-        $scope.statusCode = ''
+        $scope.statusCode = '';
     }
 
-    /** Executa o login */
+    /** Função que executa o login */
     $scope.login = function() {
 
         if (typeof(Storage) !== "undefined") {
@@ -43,13 +45,14 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
             //Criar uma página de erro especifica para esse problema do navegador ser antigo e não trabalhar com recursos mais atuais
             $location.path("/error");
         }
-    }
+    };
 
+    /** Função que trata da troca de senha */
     $scope.changePassword = function() {
-        let username = $scope.login.username;
-        let oldPassword = $scope.login.senhaProvisoria;
-        let newPassword = $scope.login.novaSenha;
-        let tipo = $scope.login.typechangepwdform;
+        var username = $scope.login.username;
+        var oldPassword = $scope.login.senhaProvisoria;
+        var newPassword = $scope.login.novaSenha;
+        var tipo = $scope.login.typechangepwdform;
 
         loginService.changePassword(username, oldPassword, newPassword, tipo)
             .then(function(response) {
@@ -64,9 +67,20 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
                 resetLocalStorage();
                 $location.path("/error");
             });
-    }
+    };
 
-    /** Verifica se o usuário tem cookie */
+    /** Função que recupera a lista de tipos de acesso */
+    $scope.getTipos = function() {
+        var tipos = [
+            {id: "", nome: 'Selecione o tipo de usuário'},
+            {id: "Atendimento", nome: 'Atendimento'},
+            {id: "Cliente", nome: 'Cliente'}
+        ];
+
+        $scope.tipos = tipos;
+    };
+
+    /** Função que verifica se o usuário tem cookie */
     var checkRememberMe = function() {
 
         //================================================================
@@ -90,18 +104,18 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
             $scope.login.typeloginform = '';
             $scope.login.rememberMe = false;
         }
-    }
+    };
 
-    /** Reset de todos os cookies gravados, caso o usuário digite no campo de username e abandone (evento on blur) */
+    /** Funçao que faz o reset de todos os cookies gravados, caso o usuário digite no campo de username e abandone (evento on blur) */
     $scope.resetCookies = function() {
         rememberMeService.setRememberMeCookie('1ipBBiRn', '');
         rememberMeService.setRememberMeCookie('fMFKHVLj', '');
         rememberMeService.setRememberMeCookie('GeTfLi22', '');
         $scope.login.typeloginform = '';
         $scope.login.rememberMe = false;
-    }
+    };
 
-    /** Grava os dados do usuário no cookie */
+    /** Função que grava os dados do usuário no cookie */
     $scope.setRememberMe = function() {
 
         $scope.login.rememberMe = !$scope.login.rememberMe;
@@ -118,8 +132,9 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
             rememberMeService.setRememberMeCookie('fMFKHVLj', '');
             rememberMeService.setRememberMeCookie('GeTfLi22', '');
         }
-    }
+    };
 
+    /** Função que trata da recuperação de senha */
     $scope.recoverPassword = function() {
 
         if($scope.login.email) {
@@ -133,22 +148,28 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
                     $location.path("/error");
                 });
         }
-    }
+    };
 
+    /** Função que trata do show/hide dos forms de login e recover */
     $scope.showHideRecoverForm = function() {
         $scope.login.isRecoverFormSelected = !$scope.login.isRecoverFormSelected;
         $scope.login.isPasswordRecovered = false;
-    }
+        $scope.getTipos();
+        $scope.login.typerecoverform = "";
+    };
     
+    /** Função que trata do show/hide dos forms de login e change pwd */
     $scope.showHideChangePasswordForm = function() {
         $scope.login.changePassword = false;
         $scope.login.isPasswordRecovered = false;
-    }
+        $scope.getTipos();
+        $scope.login.typechangepwdform = "";
+    };
 
     /** Função que alterna o type do campo de senha */
     $scope.showHidePwd = function(field) {
         generalUtility.showHidePwd(field);
-    }    
+    };   
 
     /**
      *  INTERNAL FUNCTIONS
@@ -156,16 +177,24 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
 
     /** Guarda todas as variáveis de sessão na sessionStorage */
     var setLocalStorage = function(response) {
-        $sessionStorage.tokenAuthentication = response.data.content.token;
+
         $sessionStorage.isOnDashboard = true;
+
+        //Token de autenticação
+        $sessionStorage.tokenAuthentication = response.data.content.token;
+
+        //Usuario que está logando
         $sessionStorage.usuario = response.data.content.usuario.nome;
         $sessionStorage.idUsuario = response.data.content.usuario.id;
         $sessionStorage.isAdmin = response.data.content.usuario.isAdmin;
-        $sessionStorage.idCliente = response.data.content.usuario.cliente != undefined ? response.data.content.usuario.cliente.id : 0;
-        $sessionStorage.nomeCliente = response.data.content.usuario.cliente != undefined ? response.data.content.usuario.cliente.nome : '';
         $sessionStorage.tipoUsuario = $scope.login.typeloginform;
-        $sessionStorage.logicalPathAnexos = "http://localhost:51765/Anexos/";
-    }
+
+        //Cliente associado ao usuario que está logando, caso seja um usuario_cliente
+        $sessionStorage.idCliente = response.data.content.usuario.cliente != undefined ? response.data.content.usuario.idCliente : 0;
+        $sessionStorage.nomeCliente = response.data.content.usuario.cliente != undefined ? response.data.content.usuario.cliente.nome : '';
+        
+        $sessionStorage.logicalPathAnexos = config.baseUrlAnexos;
+    };
 
     /** Apago todas as variáveis de sessão */
     var resetLocalStorage = function() {
@@ -178,7 +207,9 @@ app.controller('loginController', function($scope, $location, $sessionStorage, l
         $sessionStorage.nomeCliente = '';
         $sessionStorage.tipoUsuario = '';
         $sessionStorage.logicalPathAnexos = '';
-    }
+    };
 
     checkRememberMe();
-});
+
+    $scope.getTipos();
+}]);

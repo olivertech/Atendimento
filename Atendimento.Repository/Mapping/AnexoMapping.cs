@@ -8,9 +8,9 @@ namespace Atendimento.Repository.Mapping
         public AnexoMapping()
         {
             ToTable("Anexo");
-            Map(m => m.Id).ToColumn("id").IsKey().IsIdentity();
-            Map(m => m.IdTicket).ToColumn("id_ticket");
-            Map(m => m.IdTicketMensagem).ToColumn("id_ticket_mensagem");
+            Map(m => m.Id).ToColumn("id_anexo_entity").IsKey().IsIdentity();
+            Map(m => m.IdTicket).ToColumn("ticketid");
+            Map(m => m.IdTicketMensagem).ToColumn("ticketmensagemid");
             Map(m => m.Nome).ToColumn("nome");
         }
     }

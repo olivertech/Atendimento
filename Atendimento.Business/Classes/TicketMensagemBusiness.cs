@@ -69,8 +69,8 @@ namespace Atendimento.Business.Classes
         }
 
         public void EnviarEmailConfirmacao(TicketMensagemRequest request, 
-                                           TicketMensagem ticketMensagem, 
-                                           Ticket ticket, 
+                                           TicketMensagem ticketMensagem,
+                                           TicketResponse ticket, 
                                            AtendenteEmpresa atendenteEmpresa, 
                                            UsuarioCliente usuarioCliente, 
                                            List<AtendenteEmpresa> listaAtendentes)

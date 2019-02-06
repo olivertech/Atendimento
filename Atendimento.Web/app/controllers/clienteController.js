@@ -1,4 +1,5 @@
-app.controller('clienteController', function($scope, $sessionStorage, clienteService, paginationService, generalUtility) {
+app.controller('clienteController', ['$scope', '$sessionStorage', 'clienteService', 'paginationService', 'generalUtility',
+    function($scope, $sessionStorage, clienteService, paginationService, generalUtility) {
 
     $scope.isAdmin = $sessionStorage.isAdmin;
 
@@ -14,7 +15,7 @@ app.controller('clienteController', function($scope, $sessionStorage, clienteSer
     /** Função que recupera os clientes */
     $scope.getPage = function(page, orderBy, direction) {
 
-        let offset = (page - 1) * $scope.numRows;
+        var offset = (page - 1) * $scope.numRows;
 
         clienteService.getClientes(offset, $scope.numRows, orderBy, direction)
             .then(function(response) {
@@ -30,10 +31,12 @@ app.controller('clienteController', function($scope, $sessionStorage, clienteSer
                 $scope.mensagem = "Ocorreu um erro ao recuperar os clientes.";
                 generalUtility.showErrorAlert();
             });
-    }
+    };
 
     /** Inicializa os campos da modal de cadastro de cliente */
     $scope.newCliente = function() {
+        $scope.getEmpresas();
+        $scope.getEstados();
         $scope.cliente.id = 0;
         $scope.cliente.nome = "";
         $scope.cliente.cnpj = "";
@@ -49,28 +52,26 @@ app.controller('clienteController', function($scope, $sessionStorage, clienteSer
         $scope.cliente.cep = "";
         $scope.cliente.descricao = "";
         $scope.cliente.ativo = false;
-        $scope.getEmpresas();
-        $scope.cliente.idEmpresa = undefined;
-    }
+    };
 
     /** Função que salva cliente */
     $scope.saveCliente = function() {
-        let id = $scope.cliente.id;
-        let idEmpresa = $scope.cliente.idEmpresa;
-        let nome = $scope.cliente.nome;
-        let cnpj = $scope.cliente.cnpj;
-        let email = $scope.cliente.email;
-        let telefoneFixo = $scope.cliente.telefoneFixo;
-        let telefoneCelular = $scope.cliente.telefoneCelular;
-        let logradouro = $scope.cliente.logradouro;
-        let numeroLogradouro = $scope.cliente.numeroLogradouro;
-        let complementoLogradouro = $scope.cliente.complementoLogradouro;
-        let estado = $scope.cliente.estado;
-        let cidade = $scope.cliente.cidade;
-        let bairro = $scope.cliente.bairro;
-        let cep = $scope.cliente.cep;
-        let descricao = $scope.cliente.descricao;
-        let ativo = $scope.cliente.ativo;
+        var id = $scope.cliente.id;
+        var idEmpresa = $scope.cliente.idEmpresa;
+        var nome = $scope.cliente.nome;
+        var cnpj = $scope.cliente.cnpj != "" ? $scope.cliente.cnpj : null;
+        var email = $scope.cliente.email;
+        var telefoneFixo = $scope.cliente.telefoneFixo != "" ? $scope.cliente.telefoneFixo : null;
+        var telefoneCelular = $scope.cliente.telefoneCelular != "" ? $scope.cliente.telefoneCelular : null;
+        var logradouro = $scope.cliente.logradouro != "" ? $scope.cliente.logradouro : null;
+        var numeroLogradouro = $scope.cliente.numeroLogradouro != "" ? $scope.cliente.numeroLogradouro : null;
+        var complementoLogradouro = $scope.cliente.complementoLogradouro != "" ? $scope.cliente.complementoLogradouro : null;
+        var estado = $scope.cliente.estado != "" ? $scope.cliente.estado : null;
+        var cidade = $scope.cliente.cidade != "" ? $scope.cliente.cidade : null;
+        var bairro = $scope.cliente.bairro != "" ? $scope.cliente.bairro : null;
+        var cep = $scope.cliente.cep != "" ? $scope.cliente.cep : null;
+        var descricao = $scope.cliente.descricao;
+        var ativo = $scope.cliente.ativo;
 
         clienteService.saveCliente(id, idEmpresa, nome, cnpj, email, telefoneFixo, telefoneCelular, logradouro, numeroLogradouro, complementoLogradouro, estado, cidade, bairro, cep, descricao, ativo)
             .then(function(response) {
@@ -82,12 +83,15 @@ app.controller('clienteController', function($scope, $sessionStorage, clienteSer
                 $scope.mensagem = "Ocorreu um erro ao salvar o cliente.";
                 generalUtility.showErrorAlert();
             });        
-    }
+    };
     
     /** Função que carrega a modal com os dados do cliente */
     $scope.showCliente = function(idCliente) {
         clienteService.showCliente(idCliente)
             .then(function(response) {
+                $scope.getEmpresas(response.data.content.idEmpresa);
+                $scope.getEstados();
+                $scope.getUsuariosCliente(response.data.content.id);
                 $scope.cliente.id = response.data.content.id;
                 $scope.cliente.idEmpresa = response.data.content.idEmpresa;
                 $scope.cliente.nome = response.data.content.nome;
@@ -95,23 +99,21 @@ app.controller('clienteController', function($scope, $sessionStorage, clienteSer
                 $scope.cliente.email = response.data.content.email;
                 $scope.cliente.telefoneFixo = response.data.content.telefoneFixo;
                 $scope.cliente.telefoneCelular = response.data.content.telefoneCelular;
-                $scope.cliente.logradouro = response.data.content.endereco != null ? response.data.content.endereco.logradouro : "";
-                $scope.cliente.numeroLogradouro = response.data.content.endereco != null ? response.data.content.endereco.numeroLogradouro : "";
-                $scope.cliente.complementoLogradouro = response.data.content.endereco != null ? response.data.content.endereco.complementoLogradouro : "";
-                $scope.cliente.estado = response.data.content.endereco != null ? response.data.content.endereco.estado : "";
-                $scope.cliente.cidade = response.data.content.endereco != null ? response.data.content.endereco.cidade : "";
-                $scope.cliente.bairro = response.data.content.endereco != null ? response.data.content.endereco.bairro : "";
-                $scope.cliente.cep = response.data.content.endereco != null ? response.data.content.endereco.cep : "";
+                $scope.cliente.logradouro = response.data.content.logradouro != null ? response.data.content.logradouro : "";
+                $scope.cliente.numeroLogradouro = response.data.content.numeroLogradouro != null ? response.data.content.numeroLogradouro : "";
+                $scope.cliente.complementoLogradouro = response.data.content.complementoLogradouro != null ? response.data.content.complementoLogradouro : "";
+                $scope.cliente.estado = response.data.content.estado != null ? response.data.content.estado : "";
+                $scope.cliente.cidade = response.data.content.cidade != null ? response.data.content.cidade : "";
+                $scope.cliente.bairro = response.data.content.bairro != null ? response.data.content.bairro : "";
+                $scope.cliente.cep = response.data.content.cep != null ? response.data.content.cep : "";
                 $scope.cliente.descricao = response.data.content.descricao;
                 $scope.cliente.ativo = response.data.content.ativo;
-                $scope.getEmpresas();
-                $scope.getUsuariosCliente(response.data.content.id);
             })
             .catch(function(error) {
                 $scope.mensagem = "Ocorreu um erro ao recuperar o cliente.";
                 generalUtility.showErrorAlert();
             });   
-    }
+    };
     
     /** Função que remove cliente */
     $scope.deleteCliente = function(idCliente) {
@@ -128,20 +130,60 @@ app.controller('clienteController', function($scope, $sessionStorage, clienteSer
                 generalUtility.showErrorAlert();
             }); 
         }  
-    }
+    };
 
     /** Função que recupera todas as empresas */
-    $scope.getEmpresas = function() {
+    $scope.getEmpresas = function(idEmpresa) {
         clienteService.getEmpresas()
             .then(function(response) {
-                $scope.empresas = response.data.content;
+                var defaultOption = {id: "", nome: 'Selecione a Empresa Responsável pelo Atendimento'}
+                var lista = response.data.content;
+                $scope.empresas = lista.sort();
+                $scope.empresas.unshift(defaultOption);
+                $scope.cliente.idEmpresa = idEmpresa != undefined ? idEmpresa : "";
             })
             .catch(function(error) {
                 $scope.mensagem = "Ocorreu um erro ao recuperar a lista de empresas.";
                 generalUtility.showErrorAlert(); 
             });
-    }
+    };
     
+    /** Função que alimenta a lista de estados */
+    $scope.getEstados = function() {
+        var estados = [
+            {id:"",nome: "Selecione o estado"},
+            {id:"AL",nome:"Alagoas"},
+            {id:"AP",nome:"Amapá"},
+            {id:"AM",nome:"Amazonas"},
+            {id:"BA",nome:"Bahia"},
+            {id:"CE",nome:"Ceará"},
+            {id:"DF",nome:"Distrito Federal"},
+            {id:"ES",nome:"Espírito Santo"},
+            {id:"GO",nome:"Goiás"},
+            {id:"MA",nome:"Maranhão"},
+            {id:"MT",nome:"Mato Grosso"},
+            {id:"MS",nome:"Mato Grosso do Sul"},
+            {id:"MG",nome:"Minas Gerais"},
+            {id:"PA",nome:"Pará"},
+            {id:"PB",nome:"Paraíba"},
+            {id:"PR",nome:"Paraná"},
+            {id:"PE",nome:"Pernambuco"},
+            {id:"PI",nome:"Piauí"},
+            {id:"RJ",nome:"Rio de Janeiro"},
+            {id:"RN",nome:"Rio Grande do Norte"},
+            {id:"RS",nome:"Rio Grande do Sul"},
+            {id:"RO",nome:"Rondônia"},
+            {id:"RR",nome:"Roraima"},
+            {id:"SC",nome:"Santa Catarina"},
+            {id:"SP",nome:"São Paulo"},
+            {id:"SE",nome:"Sergipe"},
+            {id:"TO",nome:"Tocantins"},
+            {id:"ES",nome:"Estrangeiro"}
+        ];
+        $scope.estados = estados;
+        $scope.cliente.estado = "";
+    };
+
     /** Função que retorna todos os usuários associados ao cliente */
     $scope.getUsuariosCliente = function(idCliente) {
         clienteService.getUsuariosCliente(idCliente)
@@ -149,16 +191,17 @@ app.controller('clienteController', function($scope, $sessionStorage, clienteSer
                 $scope.usuarios = response.data.content;
             })
             .catch(function(error) {
+                $scope.mensagem = "Ocorreu um erro ao recuperar os usuários associados ao cliente.";
                 generalUtility.showErrorAlert(); 
             });
-    }
+    };
 
     /** Função que recupera a lista de clientes com determinada ordenação */
     $scope.ordenarPor = function(campo) {
         $scope.orderBy = campo;
         $scope.direction = $scope.direction === "ASC" ? "DESC" : "ASC";
         $scope.getPage(1, campo, $scope.direction);
-    }
+    };
     
     /**
      *  INTERNAL FUNCTIONS
@@ -172,8 +215,8 @@ app.controller('clienteController', function($scope, $sessionStorage, clienteSer
 
         // get pager object from service
         $scope.pagination = paginationService.getPagination($scope.totalRecords, page, pageSize);
-    }
+    };
     
     /** Carrega os clientes */
     $scope.getPage(1, "id", $scope.direction);
-});
+}]);

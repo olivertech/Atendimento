@@ -9,6 +9,7 @@ namespace Atendimento.Business.Interfaces.Interfaces
     public interface IUsuarioClienteBusiness : IBusinessBase<UsuarioCliente>
     {
         int GetCount(int idCliente);
+        UsuarioCliente GetFullById(int idUsuario);
         UsuariosClienteResponse GetAllPaged(FilterUsuarioRequest advancedFilter);
         IEnumerable<UsuarioCliente> GetAllById(int idCliente);
         UsuarioCliente GetByUsernameAndPassword(string username, string password);

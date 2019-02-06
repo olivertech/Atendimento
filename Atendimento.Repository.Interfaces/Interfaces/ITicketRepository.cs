@@ -9,6 +9,7 @@ namespace Atendimento.Repository.Interfaces.Interfaces
     {
         int GetCount(int idStatusTicket);
         int GetTotalTicketsUsuario(int idUsuario);
+        int GetTotalTicketsCategoria(int idCategoria);
         CountsResponse GetCounts(int idCliente);
         TicketsResponse GetAllPaged(FilterRequest advancedFilter);
         TicketResponse GetByIdFilled(int id, bool withAnexos);

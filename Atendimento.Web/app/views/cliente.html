@@ -29,7 +29,7 @@
                     </div>
                 </div>
             </div>
-            <div id="success-alert" class="row">
+            <div id="success-alert1" class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <h3 class="text-success"><i class="fa fa-check-circle"></i> Sucesso.</h3>{{mensagem}}
@@ -39,7 +39,7 @@
                     </div>
                 </div>
             </div>
-            <div id="error-alert" class="row">
+            <div id="error-alert1" class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <h3 class="text-danger"><i class="fa fa-check-circle"></i> Erro.</h3>{{mensagem}}
@@ -111,8 +111,8 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th><a href="" ng-click="ordenarPor('id')">Cliente #</a></th>
-                                            <th><a href="" ng-click="ordenarPor('nome')">Nome</a></th>
+                                            <th><a href="#" ng-click="ordenarPor('id')">Cliente #</a></th>
+                                            <th><a href="#" ng-click="ordenarPor('nome')">Nome</a></th>
                                             <th>Email Corporativo</th>
                                             <th>Telefone Fixo Corporativo</th>
                                             <th>Telefone Celular Corporativo</th>
@@ -193,10 +193,8 @@
                                         <div class="col-sm-10">
                                             <select class="form-control"
                                                     ng-required="true"
-                                                    ng-init="cliente.idEmpresa = cliente.idEmpresa || options[0].value"
                                                     ng-model="cliente.idEmpresa"
-                                                    ng-options="empresa.id as empresa.nome for empresa in empresas | orderBy: 'nome'">
-                                                <option value="">Selecione a Empresa Responsável pelo Atendimento</option>
+                                                    ng-options="empresa.id as empresa.nome for empresa in empresas">
                                             </select>
                                         </div>
                                     </div>
@@ -262,35 +260,8 @@
                                         <div class="col-sm-4">
                                             <select class="form-control" 
                                                     id="estado"
-                                                    ng-model="cliente.estado">
-                                                    <option value="">Selecione o Estado</option>
-                                                    <option value="AL">Alagoas</option>
-                                                    <option value="AP">Amapá</option>
-                                                    <option value="AM">Amazonas</option>
-                                                    <option value="BA">Bahia</option>
-                                                    <option value="CE">Ceará</option>
-                                                    <option value="DF">Distrito Federal</option>
-                                                    <option value="ES">Espírito Santo</option>
-                                                    <option value="GO">Goiás</option>
-                                                    <option value="MA">Maranhão</option>
-                                                    <option value="MT">Mato Grosso</option>
-                                                    <option value="MS">Mato Grosso do Sul</option>
-                                                    <option value="MG">Minas Gerais</option>
-                                                    <option value="PA">Pará</option>
-                                                    <option value="PB">Paraíba</option>
-                                                    <option value="PR">Paraná</option>
-                                                    <option value="PE">Pernambuco</option>
-                                                    <option value="PI">Piauí</option>
-                                                    <option value="RJ">Rio de Janeiro</option>
-                                                    <option value="RN">Rio Grande do Norte</option>
-                                                    <option value="RS">Rio Grande do Sul</option>
-                                                    <option value="RO">Rondônia</option>
-                                                    <option value="RR">Roraima</option>
-                                                    <option value="SC">Santa Catarina</option>
-                                                    <option value="SP">São Paulo</option>
-                                                    <option value="SE">Sergipe</option>
-                                                    <option value="TO">Tocantins</option>
-                                                    <option value="ES">Estrangeiro</option>
+                                                    ng-model="cliente.estado"
+                                                    ng-options="estado.id as estado.nome for estado in estados">
                                             </select>
                                         </div>
                                         <label for="cidade" class="col-sm-2 col-form-label">Cidade</label>
@@ -308,7 +279,8 @@
                                         <label for="cep" class="col-sm-2 col-form-label">Cep</label>
                                         <div class="col-sm-4">
                                             <input id="cep" type="text" class="form-control" placeholder="CEP do Logradouro" 
-                                                ng-model="cliente.cep">
+                                                ng-model="cliente.cep"
+                                                mask="99999-999" clean="false">
                                         </div> 
                                     </div>
                                     <div class="form-group row">
@@ -363,12 +335,7 @@
 <!-- ============================================================== -->
 <!-- End Wrapper -->
 <!-- ============================================================== -->
-
-<!-- Esse arquivo tem que importar aqui, pois senão os elementos não são achados pelo jquery -->
-<script src="./app/assets/scripts/custom.js"></script>
-<script src="./app/assets/scripts/sidebarmenu.js"></script>
-<script src="./app/assets/scripts/utilities.js"></script>
-<script src="./app/assets/scripts/fullscreen.js"></script>
-<script src="./app/assets/scripts/dashboard.js"></script>
-<!-- Estilo Local -->
-<link href="./app/assets/css/cliente.css" rel="stylesheet">
+<!-- scripts importados aqui, para permitir que o Jquery encontre os elementos das tags html -->
+<script src="./app/assets/dist/app-scripts-pagina.min.js"></script>
+<!-- Estilo Local que modifica a modal -->
+<link href="./app/assets/dist/app-styles-cliente.css" rel="stylesheet">

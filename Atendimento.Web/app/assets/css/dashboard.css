@@ -25,7 +25,7 @@
 
 @media (min-width:769px){
   .navbar-brand {
-    background: url(../images/logo-text-light.png) no-repeat;
+    background: url(../images/logo-text.png) no-repeat;
     display: block;
     width: 200px;
   }
@@ -40,7 +40,7 @@
   .footer {
     display: none;
   }
-  .total-cards, .fullscreen-button {
+  .total-cards {
     display: none;
   }
 }

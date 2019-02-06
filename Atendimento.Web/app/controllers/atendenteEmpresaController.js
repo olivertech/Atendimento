@@ -1,4 +1,5 @@
-app.controller('atendenteEmpresaController', function($scope, $sessionStorage, atendenteService, paginationService, generalUtility) {
+app.controller('atendenteEmpresaController', ['$scope', '$sessionStorage', 'atendenteService', 'paginationService', 'generalUtility', 
+    function($scope, $sessionStorage, atendenteService, paginationService, generalUtility) {
 
     $scope.isAdmin = $sessionStorage.isAdmin;
 
@@ -14,7 +15,7 @@ app.controller('atendenteEmpresaController', function($scope, $sessionStorage, a
     /** Função que recupera os atendentes */
     $scope.getPage = function(page) {
 
-        let offset = (page - 1) * $scope.numRows;
+        var offset = (page - 1) * $scope.numRows;
 
         atendenteService.getAtendentes(offset, $scope.numRows)
             .then(function(response) {
@@ -30,10 +31,11 @@ app.controller('atendenteEmpresaController', function($scope, $sessionStorage, a
                 $scope.mensagem = "Ocorreu um erro ao recuperar os atendentes.";
                 generalUtility.showErrorAlert();
             });
-    }
+    };
 
     /** Inicializa os campos da modal de cadastro de atendente */
     $scope.newAtendente = function() {
+        $scope.getEmpresas();
         $scope.atendente.id = 0;
         $scope.atendente.nome = "";
         $scope.atendente.username = "";
@@ -45,25 +47,24 @@ app.controller('atendenteEmpresaController', function($scope, $sessionStorage, a
         $scope.atendente.isAdmin = 0;
         $scope.atendente.copia = 0;
         $scope.atendente.provisorio = 0;
-        $scope.getEmpresas();
-        $scope.atendente.idEmpresa = undefined;
-    }
+        $scope.atendente.idEmpresa = "";
+    };
 
     /** Função que salva atendente */
     $scope.saveAtendente = function() {
-        let id = $scope.atendente.id;
-        let idEmpresa = $scope.atendente.idEmpresa;
-        let nome = $scope.atendente.nome;
-        let username = $scope.atendente.username;
-        let password = $scope.atendente.password;
-        let email = $scope.atendente.email;
-        let telefoneFixo = $scope.atendente.telefoneFixo;
-        let telefoneCelular = $scope.atendente.telefoneCelular;
-        let copia = $scope.atendente.copia;
-        let provisorio = $scope.atendente.provisorio;
-        let ativo = $scope.atendente.ativo;
-        let isAdmin = $scope.atendente.isAdmin;
-        let isDefault = $scope.atendente.id == 1 ? 1 : 0;
+        var id = $scope.atendente.id;
+        var idEmpresa = $scope.atendente.idEmpresa;
+        var nome = $scope.atendente.nome;
+        var username = $scope.atendente.username;
+        var password = $scope.atendente.password;
+        var email = $scope.atendente.email;
+        var telefoneFixo = $scope.atendente.telefoneFixo;
+        var telefoneCelular = $scope.atendente.telefoneCelular;
+        var copia = $scope.atendente.copia;
+        var provisorio = $scope.atendente.provisorio;
+        var ativo = $scope.atendente.ativo;
+        var isAdmin = $scope.atendente.isAdmin;
+        var isDefault = $scope.atendente.id == 1 ? 1 : 0;
 
         atendenteService.saveAtendente(id, idEmpresa, nome, username, password, email, telefoneFixo, telefoneCelular, copia, provisorio, ativo, isAdmin, isDefault)
             .then(function(response) {
@@ -75,12 +76,13 @@ app.controller('atendenteEmpresaController', function($scope, $sessionStorage, a
                 $scope.mensagem = "Ocorreu um erro ao salvar o atendente.";
                 generalUtility.showErrorAlert();
             });        
-    }
+    };
     
     /** Função que carrega a modal com os dados do atendente */
     $scope.showAtendente = function(idAtendente) {
         atendenteService.showAtendente(idAtendente)
             .then(function(response) {
+                $scope.getEmpresas(response.data.content.idEmpresa);
                 $scope.atendente.id = response.data.content.id;
                 $scope.atendente.idEmpresa = response.data.content.idEmpresa;
                 $scope.atendente.nome = response.data.content.nome;
@@ -93,14 +95,12 @@ app.controller('atendenteEmpresaController', function($scope, $sessionStorage, a
                 $scope.atendente.provisorio = response.data.content.provisorio;
                 $scope.atendente.ativo = response.data.content.ativo;
                 $scope.atendente.isAdmin = response.data.content.isAdmin;
-                
-                $scope.getEmpresas();
             })
             .catch(function(error) {
                 $scope.mensagem = "Ocorreu um erro ao recuperar a empresa.";
                 generalUtility.showErrorAlert();
             });   
-    }
+    };
     
     /** Função que remove atendente */
     $scope.deleteAtendente = function(idAtendente) {
@@ -117,31 +117,35 @@ app.controller('atendenteEmpresaController', function($scope, $sessionStorage, a
                 generalUtility.showErrorAlert();
             }); 
         }  
-    }
+    };
     
     /** Função que recupera todas as empresas */
-    $scope.getEmpresas = function() {
+    $scope.getEmpresas = function(idEmpresa) {
         atendenteService.getEmpresas()
             .then(function(response) {
-                $scope.empresas = response.data.content;
+                var defaultOption = {id: "", nome: 'Selecione a Empresa'};
+                var lista = response.data.content;
+                $scope.empresas = lista.sort();
+                $scope.empresas.unshift(defaultOption);
+                $scope.atendente.idEmpresa = idEmpresa != undefined ? idEmpresa : "";
             })
             .catch(function(error) {
                 $scope.mensagem = "Ocorreu um erro ao lista as empresas.";
                 generalUtility.showErrorAlert(); 
             });
-    }
+    };
     
     /** Função que gera senha randomicamente */
     $scope.gerarPwd = function()
     {
-        let pwd = generalUtility.randomPwd();
+        var pwd = generalUtility.randomPwd();
         $scope.atendente.password = pwd;
-    }
+    };
 
     /** Função que alterna o type do campo de senha */
     $scope.showHidePwd = function(field) {
         generalUtility.showHidePwd(field);
-    }
+    };
 
     /**
      *  INTERNAL FUNCTIONS
@@ -155,8 +159,8 @@ app.controller('atendenteEmpresaController', function($scope, $sessionStorage, a
 
         // get pager object from service
         $scope.pagination = paginationService.getPagination($scope.totalRecords, page, pageSize);
-    }
+    };
     
     /** Carrega as empresas */
     $scope.getPage(1);
-});
+}]);

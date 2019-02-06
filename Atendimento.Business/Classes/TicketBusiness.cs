@@ -80,6 +80,11 @@ namespace Atendimento.Business.Classes
             return _repository.GetTotalTicketsUsuario(idUsuario);
         }
 
+        public int GetTotalTicketsCategoria(int idCategoria)
+        {
+            return _repository.GetTotalTicketsCategoria(idCategoria);
+        }
+
         public TicketsResponse GetAllPaged(FilterRequest advancedFilter)
         {
             return _repository.GetAllPaged(advancedFilter);

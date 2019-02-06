@@ -9,9 +9,9 @@ namespace Atendimento.Repository.Mapping
         {
             ToTable("Ticket_Mensagem");
             Map(m => m.Id).ToColumn("id").IsKey().IsIdentity();
-            Map(m => m.IdTicket).ToColumn("id_ticket");
-            Map(m => m.IdUsuarioCliente).ToColumn("id_usuario_cliente");
-            Map(m => m.IdAtendenteEmpresa).ToColumn("id_atendente_empresa");
+            Map(m => m.IdTicket).ToColumn("ticketid");
+            Map(m => m.IdUsuarioCliente).ToColumn("usuarioclienteid");
+            Map(m => m.IdAtendenteEmpresa).ToColumn("atendenteempresaid");
             Map(m => m.Descricao).ToColumn("descricao");
             Map(m => m.DataHoraMensagem).ToColumn("data_hora_mensagem");
             Map(m => m.Interno).ToColumn("interno");

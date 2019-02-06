@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
-using System.Web.Http.Cors;
 using Atendimento.Business.Interfaces.Interfaces;
 using Atendimento.Entities.Entities;
 using Atendimento.Entities.Requests;
@@ -20,10 +19,9 @@ namespace Atendimento.WebApi.Controllers
     /// </summary>
     [RoutePrefix("api/Ticket")]
     [Authorize]
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class TicketController : ApiController
     {
-        private readonly ITicketBusiness _business;
+        private readonly ITicketBusiness _ticketBusiness;
         private readonly IUsuarioClienteBusiness _usuarioClienteBusiness;
         private readonly IAtendenteEmpresaBusiness _atendenteEmpresaBusiness;
         private readonly IStatusTicketBusiness _statusTicketBusiness;
@@ -34,20 +32,20 @@ namespace Atendimento.WebApi.Controllers
         /// <summary>
         /// Construtor
         /// </summary>
-        /// <param name="business"></param>
+        /// <param name="ticketBusiness"></param>
         /// <param name="usuarioClienteBusiness"></param>
         /// <param name="atendenteEmpresaBusiness"></param>
         /// <param name="statusTicketBusiness"></param>
         /// <param name="classificacaoBusiness"></param>
         /// <param name="anexoBusiness"></param>
-        public TicketController(ITicketBusiness business,
+        public TicketController(ITicketBusiness ticketBusiness,
                                 IUsuarioClienteBusiness usuarioClienteBusiness,
                                 IAtendenteEmpresaBusiness atendenteEmpresaBusiness,
                                 IStatusTicketBusiness statusTicketBusiness,
                                 IClassificacaoBusiness classificacaoBusiness,
                                 IAnexoBusiness anexoBusiness)
         {
-            _business = business;
+            _ticketBusiness = ticketBusiness;
             _usuarioClienteBusiness = usuarioClienteBusiness;
             _atendenteEmpresaBusiness = atendenteEmpresaBusiness;
             _statusTicketBusiness = statusTicketBusiness;
@@ -67,7 +65,7 @@ namespace Atendimento.WebApi.Controllers
             try
             {
                 //Mapeia os dados da fonte (source class) para o destino (destiny class)
-                var lista = _business.GetAll().ToList().Select(Mapper.Map<Ticket, TicketResponse>);
+                var lista = _ticketBusiness.GetAll().ToList().Select(Mapper.Map<Ticket, TicketResponse>);
 
                 var totalRegistros = lista.Count();
 
@@ -95,7 +93,7 @@ namespace Atendimento.WebApi.Controllers
         {
             try
             {
-                var entity = _business.GetByIdFilled(ticketRequest.Id, ticketRequest.WithAnexos);
+                var entity = _ticketBusiness.GetByIdFilled(ticketRequest.Id, ticketRequest.WithAnexos);
 
                 if (entity == null)
                     return NotFound();
@@ -125,7 +123,7 @@ namespace Atendimento.WebApi.Controllers
             try
             {
                 //Recupera o total de registros de tickets de acordo com o filtro informado
-                var total = _business.GetCount(idStatusTicket);
+                var total = _ticketBusiness.GetCount(idStatusTicket);
 
                 //Monta response
                 _result = Ok(Retorno<int>.Criar(true, "Consulta Realizada Com Sucesso", total));
@@ -140,7 +138,7 @@ namespace Atendimento.WebApi.Controllers
         }
 
         /// <summary>
-        /// Recupera total de tickets
+        /// Recupera total de tickets associados a um usuário
         /// </summary>
         /// <param name="idUsuario"></param>
         /// <returns></returns>
@@ -152,7 +150,34 @@ namespace Atendimento.WebApi.Controllers
             try
             {
                 //Recupera o total de registros de tickets associados a um usuario
-                var total = _business.GetTotalTicketsUsuario(idUsuario);
+                var total = _ticketBusiness.GetTotalTicketsUsuario(idUsuario);
+
+                //Monta response
+                _result = Ok(Retorno<int>.Criar(true, "Consulta Realizada Com Sucesso", total));
+
+                //Retorna o response
+                return _result;
+            }
+            catch (Exception)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Recupera total de tickets associados a uma categoria
+        /// </summary>
+        /// <param name="idCategoria"></param>
+        /// <returns></returns>
+        [Route(nameof(GetTotalTicketsCategoria))]
+        [HttpGet]
+        //[AllowAnonymous]
+        public IHttpActionResult GetTotalTicketsCategoria(int idCategoria)
+        {
+            try
+            {
+                //Recupera o total de registros de tickets associados a um usuario
+                var total = _ticketBusiness.GetTotalTicketsCategoria(idCategoria);
 
                 //Monta response
                 _result = Ok(Retorno<int>.Criar(true, "Consulta Realizada Com Sucesso", total));
@@ -179,7 +204,7 @@ namespace Atendimento.WebApi.Controllers
             try
             {
                 //Recupera todos os totais de registros de tickets
-                var response = _business.GetCounts(idCliente);
+                var response = _ticketBusiness.GetCounts(idCliente);
 
                 //Monta response
                 _result = Ok(Retorno<CountsResponse>.Criar(true, "Consulta Realizada Com Sucesso", response, response.Totais.Count()));
@@ -205,7 +230,7 @@ namespace Atendimento.WebApi.Controllers
         {
             try
             {
-                var result = _business.GetAllPaged(advancedFilter);
+                var result = _ticketBusiness.GetAllPaged(advancedFilter);
 
                 var lista = result.Tickets.ToList().Select(Mapper.Map<Ticket, TicketResponse>);
                 var totalGeral = result.TotalGeral;
@@ -234,6 +259,7 @@ namespace Atendimento.WebApi.Controllers
         //[AllowAnonymous]
         public IHttpActionResult Insert([FromBody]TicketRequest request)
         {
+            UsuarioCliente usuarioCliente = null;
             AtendenteEmpresa atendenteEmpresa = null;
             List<AtendenteEmpresa> listaAtendentes = null;
 
@@ -248,7 +274,7 @@ namespace Atendimento.WebApi.Controllers
 
                 entity.DataHoraInicial = DateTime.Now;
 
-                _business.Insert(ref entity);
+                _ticketBusiness.Insert(ref entity);
 
                 if (entity.Id > 0)
                 {
@@ -276,28 +302,40 @@ namespace Atendimento.WebApi.Controllers
                     //===========================================================================================
                     //Enviar email de confirmação de criação do novo atendimento
                     //===========================================================================================
-                    var usuarioCliente = _usuarioClienteBusiness.GetById(request.IdUsuarioCliente);
+
+                    var ticketResponse = _ticketBusiness.GetByIdFilled(entity.Id, false);
 
                     if (request.UserTypeAgent == "S")
                     {
+                        usuarioCliente = _usuarioClienteBusiness.GetById(request.IdUsuarioCliente);
                         atendenteEmpresa = _atendenteEmpresaBusiness.GetById(request.IdAtendente);
 
                         if (atendenteEmpresa != null)
                         {
                             if (atendenteEmpresa.Copia)
                             {
-                                listaAtendentes = _atendenteEmpresaBusiness.GetList(x => x.IdEmpresa == atendenteEmpresa.IdEmpresa && x.Id != atendenteEmpresa.Id).ToList();
+                                listaAtendentes = _atendenteEmpresaBusiness.GetList(x => x.IdEmpresa == atendenteEmpresa.IdEmpresa && x.IdEmpresa != atendenteEmpresa.IdEmpresa).ToList();
                             }
                         }
                     }
                     else
                     {
-                        listaAtendentes = _atendenteEmpresaBusiness.GetAll(atendenteEmpresa.IdEmpresa).ToList();
+                        usuarioCliente = _usuarioClienteBusiness.GetById(request.IdUsuarioCliente);
+                        listaAtendentes = _atendenteEmpresaBusiness.GetAll(ticketResponse.UsuarioCliente.Cliente.IdEmpresa).ToList();
                     }
 
                     var statusTicket = _statusTicketBusiness.GetById(request.IdStatusTicket);
 
-                    _business.EnviarEmailConfirmacao(request.UserTypeAgent, statusTicket, null, entity, usuarioCliente, atendenteEmpresa, listaAtendentes, "insert");
+                    try
+                    {
+                        _ticketBusiness.EnviarEmailConfirmacao(request.UserTypeAgent, statusTicket, null, entity, usuarioCliente, atendenteEmpresa, listaAtendentes, "insert");
+                    }
+                    catch (Exception)
+                    {
+                        //Monta response
+                        _result = Ok(Retorno<TicketResponse>.Criar(true, "Inclusão Realizada Com Sucesso - Email de confirmação não enviado", Mapper.Map<Ticket, TicketResponse>(entity)));
+                    }
+                    
                     //===========================================================================================
                 }
 
@@ -336,7 +374,7 @@ namespace Atendimento.WebApi.Controllers
                     entityList.Add(entity);
                 }
 
-                var rows = _business.Insert(entityList);
+                var rows = _ticketBusiness.Insert(entityList);
 
                 if (rows > 0)
                 {
@@ -372,7 +410,7 @@ namespace Atendimento.WebApi.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest("Dados inválidos.");
 
-                var entityInDb = _business.GetById(id);
+                var entityInDb = _ticketBusiness.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -383,7 +421,7 @@ namespace Atendimento.WebApi.Controllers
 
                 entityInDb.DataHoraAlteracao = DateTime.Now;
 
-                if (_business.Update(entityInDb))
+                if (_ticketBusiness.Update(entityInDb))
                 {
                     //Monta response
                     _result = Ok(Retorno<Ticket>.Criar(true, "Atualização Realizada Com Sucesso", entityInDb));
@@ -419,7 +457,7 @@ namespace Atendimento.WebApi.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest("Dados inválidos.");
 
-                var entityInDb = _business.GetById(request.Id);
+                var entityInDb = _ticketBusiness.GetById(request.Id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
@@ -433,10 +471,10 @@ namespace Atendimento.WebApi.Controllers
                     entityInDb.DataHoraAlteracao = DateTime.Now;
                 }
 
-                if (_business.UpdateStatusTicket(entityInDb))
+                if (_ticketBusiness.UpdateStatusTicket(entityInDb))
                 {
                     //Recupera o ticket atualizado
-                    entityInDb = _business.GetById(request.Id);
+                    entityInDb = _ticketBusiness.GetById(request.Id);
 
                     //Monta response
                     _result = Ok(Retorno<Ticket>.Criar(true, "Atualização Realizada Com Sucesso", entityInDb));
@@ -460,7 +498,16 @@ namespace Atendimento.WebApi.Controllers
                         }
                     }
 
-                    _business.EnviarEmailConfirmacao(request.UserTypeAgent, statusTicket, null, entityInDb, usuarioCliente, atendenteEmpresa, listaAtendentes, "update");
+                    try
+                    {
+                        _ticketBusiness.EnviarEmailConfirmacao(request.UserTypeAgent, statusTicket, null, entityInDb, usuarioCliente, atendenteEmpresa, listaAtendentes, "update");
+                    }
+                    catch (Exception)
+                    {
+                        //Monta response
+                        _result = Ok(Retorno<Ticket>.Criar(true, "Atualização Realizada Com Sucesso - Email de confirmação não enviado", entityInDb));
+                    }
+
                     //===========================================================================================
 
                     //Retorna o response
@@ -494,18 +541,19 @@ namespace Atendimento.WebApi.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest("Dados inválidos.");
 
-                var entityInDb = _business.GetById(request.Id);
+                var entityInDb = _ticketBusiness.GetById(request.Id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
                     return NotFound();
 
                 entityInDb.IdClassificacao = request.IdClassificacao;
+                entityInDb.DataHoraAlteracao = DateTime.Now;
 
-                if (_business.Update(entityInDb))
+                if (_ticketBusiness.Update(entityInDb))
                 {
                     //Recupera o ticket atualizado
-                    entityInDb = _business.GetById(request.Id);
+                    entityInDb = _ticketBusiness.GetById(request.Id);
 
                     //Monta response
                     _result = Ok(Retorno<Ticket>.Criar(true, "Atualização Realizada Com Sucesso", entityInDb));
@@ -529,7 +577,16 @@ namespace Atendimento.WebApi.Controllers
                         }
                     }
 
-                    _business.EnviarEmailConfirmacao(request.UserTypeAgent, null, classificacao, entityInDb, usuarioCliente, atendenteEmpresa, listaAtendentes, nameof(classificacao));
+                    try
+                    {
+                        _ticketBusiness.EnviarEmailConfirmacao(request.UserTypeAgent, null, classificacao, entityInDb, usuarioCliente, atendenteEmpresa, listaAtendentes, nameof(classificacao));
+                    }
+                    catch (Exception)
+                    {
+                        //Monta response
+                        _result = Ok(Retorno<Ticket>.Criar(true, "Atualização Realizada Com Sucesso - Email de confirmação não enviado", entityInDb));
+                    }
+                    
                     //===========================================================================================
 
                     //Retorna o response
@@ -564,7 +621,7 @@ namespace Atendimento.WebApi.Controllers
 
                 foreach (var item in list)
                 {
-                    var entityInDb = _business.GetById(item.Id);
+                    var entityInDb = _ticketBusiness.GetById(item.Id);
 
                     //Verifica se objeto existe
                     if (entityInDb == null)
@@ -577,7 +634,7 @@ namespace Atendimento.WebApi.Controllers
                     }
                 }
 
-                if (_business.Update(entityList))
+                if (_ticketBusiness.Update(entityList))
                 {
                     //Monta response
                     _result = Ok(Retorno<bool>.Criar(true, "Atualização de Lista Realizada Com Sucesso", true));
@@ -606,13 +663,13 @@ namespace Atendimento.WebApi.Controllers
         {
             try
             {
-                var entityInDb = _business.GetById(id);
+                var entityInDb = _ticketBusiness.GetById(id);
 
                 //Verifica se objeto existe
                 if (entityInDb == null)
                     return NotFound();
 
-                if (_business.Delete(id))
+                if (_ticketBusiness.Delete(id))
                 {
                     //Monta response
                     _result = Ok(Retorno<bool>.Criar(true, "Deleção Realizada Com Sucesso", true));
@@ -647,7 +704,7 @@ namespace Atendimento.WebApi.Controllers
                 {
                     foreach (var id in list)
                     {
-                        var entityInDb = _business.GetById(id);
+                        var entityInDb = _ticketBusiness.GetById(id);
 
                         //Verifica se objeto existe
                         if (entityInDb == null)
@@ -656,7 +713,7 @@ namespace Atendimento.WebApi.Controllers
                             entityList.Add(entityInDb);
                     }
 
-                    if (_business.Delete(entityList))
+                    if (_ticketBusiness.Delete(entityList))
                     {
                         //Monta response
                         _result = Ok(Retorno<bool>.Criar(true, "Deleção de Lista Realizada Com Sucesso", true));

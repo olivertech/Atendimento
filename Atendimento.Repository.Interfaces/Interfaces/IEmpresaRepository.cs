@@ -8,5 +8,6 @@ namespace Atendimento.Repository.Interfaces.Interfaces
     public interface IEmpresaRepository : IRepositoryBase<Empresa>
     {
         EmpresasResponse GetAllPaged(FilterEmpresaRequest advancedFilter);
+        int GetTotalAtendentesEmpresa(int idEmpresa);
     }
 }

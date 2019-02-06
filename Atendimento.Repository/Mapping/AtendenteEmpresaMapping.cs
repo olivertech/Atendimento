@@ -8,8 +8,8 @@ namespace Atendimento.Repository.Mapping
         public AtendenteEmpresaMapping()
         {
             ToTable("Atendente_Empresa");
-            Map(m => m.Id).ToColumn("id").IsKey().IsIdentity();
-            Map(m => m.IdEmpresa).ToColumn("id_empresa");
+            Map(m => m.Id).ToColumn("id_atendente_empresa_entity").IsKey().IsIdentity();
+            Map(m => m.IdEmpresa).ToColumn("empresaid");
             Map(m => m.Nome).ToColumn("nome");
             Map(m => m.Username).ToColumn("username");
             Map(m => m.Password).ToColumn("password");

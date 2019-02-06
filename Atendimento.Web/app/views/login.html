@@ -1,7 +1,7 @@
 <!-- ============================================================== -->
 <!-- Main wrapper - style you can find in pages.scss -->
 <!-- ============================================================== -->
-<section id="wrapper" class="login-register login-sidebar" style="background-image:url(app/assets/images/background_login.png);" ng-controller="loginController">
+<section id="wrapper" class="login-register login-sidebar" style="background-image:url(app/assets/images/background-login.png);" ng-controller="loginController">
     <div class="login-box card">
         <div class="card-body">
 
@@ -9,12 +9,10 @@
             <div class="div-view-animation box-login" ng-if="!login.isRecoverFormSelected && !login.changePassword">
                 <div class="layout">
                     <div class="center-title">
-                        <!-- <a href="#" class="db"><img src="app/assets/images/logo-text.png" alt="Home" /></a> -->
                         Sistema de Atendimento
                     </div>
                 </div>
                 <form class="form-horizontal form-material text-center" name="loginForm" novalidate="">
-                    <!-- <a href="#" class="db"><img src="app/assets/images/logo-text.png" alt="Home" /></a> -->
                     <div class="form-group m-t-40">
                         <div class="col-xs-12">
                             <input class="form-control" type="text" required="" placeholder="Usuário" ng-model="login.username" ng-required="true" ng-blur="resetCookies()">
@@ -28,12 +26,9 @@
                     <div class="form-group">
                         <div class="col-xs-12">
                             <select class="form-control" name="typeloginform" id="typeloginform"
-                                    ng-init="login.typeloginform = login.typeloginform || options[0].value"
                                     ng-required="true"
-                                    ng-model="login.typeloginform">
-                                <option value="">Selecione o tipo do usuário</option>
-                                <option value="Atendimento">Atendimento</option>
-                                <option value="Cliente">Cliente</option>
+                                    ng-model="login.typeloginform"
+                                    ng-options="tipo.id as tipo.nome for tipo in tipos">
                             </select>                            
                         </div>
                     </div>                
@@ -45,7 +40,7 @@
                                     <label class="custom-control-label" for="rememberMeChk">Lembrar Login</label>
                                 </div> 
                                 <div class="ml-auto">
-                                    <a href="#" id="to-recover" class="text-muted" ng-click="showHideRecoverForm()"><i class="fas fa-lock m-r-5"></i>Esqueceu a senha ?</a> 
+                                    <a href="#" id="to-recover" ng-click="showHideRecoverForm()"><i class="fas fa-lock m-r-5"></i>Esqueceu a senha ?</a> 
                                 </div>
                             </div>   
                         </div>
@@ -79,10 +74,8 @@
                         <div class="col-xs-12">
                             <select class="form-control" name="typerecoverform" id="typerecoverform" 
                                     ng-required="true"
-                                    ng-model="login.typerecoverform">
-                                <option value="" selected>Selecione o tipo do usuário</option>
-                                <option value="Atendimento">Atendimento</option>
-                                <option value="Cliente">Cliente</option>
+                                    ng-model="login.typerecoverform"
+                                    ng-options="tipo.id as tipo.nome for tipo in tipos">
                             </select>
                         </div>
                     </div>       
@@ -145,10 +138,8 @@
                         <div class="col-xs-12">
                             <select class="form-control" name="typechangepwdform" id="typechangepwdform" 
                                     ng-required="true"
-                                    ng-model="login.typechangepwdform">
-                                <option value="" selected>Selecione o tipo do usuário</option>
-                                <option value="Atendimento">Atendimento</option>
-                                <option value="Cliente">Cliente</option>
+                                    ng-model="login.typechangepwdform"
+                                    ng-options="tipo.id as tipo.nome for tipo in tipos">
                             </select>
                         </div>
                     </div>       

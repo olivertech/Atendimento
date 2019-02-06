@@ -1,4 +1,5 @@
-app.factory("clienteService", function($http, config) {
+app.factory("clienteService", ['$http', 'config',
+    function($http, config) {
     
     /** Retorna todos os clientes */
     var _getClientes = function(offSet, numRows, orderBy, direction) {
@@ -16,32 +17,30 @@ app.factory("clienteService", function($http, config) {
             async: true,
             cache: false
         });  
-    }
+    };
 
     /** Salva o clientes */
     var _saveCliente = function(id, idEmpresa, nome, cnpj, email, telefoneFixo, telefoneCelular, logradouro, numeroLogradouro, complementoLogradouro, estado, cidade, bairro, cep, descricao, ativo) {
-        let request = {
+        var request = {
             "idEmpresa": idEmpresa,
             "nome": nome,
             "cnpj": cnpj,
             "email": email,
             "telefoneFixo": telefoneFixo,
             "telefoneCelular": telefoneCelular,
-            "endereco": {
-              "logradouro": logradouro,
-              "numeroLogradouro": numeroLogradouro,
-              "complementoLogradouro": complementoLogradouro,
-              "estado": estado,
-              "cidade": cidade,
-              "bairro": bairro,
-              "cep": cep,
-            },
+            "logradouro": logradouro,
+            "numeroLogradouro": numeroLogradouro,
+            "complementoLogradouro": complementoLogradouro,
+            "estado": estado,
+            "cidade": cidade,
+            "bairro": bairro,
+            "cep": cep,
             "descricao": descricao,
             "ativo": ativo
         };
 
-        let method = '';
-        let url = config.baseUrl + "/Cliente/";
+        var method = '';
+        var url = config.baseUrl + "/Cliente/";
         
         if (id > 0) {
             method = "PUT";
@@ -59,7 +58,7 @@ app.factory("clienteService", function($http, config) {
             async: true,
             cache: false
         });  
-    }
+    };
 
     /** Recupera o cliente */
     var _showCliente = function(idCliente) {
@@ -69,7 +68,7 @@ app.factory("clienteService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
     /** Remove cliente */
     var _deleteCliente = function(idCliente) {
@@ -79,7 +78,7 @@ app.factory("clienteService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
     /** Retorna todas as empresas */
     var _getEmpresas = function() {
@@ -89,7 +88,7 @@ app.factory("clienteService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
     
     /** Retorna o total de usuarios associados ao cliente */
     var _getUsuariosCliente = function(idCliente) {
@@ -99,7 +98,7 @@ app.factory("clienteService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
     
     return {
         getClientes: _getClientes,
@@ -109,4 +108,4 @@ app.factory("clienteService", function($http, config) {
         getEmpresas: _getEmpresas,
         getUsuariosCliente: _getUsuariosCliente
     };
-});
+}]);

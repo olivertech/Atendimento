@@ -1,0 +1,12 @@
+@media (min-width:768px) {
+	.modal-dialog {
+		max-width: 900px;
+		margin: 1.75rem auto
+	}
+	.modal-dialog-centered {
+		min-height: calc(100% - (1.75rem * 2))
+	}
+	.modal-sm {
+		max-width: 300px
+	}
+}

@@ -1,4 +1,6 @@
-app.controller('topHeaderController', function($scope, $location, $sessionStorage) {
+app.controller('topHeaderController', ['$scope', '$location', '$sessionStorage',
+    function($scope, $location, $sessionStorage) {
+
     /** Função de saída do app */
     $scope.logout = function() {
         $sessionStorage.tokenAuthentication = '';
@@ -9,6 +11,7 @@ app.controller('topHeaderController', function($scope, $location, $sessionStorag
         $sessionStorage.nomeCliente = '';
         $sessionStorage.tipoUsuario = '';
         $sessionStorage.logicalPathAnexos = '';
+        $location.hash("");
         $location.path("/");
-    }
-});
+    };
+}]);

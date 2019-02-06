@@ -49,11 +49,17 @@ app.factory("paginationService", function() {
             endIndex: endIndex,
             pages: pages
         };
-    }
+    };
 
-    var range = function(start, end) {
-        return (new Array(end - start + 1)).fill(undefined).map((_, i) => i + start);
-    }
+    // var range = function(start, end) {
+    //     return (new Array(end - start + 1)).fill(undefined).map((_, i) => i + start);
+    // };
+
+    var range = function range(start, end) {
+        return new Array(end - start + 1).fill(undefined).map(function (_, i) {
+            return i + start;
+        });
+    };
 
     return {
         getPagination: _getPagination

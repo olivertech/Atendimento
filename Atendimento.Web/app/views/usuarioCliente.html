@@ -29,7 +29,7 @@
                     </div>
                 </div>
             </div>
-            <div id="success-alert" class="row">
+            <div id="success-alert1" class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <h3 class="text-success"><i class="fa fa-check-circle"></i> Sucesso.</h3>{{mensagem}}
@@ -39,7 +39,7 @@
                     </div>
                 </div>
             </div>
-            <div id="error-alert" class="row">
+            <div id="error-alert1" class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <h3 class="text-danger"><i class="fa fa-check-circle"></i> Erro.</h3>{{mensagem}}
@@ -111,8 +111,8 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th><a href="" ng-click="ordenarPor('id')">Usuário #</a></th>
-                                            <th><a href="" ng-click="ordenarPor('nome')">Nome</a></th>
+                                            <th><a href="#" ng-click="ordenarPor('id')">Usuário #</a></th>
+                                            <th><a href="#" ng-click="ordenarPor('nome')">Nome</a></th>
                                             <th>Login</th>
                                             <th>Email</th>
                                             <th>Telefone Fixo</th>
@@ -195,10 +195,8 @@
                                         <div class="col-sm-8">
                                             <select class="form-control" id="cliente"
                                                     ng-required="true"
-                                                    ng-init="usuario.idCliente = usuario.idCliente || options[0].value"
                                                     ng-model="usuario.idCliente"
-                                                    ng-options="cliente.id as cliente.nome for cliente in clientes | orderBy: 'nome'">
-                                                <option value="">Selecione o Cliente</option>
+                                                    ng-options="cliente.id as cliente.nome for cliente in clientes">
                                             </select>
                                         </div>
                                     </div>                                    
@@ -223,7 +221,7 @@
                                         <div class="col-sm-5">
                                             <input id="senha" type="password" class="form-control" placeholder="Senha" 
                                                 ng-model="usuario.password"
-                                                ng-required="true">
+                                                ng-required="true" autocomplete="off">
                                         </div> 
                                         <div class="col-sm-3 m-t-10">
                                             <button type="button" ng-click="gerarPwd();" class="btn btn-cyan btn-sm waves-effect m-r-5" title="Gerar senha temporária"><i class="fas fa-key"></i></button>
@@ -260,8 +258,7 @@
                                             <input class="form-check-input" type="checkbox" value="1" id="ativo"
                                                 ng-true-value="true"
                                                 ng-false-value="false"
-                                                ng-model="usuario.ativo"
-                                                ng-disabled="usuario.id == 1">
+                                                ng-model="usuario.ativo">
                                             <label class="form-check-label" for="ativo" style="color: red">
                                                 Ativo
                                             </label>
@@ -323,10 +320,5 @@
 <!-- ============================================================== -->
 <!-- End Wrapper -->
 <!-- ============================================================== -->
-
-<!-- Esse arquivo tem que importar aqui, pois senão os elementos não são achados pelo jquery -->
-<script src="./app/assets/scripts/custom.js"></script>
-<script src="./app/assets/scripts/sidebarmenu.js"></script>
-<script src="./app/assets/scripts/utilities.js"></script>
-<script src="./app/assets/scripts/fullscreen.js"></script>
-<script src="./app/assets/scripts/dashboard.js"></script>
+<!-- scripts importados aqui, para permitir que o Jquery encontre os elementos das tags html -->
+<script src="./app/assets/dist/app-scripts-pagina.min.js"></script>

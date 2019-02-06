@@ -1,0 +1,225 @@
+<!-- ============================================================== -->
+<!-- Main wrapper - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<div id="main-wrapper">
+<!-- header -->
+<top-header></top-header>
+<!-- left side bar -->
+<left-side-bar></left-side-bar>
+<!-- ============================================================== -->
+<!-- Page wrapper  -->
+<!-- ============================================================== -->
+<div class="page-wrapper">
+    <!-- ============================================================== -->
+    <!-- Container fluid  -->
+    <!-- ============================================================== -->
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h4 class="text-themecolor">Cadastro de Categoria</h4>
+            </div>
+            <div class="col-md-7 align-self-center text-right">
+                <div class="d-flex justify-content-end align-items-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item active">Cadastro de Categoria</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div id="success-alert1" class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <h3 class="text-success"><i class="fa fa-check-circle"></i> Sucesso.</h3>{{mensagem}}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="error-alert1" class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <h3 class="text-danger"><i class="fa fa-check-circle"></i> Erro.</h3>{{mensagem}}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        </div>            
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Start Page Content -->
+        <!-- ============================================================== -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- grid header -->
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-t-10 text-left">
+                                <button type="button" class="btn btn-info" ng-click="newCategoria()" data-toggle="modal" data-target="#add-categoria"><i class="fas fa-plus"></i> Nova Categoria</button>
+                            </div>
+                        </div>
+                        <!-- grid de categorias -->
+                        <div class="table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
+                            <div class="row justify-content-md-center m-t-20">
+                                <div class="col">
+                                    <nav aria-label="Page navigation example" ng-if="categorias.length > 0">
+                                        <!-- Paginação -->
+                                        <ul class="pagination">
+                                            <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                <a class="page-link" ng-click="getPage(1,orderBy,direction)">Primeiro</a>
+                                            </li>
+                                            <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                <a class="page-link" ng-click="getPage(pagination.currentPage - 1,orderBy,direction)"><i class="fas fa-chevron-left"></i></a>
+                                            </li>
+                                            <li class="page-item" ng-repeat="page in pagination.pages track by $index" ng-class="{active:pagination.currentPage === page}">
+                                                <a class="page-link" ng-click="getPage(page,orderBy,direction)">{{page}}</a>
+                                            </li>
+                                            <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                <a class="page-link" ng-click="getPage(pagination.currentPage + 1,orderBy,direction)"><i class="fas fa-chevron-right"></i></a>
+                                            </li>
+                                            <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                <a class="page-link" ng-click="getPage(pagination.totalPages,orderBy,direction)">Último</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <div class="col-4">
+                                    &nbsp;
+                                </div>
+                                <!-- Contagem de páginas -->
+                                <div class="col text-right" ng-if="categorias.length > 0">
+                                    <label class="">Mostrando página {{pagination.currentPage}} de {{pagination.totalPages}}</label>
+                                </div>
+                            </div>
+                            <table id="categorias" class="table m-t-20 no-wrap" ng-if="categorias.length == 0">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Não foram encontradas categorias cadastradas.
+                                        </th>
+                                    </td>
+                                </tr>
+                            </table>                              
+                            <table id="categorias" class="table m-t-20 table-hover no-wrap contact-list table-striped" ng-if="categorias.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th><a href="#" ng-click="ordenarPor('id')">Categoria #</a></th>
+                                        <th><a href="#" ng-click="ordenarPor('nome')">Nome</a></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="categoria in categorias track by categoria.id" ng-click="showCategoria(categoria.id)" style="cursor: pointer;" data-toggle="modal" data-target="#add-categoria">
+                                        <td>{{pagination.startIndex + $index + 1}}</td>
+                                        <td>{{categoria.id}}</td>
+                                        <td>{{categoria.nome}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!-- Grid Footer -->
+                            <div class="row justify-content-md-center m-t-20">
+                                <div class="col">
+                                    <nav aria-label="Page navigation example" ng-if="categorias.length > 0">
+                                        <!-- Paginação -->
+                                        <ul class="pagination">
+                                            <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                <a class="page-link" ng-click="getPage(1,orderBy,direction)">Primeiro</a>
+                                            </li>
+                                            <li class="page-item" ng-class="{disabled:pagination.currentPage === 1}">
+                                                <a class="page-link" ng-click="getPage(pagination.currentPage - 1,orderBy,direction)"><i class="fas fa-chevron-left"></i></a>
+                                            </li>
+
+                                            <li class="page-item" ng-repeat="page in pagination.pages track by $index" ng-class="{active:pagination.currentPage === page}">
+                                                <a class="page-link" ng-click="getPage(page,orderBy,direction)">{{page}}</a>
+                                            </li>
+                                            
+                                            <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                <a class="page-link" ng-click="getPage(pagination.currentPage + 1,orderBy,direction)"><i class="fas fa-chevron-right"></i></a>
+                                            </li>
+                                            <li class="page-item" ng-class="{disabled:pagination.currentPage === pagination.totalPages}">
+                                                <a class="page-link" ng-click="getPage(pagination.totalPages,orderBy,direction)">Último</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <div class="col-4">
+                                    &nbsp;
+                                </div>
+                                <!-- Contagem de páginas -->
+                                <div class="col text-right" ng-if="categorias.length > 0">
+                                    <label class="">Mostrando página {{pagination.currentPage}} de {{pagination.totalPages}}</label>
+                                </div>
+                            </div>
+                        </div>                            
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Page Content -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Begin Modal Nova Categoria -->
+        <!-- ============================================================== -->
+        <div id="add-categoria" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel" ng-if="categoria.id == 0">Nova Categoria</h4>
+                        <h4 class="modal-title" id="myModalLabel" ng-if="categoria.id != 0">Atualizar Categoria</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal form-material" name="novaCategoriaForm">
+                            <input type="hidden" name="categoria.id" ng-model="categoria.id">
+                            <div class="form-group">
+                                <div class="form-group row">
+                                    <label for="ticket" class="col-sm-3 col-form-label"><strong>Nome</strong></label>
+                                    <div class="col-sm-9">
+                                        <input type="text "class="form-control" placeholder="Nome da Categoria" 
+                                            ng-model="categoria.nome"
+                                            ng-required="true">
+                                    </div> 
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row">
+                            <div class="col-3">
+                                <button type="button" id="submit" ng-click="deleteCategoria(categoria.id);" class="btn btn-danger waves-effect" data-dismiss="modal" ng-if="tickets == 0"><i class="fas fa-trash-alt"></i> Remover</button>
+                            </div>
+                            <div class="col-9 text-right">
+                                <button type="button" id="submit" ng-click="saveCategoria();" class="btn btn-info waves-effect" data-dismiss="modal" ng-disabled="novaCategoriaForm.$invalid"><i class="fas fa-check"></i> Salvar</button>
+                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal"><i class="fas fa-ban"></i> Cancelar</button>
+                            </div>
+                        </div>
+                        {{tickets.length}}
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Modal Nova Categoria  -->
+        <!-- ============================================================== -->
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Page wrapper  -->
+<!-- ============================================================== -->
+<app-footer></app-footer>
+</div>
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->
+<!-- scripts importados aqui, para permitir que o Jquery encontre os elementos das tags html -->
+<script src="./app/assets/dist/app-scripts-pagina.min.js"></script>

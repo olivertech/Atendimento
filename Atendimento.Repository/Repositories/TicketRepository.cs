@@ -18,10 +18,10 @@ namespace Atendimento.Repository.Repositories
     {
         const string selectQuery = @"SELECT 
                                     t.id,
-                                    t.id_status_ticket,
-                                    t.id_usuario_cliente,
-                                    t.id_categoria,
-                                    t.id_classificacao,
+                                    t.statusticketid,
+                                    t.usuarioclienteid,
+                                    t.categoriaid,
+                                    t.classificacaoid,
                                     t.titulo,
                                     t.descricao,
                                     t.data_hora_inicial,
@@ -31,17 +31,17 @@ namespace Atendimento.Repository.Repositories
                                         WHEN t.data_hora_ultima_mensagem IS NOT NULL THEN t.data_hora_ultima_mensagem
                                     END AS data_hora_ultima_mensagem,
                                     t.data_hora_final,
-                                    ct.id                       AS id_categoria, 
+                                    ct.id                       AS id_categoria_entity, 
                                     ct.nome, 
-                                    cl.id                       AS id_classificacao, 
+                                    cl.id                       AS id_classificacao_entity, 
                                     cl.nome,
-                                    st.id                       AS id_status_ticket,
+                                    st.id                       AS id_status_ticket_entity,
                                     st.nome,
                                     st.uso,
                                     st.em_aberto,
                                     st.ordem_em_aberto,
-                                    uc.id                       AS id_usuario_cliente,
-                                    uc.id_cliente,
+                                    uc.id                      AS id_usuario_cliente_enttity,
+                                    uc.clienteid,
                                     uc.nome,
                                     uc.email,
                                     uc.telefone_fixo,
@@ -50,18 +50,18 @@ namespace Atendimento.Repository.Repositories
                                     uc.provisorio,
                                     uc.ativo
                             FROM dbo.Ticket t
-                            LEFT JOIN dbo.Categoria ct          ON t.id_categoria = ct.id
-                            LEFT JOIN dbo.Classificacao cl      ON t.id_classificacao = cl.id
-                            LEFT JOIN dbo.Status_Ticket st      ON t.id_status_ticket = st.id
-                            LEFT JOIN dbo.Usuario_Cliente uc    ON t.id_usuario_cliente = uc.id 
+                            LEFT JOIN dbo.Categoria ct          ON t.categoriaid = ct.id
+                            LEFT JOIN dbo.Classificacao cl      ON t.classificacaoid = cl.id
+                            LEFT JOIN dbo.Status_Ticket st      ON t.statusticketid = st.id
+                            LEFT JOIN dbo.Usuario_Cliente uc    ON t.usuarioclienteid = uc.id
                             WHERE 1 = 1 ";
 
         const string countQuery = @"SELECT COUNT(*)
                                 FROM dbo.Ticket t
-                                LEFT JOIN dbo.Categoria ct          ON t.id_categoria = ct.id
-                                LEFT JOIN dbo.Classificacao cl      ON t.id_classificacao = cl.id
-                                LEFT JOIN dbo.Status_Ticket st      ON t.id_status_ticket = st.id
-                                LEFT JOIN dbo.Usuario_Cliente uc    ON t.id_usuario_cliente = uc.id 
+                                LEFT JOIN dbo.Categoria ct          ON t.categoriaid = ct.id
+                                LEFT JOIN dbo.Classificacao cl      ON t.classificacaoid = cl.id
+                                LEFT JOIN dbo.Status_Ticket st      ON t.statusticketid = st.id
+                                LEFT JOIN dbo.Usuario_Cliente uc    ON t.usuarioclienteid = uc.id
                                 WHERE 1 = 1 ";
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Atendimento.Repository.Repositories
 
                                     return ticket;
                                 },
-                                splitOn: "id_categoria,id_classificacao,id_status_ticket,id_usuario_cliente").Distinct().ToList();
+                                splitOn: "id_categoria_entity,id_classificacao_entity,id_status_ticket_entity,id_usuario_cliente_enttity").Distinct().ToList();
 
                     return result;
                 }
@@ -98,13 +98,13 @@ namespace Atendimento.Repository.Repositories
         }
 
         /// <summary>
-        /// Método que recupera determinado tickek, com todas as subclasses preenchidas,
+        /// Método que recupera determinado ticket, com todas as subclasses preenchidas,
         /// podendo carregar ou não os anexos
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="idTicket"></param>
         /// <param name="withAnexos"></param>
         /// <returns></returns>
-        public TicketResponse GetByIdFilled(int id, bool withAnexos)
+        public TicketResponse GetByIdFilled(int idTicket, bool withAnexos)
         {
             var response = new TicketResponse();
             Ticket result1;
@@ -112,10 +112,10 @@ namespace Atendimento.Repository.Repositories
 
             var sql1 = @"SELECT 
                                     t.id,
-                                    t.id_status_ticket,
-                                    t.id_usuario_cliente,
-                                    t.id_categoria,
-                                    t.id_classificacao,
+                                    t.statusticketid,
+                                    t.usuarioclienteid,
+                                    t.categoriaid,
+                                    t.classificacaoid,
                                     t.titulo,
                                     t.descricao,
                                     t.data_hora_inicial,
@@ -125,17 +125,17 @@ namespace Atendimento.Repository.Repositories
                                         WHEN t.data_hora_ultima_mensagem IS NOT NULL THEN t.data_hora_ultima_mensagem
                                     END AS data_hora_ultima_mensagem,
                                     t.data_hora_final,
-                                    ct.id                       AS id_categoria, 
+                                    ct.id                       AS id_categoria_entity, 
                                     ct.nome, 
-                                    cl.id                       AS id_classificacao, 
+                                    cl.id                       AS id_classificacao_entity, 
                                     cl.nome,
-                                    st.id                       AS id_status_ticket,
+                                    st.id                       AS id_status_ticket_entity,
                                     st.nome,
                                     st.uso,
                                     st.em_aberto,
                                     st.ordem_em_aberto,
-                                    uc.id                       AS id_usuario_cliente,
-                                    uc.id_cliente,
+                                    uc.id                       AS id_usuario_cliente_entity,
+                                    uc.clienteid,
                                     uc.nome,
                                     uc.email,
                                     uc.telefone_fixo,
@@ -143,23 +143,24 @@ namespace Atendimento.Repository.Repositories
                                     uc.copia,
                                     uc.provisorio,
                                     uc.ativo,
-                                    c.id                        AS id_cliente,
+                                    c.id                        AS id_cliente_entity,
+                                    c.empresaid,
                                     c.nome
                             FROM dbo.Ticket t
-                            LEFT JOIN dbo.Categoria ct          ON t.id_categoria = ct.id
-                            LEFT JOIN dbo.Classificacao cl      ON t.id_classificacao = cl.id
-                            LEFT JOIN dbo.Status_Ticket st      ON t.id_status_ticket = st.id
-                            LEFT JOIN dbo.Usuario_Cliente uc    ON t.id_usuario_cliente = uc.id 
-                            LEFT JOIN dbo.Cliente c             ON uc.id_cliente = c.id
-                            WHERE t.id = " + id;
+                            LEFT JOIN dbo.Categoria ct          ON t.categoriaid = ct.id
+                            LEFT JOIN dbo.Classificacao cl      ON t.classificacaoid = cl.id
+                            LEFT JOIN dbo.Status_Ticket st      ON t.statusticketid = st.id
+                            LEFT JOIN dbo.Usuario_Cliente uc    ON t.usuarioclienteid = uc.id
+                            LEFT JOIN dbo.Cliente c             ON uc.clienteid = c.id
+                            WHERE t.id = " + idTicket;
 
 
             var sql2 = @"SELECT
                                     a.id,
                                     a.nome
                         FROM		Anexo a
-                        LEFT JOIN   Ticket t ON a.id_ticket = t.id
-                        WHERE		a.id_ticket = " + id;
+                        LEFT JOIN   Ticket t ON a.ticketid = t.id
+                        WHERE		a.ticketid = " + idTicket;
 
             try
             {
@@ -176,7 +177,7 @@ namespace Atendimento.Repository.Repositories
 
                                     return ticket;
                                 },
-                                splitOn: "id_categoria,id_classificacao,id_status_ticket,id_usuario_cliente,id_cliente").SingleOrDefault();
+                                splitOn: "id_categoria_entity,id_classificacao_entity,id_status_ticket_entity,id_usuario_cliente_entity,id_cliente_entity").SingleOrDefault();
 
                     if (withAnexos)
                     {
@@ -256,6 +257,31 @@ namespace Atendimento.Repository.Repositories
         }
 
         /// <summary>
+        /// Recupera o total de tickets associados a uma categoria
+        /// </summary>
+        /// <param name="idCategoria"></param>
+        /// <returns></returns>
+        public int GetTotalTicketsCategoria(int idCategoria)
+        {
+            var result = 0;
+            var sql = string.Empty;
+
+            try
+            {
+                using (var conn = CreateConnection())
+                {
+                    result = conn.Select<Ticket>(q => q.IdCategoria == idCategoria).Count();
+                }
+
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Recupera todos os totais de tickets por status
         /// </summary>
         /// <param name="idCliente"></param>
@@ -276,8 +302,8 @@ namespace Atendimento.Repository.Repositories
                     {
                         var sql = @"SELECT COUNT(*)
                                     FROM Ticket t
-                                    INNER JOIN Usuario_Cliente uc ON t.id_usuario_cliente = uc.id
-                                    INNER JOIN Cliente c ON uc.id_cliente = c.id ";
+                                    INNER JOIN Usuario_Cliente uc ON t.usuarioclienteid = uc.id
+                                    INNER JOIN Cliente c ON uc.clienteid = c.id ";
 
                         var builder = new StringBuilder();
 
@@ -291,7 +317,7 @@ namespace Atendimento.Repository.Repositories
                         {
                             builder.Clear();
                             builder.Append(sql);
-                            builder.Append("WHERE c.id = " + idCliente + " AND id_status_ticket = " + statusTickets[i]);
+                            builder.Append("WHERE c.id = " + idCliente + " AND t.statusticketid = " + statusTickets[i]);
 
                             total = conn.ExecuteScalar<int>(builder.ToString());
                             result.AddItem(statusTickets[i], total);
@@ -304,7 +330,7 @@ namespace Atendimento.Repository.Repositories
 
                         for (int i = 0; i < statusTickets.Length; i++)
                         {
-                            total = conn.ExecuteScalar<int>(@"SELECT COUNT(*) FROM Ticket WHERE id_status_ticket = @Id", new { Id = statusTickets[i] });
+                            total = conn.ExecuteScalar<int>(@"SELECT COUNT(*) FROM Ticket WHERE statusticketid = @Id", new { Id = statusTickets[i] });
                             result.AddItem(statusTickets[i], total);
                         }
                     }
@@ -350,7 +376,7 @@ namespace Atendimento.Repository.Repositories
 
                                                 return ticket;
                                             },
-                                            splitOn: "id_categoria,id_classificacao,id_status_ticket,id_usuario_cliente").Distinct().ToList();
+                                            splitOn: "id_categoria_entity,id_classificacao_entity,id_status_ticket_entity,id_usuario_cliente_enttity").Distinct().ToList();
                 }
 
                 return result;
@@ -380,7 +406,7 @@ namespace Atendimento.Repository.Repositories
 
                     if (ticket.IdStatusTicket == (int)EnumStatusTicket.CANCELADO || ticket.IdStatusTicket == (int)EnumStatusTicket.CONCLUIDO)
                     {
-                        ticket.DataHoraFinal = DateTime.Now;
+                        ticket.DataHoraAlteracao = DateTime.Now;
                     }
 
                     result = conn.Update<Ticket>(ticket);
@@ -476,7 +502,7 @@ namespace Atendimento.Repository.Repositories
 
             if (advancedFilter.IdClienteFiltro > 0)
             {
-                whereClause.Append(" AND uc.id_cliente = " + advancedFilter.IdClienteFiltro);
+                whereClause.Append(" AND uc.clienteid = " + advancedFilter.IdClienteFiltro);
             }
 
             if (advancedFilter.IdCategoriaFiltro > 0)
@@ -486,7 +512,7 @@ namespace Atendimento.Repository.Repositories
 
             if (advancedFilter.IdClienteSession > 0)
             {
-                whereClause.Append(" AND uc.id_cliente = " + advancedFilter.IdClienteSession);
+                whereClause.Append(" AND uc.clienteid = " + advancedFilter.IdClienteSession);
             }
 
             switch (advancedFilter.IdsStatusFiltro)
@@ -496,14 +522,14 @@ namespace Atendimento.Repository.Repositories
                 case "1": //Aguardando Atendimento
                 case "4": //Pendente com Cliente
                 case "5": //Em Análise
-                    whereClause.Append(" AND t.id_status_ticket = " + advancedFilter.IdsStatusFiltro);
+                    whereClause.Append(" AND t.statusticketid = " + advancedFilter.IdsStatusFiltro);
                     break;
                 case "2": //Concluído
                 case "3": //Cancelado
-                    whereClause.Append(" AND t.id_status_ticket = " + advancedFilter.IdsStatusFiltro);
+                    whereClause.Append(" AND t.statusticketid = " + advancedFilter.IdsStatusFiltro);
                     break;
                 default:
-                    whereClause.Append(" AND t.id_status_ticket IN (1,4,5)");
+                    whereClause.Append(" AND t.statusticketid IN (1,4,5)");
                     break;
             }
 

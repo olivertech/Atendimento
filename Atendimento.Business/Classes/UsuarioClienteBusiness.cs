@@ -87,5 +87,10 @@ namespace Atendimento.Business.Classes
         {
             return _repository.GetAllPaged(advancedFilter);
         }
+
+        public UsuarioCliente GetFullById(int idUsuario)
+        {
+            return _repository.GetFullById(idUsuario);
+        }
     }
 }

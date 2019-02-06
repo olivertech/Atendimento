@@ -2669,22 +2669,22 @@ pre code {
 }
 
 .form-control::-webkit-input-placeholder {
-	color: #6c757d;
+	color: lightgrey;
 	opacity: 1
 }
 
 .form-control:-ms-input-placeholder {
-	color: #6c757d;
+	color: lightgrey;
 	opacity: 1
 }
 
 .form-control::-ms-input-placeholder {
-	color: #6c757d;
+	color: lightgrey;
 	opacity: 1
 }
 
 .form-control::placeholder {
-	color: #6c757d;
+	color: lightgrey;
 	opacity: 1
 }
 
@@ -4680,6 +4680,10 @@ input[type=submit].btn-block {
 	margin-right: 1rem
 }
 
+.custom-radio-pointer {
+	cursor: pointer;
+}
+
 .custom-control-input {
 	position: absolute;
 	z-index: -1;
@@ -4688,7 +4692,7 @@ input[type=submit].btn-block {
 
 .custom-control-input:checked~.custom-control-label:before {
 	color: #fff;
-	background-color: #fb9678
+	background-color: #fb9679
 }
 
 .custom-control-input:focus~.custom-control-label:before {
@@ -6829,7 +6833,7 @@ button.close {
 .modal-footer {
 	display: -webkit-box;
 	display: -ms-flexbox;
-	display: flex;
+	display: block;
 	-webkit-box-align: center;
 	-ms-flex-align: center;
 	align-items: center;
@@ -6869,11 +6873,11 @@ button.close {
 	}
 }
 
-@media (min-width:992px) {
+/* @media (min-width:992px) {
 	.modal-lg {
 		max-width: 800px
 	}
-}
+} */
 
 .tooltip {
 	position: absolute;

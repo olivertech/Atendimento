@@ -16,7 +16,7 @@ namespace Atendimento.Repository.Repositories
     {
         const string selectQuery = @"SELECT 
                                         ae.id,
-                                        ae.id_empresa,
+                                        ae.empresaid,
                                         ae.nome,
                                         ae.username,
                                         ae.password,
@@ -28,7 +28,7 @@ namespace Atendimento.Repository.Repositories
                                         ae.ativo,
                                         ae.is_admin,
                                         ae.is_default,
-                                        e.id                AS id_empresa,
+                                        e.id               AS id_empresa_entity,
                                         e.nome,
                                         e.email,
                                         e.telefone_fixo,
@@ -36,7 +36,7 @@ namespace Atendimento.Repository.Repositories
                                         e.descricao,
                                         e.is_default
                                     FROM Atendente_Empresa ae 
-                                    INNER JOIN Empresa e ON e.id = ae.id_empresa ";
+                                    INNER JOIN Empresa e ON ae.empresaid = e.id";
 
         /// <summary>
         /// Método que retorna todos os atendentes de uma determinada empresa
@@ -82,7 +82,7 @@ namespace Atendimento.Repository.Repositories
 
                                     return atendente;
                                 },
-                                splitOn: "id_empresa").Distinct().ToList();
+                                splitOn: "id_empresa_entity").Distinct().ToList();
 
                     return result;
                 }
@@ -119,7 +119,7 @@ namespace Atendimento.Repository.Repositories
 
                                                 return atendente;
                                             },
-                                            splitOn: "id_empresa").Distinct().ToList();
+                                            splitOn: "id_empresa_entity").Distinct().ToList();
                 }
 
                 return result;
@@ -161,7 +161,7 @@ namespace Atendimento.Repository.Repositories
         {
             var orderByClause = new StringBuilder();
 
-            orderByClause.Append("ORDER BY ID ASC");
+            orderByClause.Append("ORDER BY id ASC");
 
             return orderByClause.ToString();
         }

@@ -1,4 +1,5 @@
-app.directive("ifLoading", function ($http) {
+app.directive("ifLoading", ['$http',
+    function ($http) {
     return {
         restrict: "A",
         link: function(scope, elem) {
@@ -10,7 +11,7 @@ app.directive("ifLoading", function ($http) {
                 } else {
                     elem[0].style.display = "none";
                 }
-            })
+            });
 
             function isLoading() {
                 //console.log($http.pendingRequests.length);
@@ -18,4 +19,4 @@ app.directive("ifLoading", function ($http) {
             }
         }
     };
-});
+}]);

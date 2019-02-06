@@ -1,4 +1,5 @@
-app.factory("rememberMeService", function($cookies) {
+app.factory("rememberMeService", ['$cookies',
+    function($cookies) {
 
     /** Recupera cookies */
     var _fetchRememberMeCookie = function(name) {
@@ -25,7 +26,7 @@ app.factory("rememberMeService", function($cookies) {
 
         //Se não existir o cookie
         return null;
-    }
+    };
 
     /** Grava cookie de login */
     var _setRememberMeCookie = function(name, value) {
@@ -39,7 +40,7 @@ app.factory("rememberMeService", function($cookies) {
         
         cookie += 'expires=' + date.toString() + ';';
         document.cookie = cookie;
-    }
+    };
 
     /** remove todos os cookies */
     var _resetAllCookies = function() {
@@ -47,11 +48,11 @@ app.factory("rememberMeService", function($cookies) {
         angular.forEach(cookies, function (v, k) {
             $cookies.remove(k);
         });
-    }
+    };
 
     return {
         fetchRememberMeCookie: _fetchRememberMeCookie,
         setRememberMeCookie: _setRememberMeCookie,
         resetAllCookies: _resetAllCookies
     };
-});
+}]);

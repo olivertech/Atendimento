@@ -11,6 +11,9 @@ namespace Atendimento.Entities.Requests
         [Required(ErrorMessage = "Informe o id do autor.")]
         public int IdAutor { get; set; }
 
+        [Required(ErrorMessage = "Informe o id do status.")]
+        public int IdStatusTicket { get; set; }
+
         [Required(ErrorMessage = "O campo 'UserType' deve ser informado com a letra 'S' para Suporte ou 'C' para cliente")]
         public string UserType { get; set; } = "C";
 

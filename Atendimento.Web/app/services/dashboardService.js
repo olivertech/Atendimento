@@ -1,4 +1,5 @@
-app.factory("dashboardService", function($http, config) {
+app.factory("dashboardService", ['$http', 'config',
+    function($http, config) {
     
     /** Retorna os totais de todos os status */
     var _getTotals = function(idCliente) {
@@ -8,7 +9,7 @@ app.factory("dashboardService", function($http, config) {
             async: true,
             cache: false
         }); 
-    }
+    };
 
     /** Retorna todos os tickets paginando */
     var _getTickets = function(offSet, numRows, orderBy, direction, idsStatusTicket, idCliente, idTicketFiltro, tituloFiltro, descricaoFiltro, dataInicialFiltro, dataFinalFiltro, idClienteFiltro, idCategoriaFiltro) {
@@ -35,7 +36,7 @@ app.factory("dashboardService", function($http, config) {
             async: true,
             cache: false
         });  
-    }
+    };
 
     /** Retorna todos os clientes */
     var _getClientes = function() {
@@ -45,7 +46,7 @@ app.factory("dashboardService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
     /** Retorna os usuarios associados a um cliente */
     var _getUsuarios = function(idCliente) {
@@ -55,7 +56,7 @@ app.factory("dashboardService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
     /** Retorna todas as categorias */
     var _getCategorias = function() {
@@ -65,7 +66,7 @@ app.factory("dashboardService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
     /** Retorna todas as classificacoes */
     var _getClassificacoes = function() {
@@ -75,7 +76,7 @@ app.factory("dashboardService", function($http, config) {
             async: true,
             cache: false
         });
-    }
+    };
 
     /** Salva um novo ticket */
     var _saveNewSupport = function(idUsuarioFiltro, idCategoriaFiltro, idClassificacaoFiltro, assuntoFiltro, descricaoFiltro, pathAnexos, tipoUsuario, idAtendente) {
@@ -91,7 +92,7 @@ app.factory("dashboardService", function($http, config) {
             "pathAnexos": pathAnexos,
             "userTypeAgent": (tipoUsuario == "Atendimento" ? "S" : "C"),
             "idAtendente": idAtendente
-        }
+        };
 
         return $http({
             method: "POST",
@@ -100,7 +101,7 @@ app.factory("dashboardService", function($http, config) {
             async: true,
             cache: false
         });         
-    }
+    };
 
     /** Faz o upload de um arquivo */
     var _uploadFile = function(file, idUsuario) {
@@ -108,11 +109,11 @@ app.factory("dashboardService", function($http, config) {
         fd.append('file', file);
 
         return $http.post(config.baseUrl + "/FileUpload/Upload?idUsuario=" + idUsuario, fd, { transformRequest: angular.identity, headers: {'Content-Type': undefined}});
-    }
+    };
     
     /** Faz a deleção da base, de todos os anexos que estiverem dentro da lista recebida */
     var _removeAttachments = function(ids) {
-        var list = {ids};
+        var list = { ids: ids };
 
         var req = {
             method: 'DELETE',
@@ -121,10 +122,10 @@ app.factory("dashboardService", function($http, config) {
               'Content-Type':'application/json'
             },
             data: ids
-           }
+           };
            
            return $http(req);
-    }
+    };
 
     return {
         getTotals: _getTotals,
@@ -137,4 +138,4 @@ app.factory("dashboardService", function($http, config) {
         saveNewSupport: _saveNewSupport,
         removeAttachments: _removeAttachments
     };
-});
+}]);

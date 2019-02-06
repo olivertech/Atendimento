@@ -1,4 +1,5 @@
-app.factory('loadingInterceptor', function($q, $rootScope, $timeout) {
+app.factory('loadingInterceptor', ['$q', '$rootScope', '$timeout',
+    function($q, $rootScope, $timeout) {
     return {
         request: function(config) {
             $rootScope.loading = true;
@@ -20,4 +21,4 @@ app.factory('loadingInterceptor', function($q, $rootScope, $timeout) {
             return $q.reject(rejection);
         }
     };
-});
+}]);

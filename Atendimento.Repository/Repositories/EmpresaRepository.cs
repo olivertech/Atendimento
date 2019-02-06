@@ -7,6 +7,7 @@ using Atendimento.Entities.Responses;
 using Atendimento.Repository.Interfaces.Interfaces;
 using Atendimento.Repository.Repositories.Base;
 using Dapper;
+using Dommel;
 
 namespace Atendimento.Repository.Repositories
 {
@@ -74,7 +75,7 @@ namespace Atendimento.Repository.Repositories
         {
             var orderByClause = new StringBuilder();
 
-            orderByClause.Append("ORDER BY ID ASC");
+            orderByClause.Append("ORDER BY id ASC");
 
             return orderByClause.ToString();
         }
@@ -89,6 +90,31 @@ namespace Atendimento.Repository.Repositories
             offSetNumRowsClauses.Append(" FETCH NEXT " + advancedFilter.NumRows + " ROWS ONLY");
 
             return offSetNumRowsClauses.ToString();
+        }
+
+        /// <summary>
+        /// Método que retorna o total de atendentes associados a empresa
+        /// </summary>
+        /// <param name="idEmpresa"></param>
+        /// <returns></returns>
+        public int GetTotalAtendentesEmpresa(int idEmpresa)
+        {
+            var result = 0;
+            var sql = string.Empty;
+
+            try
+            {
+                using (var conn = CreateConnection())
+                {
+                    result = conn.Select<AtendenteEmpresa>(q => q.IdEmpresa == idEmpresa).Count();
+                }
+
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

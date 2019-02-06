@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
-using System.Web.Http.Cors;
 using Atendimento.Business.Interfaces.Interfaces;
 using Atendimento.Entities.Entities;
 using Atendimento.Entities.Enums;
@@ -19,22 +17,21 @@ namespace Atendimento.WebApi.Controllers
     /// Controller para autenticação
     /// </summary>
     [RoutePrefix("api/Login")]
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class LoginController : ApiController
     {
-        private readonly ILoginBusiness _business;
+        private readonly ILoginBusiness _loginBusiness;
         private readonly IAtendenteEmpresaBusiness _atendenteEmpresaBusiness;
         private readonly IUsuarioClienteBusiness _usuarioClienteBusiness;
 
         /// <summary>
         /// Construtor
         /// </summary>
-        /// <param name="business"></param>
+        /// <param name="loginBusiness"></param>
         /// <param name="atendenteEmpresaBusiness"></param>
         /// <param name="usuarioClienteBusiness"></param>
-        public LoginController(ILoginBusiness business, IAtendenteEmpresaBusiness atendenteEmpresaBusiness, IUsuarioClienteBusiness usuarioClienteBusiness)
+        public LoginController(ILoginBusiness loginBusiness, IAtendenteEmpresaBusiness atendenteEmpresaBusiness, IUsuarioClienteBusiness usuarioClienteBusiness)
         {
-            _business = business;
+            _loginBusiness = loginBusiness;
             _atendenteEmpresaBusiness = atendenteEmpresaBusiness;
             _usuarioClienteBusiness = usuarioClienteBusiness;
         }
@@ -64,7 +61,7 @@ namespace Atendimento.WebApi.Controllers
                     var userLogin = new UserLogin { UserName = loginRequest.Username, Password = loginRequest.Password, UserType = loginRequest.UserType };
 
                     //Recupera o usuário de atendimento
-                    var loginResponse = _business.DoLogin(userLogin);
+                    var loginResponse = _loginBusiness.DoLogin(userLogin);
 
                     //Se o usuário não foi encontrado com base nos dados do login, retornar Unauthorized
                     if (loginResponse == null)
@@ -114,7 +111,7 @@ namespace Atendimento.WebApi.Controllers
                     var userLogin = new UserLogin { Email = recoverRequest.Email, UserType = recoverRequest.UserType };
 
                     //Recupera o usuário de atendimento
-                    var recoverResponse = _business.DoRecover(userLogin);
+                    var recoverResponse = _loginBusiness.DoRecover(userLogin);
 
                     //Monta response
                     result = Ok(Retorno<RecoverResponse>.Criar(true, "Recuperação de Senha Realizada Com Sucesso.", recoverResponse));

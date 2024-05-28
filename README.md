@@ -12,6 +12,6 @@ Espero com esse repositório, apresentar um pouco daquilo que uso em meus projet
 
 Por questões de segurança, foram removidas algumas partes do código, sem comprometer o entendimento, para que se preserve os clientes que estão utilizando este projeto em seus ambientes de produção.
 
-Para maiores informações, ou contato profissional, me coloco a disposição pelo email olivertech@terra.com.br, pelo celular (21) 99710-8994 (Ligações / WhatsApp) ou pelo Skype maclauservicos.
+Para maiores informações, ou contato profissional, me coloco a disposição pelo email olivertech@outlook.com, pelo celular (21) 99710-8994 (Ligações / WhatsApp) ou pelo Skype maclauservicos.
 
 Marcelo de Oliveira.
